@@ -1,11 +1,10 @@
 package com.wxw.srl;
 
 /**
- * ÓïÒå½ÇÉ«±ê×¢Æ÷
- * @author ÍõÜ°Î­
+ * è¯­ä¹‰è§’è‰²æ ‡æ³¨å™¨
+ * @author ç‹é¦¨è‹‡
  *
  */
 public interface SemanticRoleLabeling {
 
-	
 }

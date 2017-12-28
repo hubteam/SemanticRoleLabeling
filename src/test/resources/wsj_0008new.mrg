@@ -1,0 +1,412 @@
+( (S 
+    (NP-SBJ (DT The) (JJ federal) (NN government) )
+    (VP (VBD suspended) 
+      (NP 
+        (NP (NNS sales) )
+        (PP (IN of) 
+          (NP (NNP U.S.) (NNS savings) (NNS bonds) )))
+      (SBAR-PRP (IN because) 
+        (S 
+          (NP-SBJ (NNP Congress) )
+          (VP (VBZ has) (RB n't) 
+            (VP (VBN lifted) 
+              (NP 
+                (NP (DT the) (NN ceiling) )
+                (PP-LOC (IN on) 
+                  (NP (NN government) (NN debt) ))))))))
+    (. .) ))
+wsj/00/wsj_0008.mrg 0 3 gold suspend.01 vp--a 0:1-ARG0 3:0-rel 4:2-ARG1 9:1-ARGM-CAU
+
+( (S 
+    (NP-SBJ (DT The) (JJ federal) (NN government) )
+    (VP (VBD suspended) 
+      (NP 
+        (NP (NNS sales) )
+        (PP (IN of) 
+          (NP (NNP U.S.) (NNS savings) (NNS bonds) )))
+      (SBAR-PRP (IN because) 
+        (S 
+          (NP-SBJ (NNP Congress) )
+          (VP (VBZ has) (RB n't) 
+            (VP (VBN lifted) 
+              (NP 
+                (NP (DT the) (NN ceiling) )
+                (PP-LOC (IN on) 
+                  (NP (NN government) (NN debt) ))))))))
+    (. .) ))
+wsj/00/wsj_0008.mrg 0 13 gold lift.01 pnp3a 10:1-ARG0 12:0-ARGM-NEG 13:0-rel 14:2-ARG1
+
+( (S 
+    (S-TPC-1 
+      (SBAR-TMP (IN Until) 
+        (S 
+          (NP-SBJ (NNP Congress) )
+          (VP (VBZ acts) )))
+      (, ,) 
+      (NP-SBJ (DT the) (NN government) )
+      (VP (VBZ has) (RB n't) 
+        (NP (DT any) (NN authority) 
+          (S 
+            (NP-SBJ (-NONE- *) )
+            (VP (TO to) 
+              (VP (VB issue) 
+                (NP 
+                  (NP (JJ new) (NN debt) (NNS obligations) )
+                  (PP (IN of) 
+                    (NP (DT any) (NN kind) )))))))))
+    (, ,) 
+    (NP-SBJ (DT the) (NNP Treasury) )
+    (VP (VBD said) 
+      (SBAR (-NONE- 0) 
+        (S (-NONE- *T*-1) )))
+    (. .) ))
+wsj/00/wsj_0008.mrg 1 2 gold act.02 vn-3a 1:1-ARG0 2:0-rel
+
+( (S 
+    (S-TPC-1 
+      (SBAR-TMP (IN Until) 
+        (S 
+          (NP-SBJ (NNP Congress) )
+          (VP (VBZ acts) )))
+      (, ,) 
+      (NP-SBJ (DT the) (NN government) )
+      (VP (VBZ has) (RB n't) 
+        (NP (DT any) (NN authority) 
+          (S 
+            (NP-SBJ (-NONE- *) )
+            (VP (TO to) 
+              (VP (VB issue) 
+                (NP 
+                  (NP (JJ new) (NN debt) (NNS obligations) )
+                  (PP (IN of) 
+                    (NP (DT any) (NN kind) )))))))))
+    (, ,) 
+    (NP-SBJ (DT the) (NNP Treasury) )
+    (VP (VBD said) 
+      (SBAR (-NONE- 0) 
+        (S (-NONE- *T*-1) )))
+    (. .) ))
+wsj/00/wsj_0008.mrg 1 6 gold have.03 vn-3a 0:1-ARGM-TMP 4:1-ARG0 6:0-rel 7:0-ARGM-NEG 8:1-ARG1
+
+( (S 
+    (S-TPC-1 
+      (SBAR-TMP (IN Until) 
+        (S 
+          (NP-SBJ (NNP Congress) )
+          (VP (VBZ acts) )))
+      (, ,) 
+      (NP-SBJ (DT the) (NN government) )
+      (VP (VBZ has) (RB n't) 
+        (NP (DT any) (NN authority) 
+          (S 
+            (NP-SBJ (-NONE- *) )
+            (VP (TO to) 
+              (VP (VB issue) 
+                (NP 
+                  (NP (JJ new) (NN debt) (NNS obligations) )
+                  (PP (IN of) 
+                    (NP (DT any) (NN kind) )))))))))
+    (, ,) 
+    (NP-SBJ (DT the) (NNP Treasury) )
+    (VP (VBD said) 
+      (SBAR (-NONE- 0) 
+        (S (-NONE- *T*-1) )))
+    (. .) ))
+wsj/00/wsj_0008.mrg 1 12 gold issue.01 i---a 4:1*10:0-ARG0 12:0-rel 13:2-ARG1
+
+( (S 
+    (S-TPC-1 
+      (SBAR-TMP (IN Until) 
+        (S 
+          (NP-SBJ (NNP Congress) )
+          (VP (VBZ acts) )))
+      (, ,) 
+      (NP-SBJ (DT the) (NN government) )
+      (VP (VBZ has) (RB n't) 
+        (NP (DT any) (NN authority) 
+          (S 
+            (NP-SBJ (-NONE- *) )
+            (VP (TO to) 
+              (VP (VB issue) 
+                (NP 
+                  (NP (JJ new) (NN debt) (NNS obligations) )
+                  (PP (IN of) 
+                    (NP (DT any) (NN kind) )))))))))
+    (, ,) 
+    (NP-SBJ (DT the) (NNP Treasury) )
+    (VP (VBD said) 
+      (SBAR (-NONE- 0) 
+        (S (-NONE- *T*-1) )))
+    (. .) ))
+wsj/00/wsj_0008.mrg 1 22 gold say.01 vp--a 20:1-ARG0 22:0-rel 0:2*24:0-ARG1
+
+( (S 
+    (NP-SBJ 
+      (NP (DT The) (NN government) (POS 's) )
+      (NN borrowing) (NN authority) )
+    (VP (VBD dropped) 
+      (PP-TMP (IN at) 
+        (NP (NN midnight) ))
+      (NP-TMP (NNP Tuesday) )
+      (PP-DIR (TO to) 
+        (NP 
+          (QP ($ $) (CD 2.80) (CD trillion) )
+          (-NONE- *U*) ))
+      (PP-DIR (IN from) 
+        (NP 
+          (QP ($ $) (CD 2.87) (CD trillion) )
+          (-NONE- *U*) )))
+    (. .) ))
+wsj/00/wsj_0008.mrg 2 5 gold drop.01 vp--a 0:2-ARG1 5:0-rel 6:1-ARGM-TMP 8:1-ARGM-TMP 9:1-ARG4-to 14:1-ARG3-from
+
+( (S 
+    (NP-SBJ-11 
+      (NP (NN Legislation) )
+      (SBAR 
+        (WHNP-1 (-NONE- 0) )
+        (S 
+          (NP-SBJ (-NONE- *T*-1) )
+          (VP (TO to) 
+            (VP (VB lift) 
+              (NP (DT the) (NN debt) (NN ceiling) ))))))
+    (VP (VBZ is) 
+      (VP (VBN ensnarled) 
+        (NP (-NONE- *-11) )
+        (PP-LOC-CLR (IN in) 
+          (NP 
+            (NP (DT the) (NN fight) )
+            (PP (IN over) 
+              (S-NOM 
+                (NP-SBJ (-NONE- *) )
+                (VP (VBG cutting) 
+                  (NP (JJ capital-gains) (NNS taxes) ))))))))
+    (. .) ))
+wsj/00/wsj_0008.mrg 3 4 gold lift.01 i---a 0:1*1:0*2:0-ARG0 4:0-rel 5:1-ARG1
+
+( (S 
+    (NP-SBJ-11 
+      (NP (NN Legislation) )
+      (SBAR 
+        (WHNP-1 (-NONE- 0) )
+        (S 
+          (NP-SBJ (-NONE- *T*-1) )
+          (VP (TO to) 
+            (VP (VB lift) 
+              (NP (DT the) (NN debt) (NN ceiling) ))))))
+    (VP (VBZ is) 
+      (VP (VBN ensnarled) 
+        (NP (-NONE- *-11) )
+        (PP-LOC-CLR (IN in) 
+          (NP 
+            (NP (DT the) (NN fight) )
+            (PP (IN over) 
+              (S-NOM 
+                (NP-SBJ (-NONE- *) )
+                (VP (VBG cutting) 
+                  (NP (JJ capital-gains) (NNS taxes) ))))))))
+    (. .) ))
+wsj/00/wsj_0008.mrg 3 9 gold ensnarl.01 pn-3p 9:0-rel 0:2*10:0-ARG1 11:1-ARG2-in
+
+( (S 
+    (NP-SBJ-11 
+      (NP (NN Legislation) )
+      (SBAR 
+        (WHNP-1 (-NONE- 0) )
+        (S 
+          (NP-SBJ (-NONE- *T*-1) )
+          (VP (TO to) 
+            (VP (VB lift) 
+              (NP (DT the) (NN debt) (NN ceiling) ))))))
+    (VP (VBZ is) 
+      (VP (VBN ensnarled) 
+        (NP (-NONE- *-11) )
+        (PP-LOC-CLR (IN in) 
+          (NP 
+            (NP (DT the) (NN fight) )
+            (PP (IN over) 
+              (S-NOM 
+                (NP-SBJ (-NONE- *) )
+                (VP (VBG cutting) 
+                  (NP (JJ capital-gains) (NNS taxes) ))))))))
+    (. .) ))
+wsj/00/wsj_0008.mrg 3 16 gold cut.02 g---- 15:0-ARG0 16:0-rel 17:1-ARG1
+
+( (S 
+    (S 
+      (NP-SBJ-1 (DT The) (NNP House) )
+      (VP (VBZ has) 
+        (VP (VBN voted) 
+          (S 
+            (NP-SBJ (-NONE- *-1) )
+            (VP (TO to) 
+              (VP (VB raise) 
+                (NP (DT the) (NN ceiling) )
+                (PP-DIR (TO to) 
+                  (NP 
+                    (QP ($ $) (CD 3.1) (CD trillion) )
+                    (-NONE- *U*) ))))))))
+    (, ,) (CC but) 
+    (S 
+      (NP-SBJ-2 (DT the) (NNP Senate) )
+      (VP (VBZ is) (RB n't) 
+        (VP (VBN expected) 
+          (S 
+            (NP-SBJ (-NONE- *-2) )
+            (VP (TO to) 
+              (VP (VB act) 
+                (PP-TMP (IN until) 
+                  (NP (JJ next) (NN week) ))
+                (PP-TMP (IN at) 
+                  (NP (DT the) (JJS earliest) ))))))))
+    (. .) ))
+wsj/00/wsj_0008.mrg 4 3 gold vote.01 pnp3a 0:1-ARG0 3:0-rel 4:2-ARG1
+
+( (S 
+    (S 
+      (NP-SBJ-1 (DT The) (NNP House) )
+      (VP (VBZ has) 
+        (VP (VBN voted) 
+          (S 
+            (NP-SBJ (-NONE- *-1) )
+            (VP (TO to) 
+              (VP (VB raise) 
+                (NP (DT the) (NN ceiling) )
+                (PP-DIR (TO to) 
+                  (NP 
+                    (QP ($ $) (CD 3.1) (CD trillion) )
+                    (-NONE- *U*) ))))))))
+    (, ,) (CC but) 
+    (S 
+      (NP-SBJ-2 (DT the) (NNP Senate) )
+      (VP (VBZ is) (RB n't) 
+        (VP (VBN expected) 
+          (S 
+            (NP-SBJ (-NONE- *-2) )
+            (VP (TO to) 
+              (VP (VB act) 
+                (PP-TMP (IN until) 
+                  (NP (JJ next) (NN week) ))
+                (PP-TMP (IN at) 
+                  (NP (DT the) (JJS earliest) ))))))))
+    (. .) ))
+wsj/00/wsj_0008.mrg 4 6 gold raise.01 i---a 0:1*4:0-ARG0 6:0-rel 7:1-ARG1 9:1-ARG4-to
+
+( (S 
+    (S 
+      (NP-SBJ-1 (DT The) (NNP House) )
+      (VP (VBZ has) 
+        (VP (VBN voted) 
+          (S 
+            (NP-SBJ (-NONE- *-1) )
+            (VP (TO to) 
+              (VP (VB raise) 
+                (NP (DT the) (NN ceiling) )
+                (PP-DIR (TO to) 
+                  (NP 
+                    (QP ($ $) (CD 3.1) (CD trillion) )
+                    (-NONE- *U*) ))))))))
+    (, ,) (CC but) 
+    (S 
+      (NP-SBJ-2 (DT the) (NNP Senate) )
+      (VP (VBZ is) (RB n't) 
+        (VP (VBN expected) 
+          (S 
+            (NP-SBJ (-NONE- *-2) )
+            (VP (TO to) 
+              (VP (VB act) 
+                (PP-TMP (IN until) 
+                  (NP (JJ next) (NN week) ))
+                (PP-TMP (IN at) 
+                  (NP (DT the) (JJS earliest) ))))))))
+    (. .) ))
+wsj/00/wsj_0008.mrg 4 20 gold expect.01 pn-3p 16:1,21:2-ARG1 19:0-ARGM-NEG 20:0-rel
+
+( (S 
+    (S 
+      (NP-SBJ-1 (DT The) (NNP House) )
+      (VP (VBZ has) 
+        (VP (VBN voted) 
+          (S 
+            (NP-SBJ (-NONE- *-1) )
+            (VP (TO to) 
+              (VP (VB raise) 
+                (NP (DT the) (NN ceiling) )
+                (PP-DIR (TO to) 
+                  (NP 
+                    (QP ($ $) (CD 3.1) (CD trillion) )
+                    (-NONE- *U*) ))))))))
+    (, ,) (CC but) 
+    (S 
+      (NP-SBJ-2 (DT the) (NNP Senate) )
+      (VP (VBZ is) (RB n't) 
+        (VP (VBN expected) 
+          (S 
+            (NP-SBJ (-NONE- *-2) )
+            (VP (TO to) 
+              (VP (VB act) 
+                (PP-TMP (IN until) 
+                  (NP (JJ next) (NN week) ))
+                (PP-TMP (IN at) 
+                  (NP (DT the) (JJS earliest) ))))))))
+    (. .) ))
+wsj/00/wsj_0008.mrg 4 23 gold act.02 i---a 16:1*21:0-ARG0 23:0-rel 24:1-ARGM-TMP 27:1-ARGM-TMP
+
+( (S 
+    (NP-SBJ (DT The) (NNP Treasury) )
+    (VP (VBD said) 
+      (SBAR (-NONE- 0) 
+        (S 
+          (NP-SBJ (DT the) (NNP U.S.) )
+          (VP (MD will) 
+            (VP (VB default) 
+              (PP-TMP (IN on) 
+                (NP (NNP Nov.) (CD 9) ))
+              (SBAR-ADV (IN if) 
+                (S 
+                  (NP-SBJ (NNP Congress) )
+                  (VP (VBZ does) (RB n't) 
+                    (VP (VB act) 
+                      (PP-TMP (IN by) 
+                        (NP (RB then) )))))))))))
+    (. .) ))
+wsj/00/wsj_0008.mrg 5 2 gold say.01 vp--a 0:1-ARG0 2:0-rel 3:1-ARG1
+
+( (S 
+    (NP-SBJ (DT The) (NNP Treasury) )
+    (VP (VBD said) 
+      (SBAR (-NONE- 0) 
+        (S 
+          (NP-SBJ (DT the) (NNP U.S.) )
+          (VP (MD will) 
+            (VP (VB default) 
+              (PP-TMP (IN on) 
+                (NP (NNP Nov.) (CD 9) ))
+              (SBAR-ADV (IN if) 
+                (S 
+                  (NP-SBJ (NNP Congress) )
+                  (VP (VBZ does) (RB n't) 
+                    (VP (VB act) 
+                      (PP-TMP (IN by) 
+                        (NP (RB then) )))))))))))
+    (. .) ))
+wsj/00/wsj_0008.mrg 5 7 gold default.01 vf--a 4:1-ARG1 6:0-ARGM-MOD 7:0-rel 8:1-ARGM-TMP 11:1-ARGM-ADV
+
+( (S 
+    (NP-SBJ (DT The) (NNP Treasury) )
+    (VP (VBD said) 
+      (SBAR (-NONE- 0) 
+        (S 
+          (NP-SBJ (DT the) (NNP U.S.) )
+          (VP (MD will) 
+            (VP (VB default) 
+              (PP-TMP (IN on) 
+                (NP (NNP Nov.) (CD 9) ))
+              (SBAR-ADV (IN if) 
+                (S 
+                  (NP-SBJ (NNP Congress) )
+                  (VP (VBZ does) (RB n't) 
+                    (VP (VB act) 
+                      (PP-TMP (IN by) 
+                        (NP (RB then) )))))))))))
+    (. .) ))
+wsj/00/wsj_0008.mrg 5 15 gold act.02 ----a 12:1-ARG0 14:0-ARGM-NEG 15:0-rel 16:1-ARGM-TMP
