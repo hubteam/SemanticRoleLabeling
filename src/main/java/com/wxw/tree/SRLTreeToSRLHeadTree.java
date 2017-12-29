@@ -12,7 +12,7 @@ public class SRLTreeToSRLHeadTree {
 
 	private AbsractGenerateHeadWords aghw = new ConcreteGenerateHeadWords(); 
 	
-	public SRLTreeToSRLHeadTree srlTreeToSRLHeadTree(SemanticRoleTree tree){
+	public SemanticRoleHeadTree srlTreeToSRLHeadTree(SemanticRoleTree tree){
 		return null;
 	}
 }

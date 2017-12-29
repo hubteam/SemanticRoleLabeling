@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * ´øÍ·½áµãµÄÓïÒå½ÇÉ«±ê×¢Ê÷
- * @author ÍõÜ°Î­
+ * å¸¦å¤´ç»“ç‚¹çš„è¯­ä¹‰è§’è‰²æ ‡æ³¨æ ‘
+ * @author çŽ‹é¦¨è‹‡
  *
  */
 public class SemanticRoleHeadTree extends SemanticRoleTree{
@@ -24,12 +24,10 @@ public class SemanticRoleHeadTree extends SemanticRoleTree{
 		return this.headWords;
 	}
 
-	//·µ»Ø¸¸½Úµã
 	public SemanticRoleHeadTree getParent(){
 		return (SemanticRoleHeadTree) parent;
 	}
 
-	//·µ»Ø×Ó½ÚµãÁÐ±í
 	public List<SemanticRoleHeadTree> getChildren(){
 		List<SemanticRoleHeadTree> hnode = new ArrayList<SemanticRoleHeadTree>();
 		for (TreeNode treeNode : children) {

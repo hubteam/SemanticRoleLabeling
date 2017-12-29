@@ -1,35 +1,51 @@
 package com.wxw.tree;
 
+import java.util.List;
+import java.util.Stack;
+
 /**
  * 将一棵树转换成语义角色标注树
  * @author 王馨苇
  *
  */
 public class TreeToSRLTree {
-
-	//记录词下标的量
-	private int wordindex = 0;
 	
 	/**
 	 * 为树加上词下标
 	 * @param tree
 	 * @return
 	 */
-	public SemanticRoleTree treeAddWordIndex(TreeNode tree){
-		SemanticRoleTree srltree = new SemanticRoleTree(tree.getNodeName());
-		for (int i = 0; i < tree.getChildren().size(); i++) {
-			srltree.addChild(treeAddWordIndex(tree.getChildren().get(i)));
+	public SemanticRoleTree treeAddWordIndex(TreeNode treenode){
+		String strtree = "("+treenode.toString()+")";
+		PhraseGenerateTree pgt = new PhraseGenerateTree();
+		String format = pgt.format(strtree);
+		List<String> parts = pgt.stringToList(format);
+		Stack<SemanticRoleTree> tree = new Stack<SemanticRoleTree>();
+		int wordindex = 0;
+        for (int i = 0; i < parts.size(); i++) {
+			if(!parts.get(i).equals(")") && !parts.get(i).equals(" ")){
+				SemanticRoleTree tn = new SemanticRoleTree(parts.get(i));
+				tree.push(tn);				
+			}else if(parts.get(i).equals(" ")){
+				
+			}else if(parts.get(i).equals(")")){
+				Stack<SemanticRoleTree> temp = new Stack<SemanticRoleTree>();
+				while(!tree.peek().getNodeName().equals("(")){
+					if(!tree.peek().getNodeName().equals(" ")){
+						temp.push(tree.pop());
+					}
+				}
+				tree.pop();
+				SemanticRoleTree node = temp.pop();
+				while(!temp.isEmpty()){		
+					temp.peek().setParent(node);
+					node.addChild(temp.pop());
+				}
+				tree.push(node);
+			}
 		}
-		SemanticRoleTree leaf = null;
-		if(tree.getChildren().size() == 0){	
-			leaf = new SemanticRoleTree(tree.getNodeName());
-			leaf.setWordIndex(wordindex);
-			wordindex++;			
-		}else{
-			leaf = (SemanticRoleTree) tree.getChildren();
-		}
-		srltree.addChild(leaf);
-		return srltree;
+        SemanticRoleTree treeStruct = tree.pop();
+        return treeStruct;
 	}
 	
 	/**
