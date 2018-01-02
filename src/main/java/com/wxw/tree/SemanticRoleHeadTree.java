@@ -24,10 +24,10 @@ public class SemanticRoleHeadTree extends SemanticRoleTree{
 		return this.headWords;
 	}
 
-	public SemanticRoleHeadTree getParent(){
-		return (SemanticRoleHeadTree) parent;
-	}
-
+//	public SemanticRoleHeadTree getParent(){
+//		return (SemanticRoleHeadTree) parent;
+//	}
+//
 	public List<SemanticRoleHeadTree> getChildren(){
 		List<SemanticRoleHeadTree> hnode = new ArrayList<SemanticRoleHeadTree>();
 		for (TreeNode treeNode : children) {
@@ -35,5 +35,24 @@ public class SemanticRoleHeadTree extends SemanticRoleTree{
 			hnode.add(node);
 		}
 		return hnode;
+	}
+	
+	@Override
+	public String toString() {
+		if(this.children.size() == 0){
+			return " "+this.nodename+"_["+this.getWordIndex()+"]";
+		}else{
+			String treestr = "";
+			if(getSemanticRole() != null){
+				treestr = "("+this.nodename+"{"+this.headWords+"}_"+"{"+this.getSemanticRole()+"}";
+			}else{
+				treestr = "("+this.nodename+"{"+this.headWords+"}";
+			}			
+			for (TreeNode node:this.children) {
+				treestr += node.toString();
+			}
+			treestr += ")";
+			return treestr;
+		}
 	}
 }

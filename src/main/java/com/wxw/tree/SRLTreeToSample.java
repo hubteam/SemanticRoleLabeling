@@ -28,5 +28,9 @@ public abstract class SRLTreeToSample {
 		}
 	}
 	
+	/**
+	 * 是否有头结点
+	 * @return
+	 */
 	public abstract boolean hasHeadWords();
 }
