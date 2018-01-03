@@ -15,32 +15,32 @@ public class TreeToSRLTree {
 	 * @param tree
 	 * @return
 	 */
-	public SemanticRoleTree treeAddWordIndex(TreeNode treenode){
+	public SRLTreeNode treeAddWordIndex(TreeNode treenode){
 		String strtree = "("+treenode.toString()+")";
 		PhraseGenerateTree pgt = new PhraseGenerateTree();
 		String format = pgt.format(strtree);
 		List<String> parts = pgt.stringToList(format);
-		Stack<SemanticRoleTree> tree = new Stack<SemanticRoleTree>();
+		Stack<SRLTreeNode> tree = new Stack<SRLTreeNode>();
 		int wordindex = 0;
         for (int i = 0; i < parts.size(); i++) {
 			if(!parts.get(i).equals(")") && !parts.get(i).equals(" ")){
-				SemanticRoleTree tn = new SemanticRoleTree(parts.get(i));
+				SRLTreeNode tn = new SRLTreeNode(parts.get(i));
 				tree.push(tn);				
 			}else if(parts.get(i).equals(" ")){
 				
 			}else if(parts.get(i).equals(")")){
-				Stack<SemanticRoleTree> temp = new Stack<SemanticRoleTree>();
+				Stack<SRLTreeNode> temp = new Stack<SRLTreeNode>();
 				while(!tree.peek().getNodeName().equals("(")){
 					if(!tree.peek().getNodeName().equals(" ")){
 						temp.push(tree.pop());						
 					}
 				}
 				tree.pop();
-				SemanticRoleTree node = temp.pop();
+				SRLTreeNode node = temp.pop();
 				while(!temp.isEmpty()){		
 					temp.peek().setParent(node);					
 					if(temp.peek().getChildren().size() == 0){
-						SemanticRoleTree wordindexnode = temp.pop();
+						SRLTreeNode wordindexnode = temp.pop();
 						wordindexnode.setWordIndex(wordindex++);
 						node.addChild(wordindexnode);
 					}else{
@@ -50,7 +50,7 @@ public class TreeToSRLTree {
 				tree.push(node);
 			}
 		}
-        SemanticRoleTree treeStruct = tree.pop();
+        SRLTreeNode treeStruct = tree.pop();
         return treeStruct;
 	}
 	
@@ -60,7 +60,7 @@ public class TreeToSRLTree {
 	 * @param semanticRole 语义角色标注信息
 	 * @return
 	 */
-	public SemanticRoleTree treeAddSemanticRole(SemanticRoleTree tree, String semanticRole){
+	public SRLTreeNode treeAddSemanticRole(SRLTreeNode tree, String semanticRole){
 		String[] roles = semanticRole.split(" ");
 		for (int i = 6; i < roles.length; i++) {
 			//拆开为argument下标和语义标记部分
@@ -96,18 +96,18 @@ public class TreeToSRLTree {
 		return tree;
 	}
 	
-	private void treeAddSingleSemanticRole(SemanticRoleTree tree,int begin,int up,String role){
+	private void treeAddSingleSemanticRole(SRLTreeNode tree,int begin,int up,String role){
 		if(tree.getChildren().size() == 0 && tree.getWordIndex() == begin){
-			SemanticRoleTree temp = tree;
-			tree = (SemanticRoleTree) tree.getParent();;
+			SRLTreeNode temp = tree;
+			tree = (SRLTreeNode) tree.getParent();;
 			for (int i = 0; i < up; i++) {
-				tree = (SemanticRoleTree) tree.getParent();
+				tree = (SRLTreeNode) tree.getParent();
 			}
 			tree.setSemanticRole(role);
 			tree = temp;
 		}else{
 			for (TreeNode treenode : tree.getChildren()) {
-				treeAddSingleSemanticRole((SemanticRoleTree)treenode,begin,up,role);
+				treeAddSingleSemanticRole((SRLTreeNode)treenode,begin,up,role);
 			}
 		}
 	}
@@ -118,7 +118,7 @@ public class TreeToSRLTree {
 	 * @param semanticRole 语义角色信息
 	 * @return
 	 */
-	public SemanticRoleTree treeToSRLTree(TreeNode tree, String semanticRole){		
+	public SRLTreeNode treeToSRLTree(TreeNode tree, String semanticRole){		
 		return treeAddSemanticRole(treeAddWordIndex(tree),semanticRole);
 	}
 }

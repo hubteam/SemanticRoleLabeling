@@ -8,11 +8,13 @@ import java.util.List;
  * @author 王馨苇
  *
  */
-public class SemanticRoleHeadTree extends SemanticRoleTree{
+public class SRLHeadTreeNode extends SRLTreeNode{
 
-	private String headWords;
 	
-	public SemanticRoleHeadTree(String nodename) {
+	private String headWords;
+	private String headWordsPos;
+	
+	public SRLHeadTreeNode(String nodename) {
 		super(nodename);
 	}
 
@@ -24,14 +26,21 @@ public class SemanticRoleHeadTree extends SemanticRoleTree{
 		return this.headWords;
 	}
 
+	public void setHeadWordsPos(String headWordsPos){
+		this.headWordsPos = headWordsPos;
+	}
+	
+	public String getHeadWordsPos(){
+		return this.headWordsPos;
+	}
 //	public SemanticRoleHeadTree getParent(){
 //		return (SemanticRoleHeadTree) parent;
 //	}
 //
-	public List<SemanticRoleHeadTree> getChildren(){
-		List<SemanticRoleHeadTree> hnode = new ArrayList<SemanticRoleHeadTree>();
+	public List<SRLHeadTreeNode> getChildren(){
+		List<SRLHeadTreeNode> hnode = new ArrayList<SRLHeadTreeNode>();
 		for (TreeNode treeNode : children) {
-			SemanticRoleHeadTree node = (SemanticRoleHeadTree) treeNode;
+			SRLHeadTreeNode node = (SRLHeadTreeNode) treeNode;
 			hnode.add(node);
 		}
 		return hnode;
@@ -40,13 +49,13 @@ public class SemanticRoleHeadTree extends SemanticRoleTree{
 	@Override
 	public String toString() {
 		if(this.children.size() == 0){
-			return " "+this.nodename+"_["+this.getWordIndex()+"]";
+			return " "+this.nodename+"_["+getWordIndex()+"]";
 		}else{
 			String treestr = "";
 			if(getSemanticRole() != null){
-				treestr = "("+this.nodename+"{"+this.headWords+"}_"+"{"+this.getSemanticRole()+"}";
+				treestr = "("+this.nodename+"{"+this.headWords+"["+this.headWordsPos+"]"+"}_"+"{"+this.getSemanticRole()+"}";
 			}else{
-				treestr = "("+this.nodename+"{"+this.headWords+"}";
+				treestr = "("+this.nodename+"{"+this.headWords+"["+this.headWordsPos+"]"+"}";
 			}			
 			for (TreeNode node:this.children) {
 				treestr += node.toString();

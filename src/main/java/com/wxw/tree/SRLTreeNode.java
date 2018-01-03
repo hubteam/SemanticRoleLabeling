@@ -8,9 +8,9 @@ import java.util.List;
  * @author 王馨苇
  *
  */
-public class SemanticRoleTree extends TreeNode{
+public class SRLTreeNode extends TreeNode{
 
-	public SemanticRoleTree(String nodename){
+	public SRLTreeNode(String nodename){
 		super(nodename);
 	}
 	
@@ -85,7 +85,7 @@ public class SemanticRoleTree extends TreeNode{
 				treestr = "("+this.nodename;
 			}			
 			for (TreeNode node:this.children) {
-				treestr += ((SemanticRoleTree) node).toRoleString();
+				treestr += ((SRLTreeNode) node).toRoleString();
 			}
 			treestr += ")";
 			return treestr;

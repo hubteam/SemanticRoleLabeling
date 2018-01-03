@@ -14,7 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * 
+ * 合并宾州树库语料和语义角色标注语料的测试
  * @author 王馨苇
  *
  */
