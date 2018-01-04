@@ -55,9 +55,9 @@ public class SRLHeadTreeToSampleTest {
 				+ "(PP-DIR(IN from)(NP(JJ last)(NN year)))))(, ,)(PP(VBG according)(PP(TO to)"
 				+ "(NP(NNP Publishers)(NNP Information)(NNP Bureau))))))(. .)))");
 		roletree1 = ttst.treeToSRLTree(tree1, roles1);
-		headtree1 = toheadtree.srlTreeToSRLHeadTree(roletree1);		
-		TreePreTreatment.travelTree(headtree1);
-		
+		TreePreTreatment.travelTree(roletree1);
+		headtree1 = toheadtree.srlTreeToSRLHeadTree(roletree1);				
+//		System.out.println(headtree1.toString());
 		shtts = new SRLHeadTreeToSample();
 		sample = shtts.getSample(headtree1, roles1);
 		
@@ -70,9 +70,9 @@ public class SRLHeadTreeToSampleTest {
 
 		result2 = "(NP{plan[NN]}_{ARG0}(DT{the[DT]} the_[4])(NN{plan[NN]} plan_[5]))";
 		result3 = "(NP{decline[NN]}_{ARG1}(NP{decline[NN]}(DT{a[DT]} a_[14])(NN{decline[NN]} decline_[15]))(PP{in[IN]}(IN{in[IN]} in_[16])"
-				+ "(NP{ad[NN]}(NN{ad[NN]} ad_[17])(NNS{pages[NNS]} pages_[18])))(PP(IN{in[IN]} in_[19])"+ 
+				+ "(NP{ad[NN]}(NN{ad[NN]} ad_[17])(NNS{pages[NNS]} pages_[18])))(PP{in[IN]}(IN{in[IN]} in_[19])"+ 
                   "(NP{months[NNS]}(NP{months[NNS]}(DT{the[DT]} the_[20])(JJ{first[JJ]} first_[21])(CD{nine[CD]} nine_[22])"
-                  + "(NNS{months[NNS]} months_[23]))(PP{of[IN]}(IN{of[IN]} of_[24])(NP(CD{1989[CD]} 1989_[25]))))))";
+                  + "(NNS{months[NNS]} months_[23]))(PP{of[IN]}(IN{of[IN]} of_[24])(NP{1989[CD]}(CD{1989[CD]} 1989_[25]))))))";
 	}
 	
 	@Test

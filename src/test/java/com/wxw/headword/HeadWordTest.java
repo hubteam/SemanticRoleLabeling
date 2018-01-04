@@ -38,8 +38,8 @@ public class HeadWordTest {
 		roles1 = "wsj/00/wsj_0001.mrg 0 8 gold join.01 vf--a 0:2-ARG0 7:0-ARGM-MOD 8:0-rel 9:1-ARG1 11:1-ARGM-PRD 15:1-ARGM-TMP";
 		tree1 = pgt.generateTree("((S(NP-SBJ(NP(NNP Pierre)(NNP Vinken))(, ,)(ADJP(NP(CD 61)(NNS years))(JJ old))(, ,))(VP(MD will)(VP(VB join)(NP(DT the)(NN board))(PP-CLR(IN as)(NP (DT a)(JJ nonexecutive)(NN director)))(NP-TMP(NNP Nov.)(CD 29))))(. .)))");
 		roletree1 = ttst.treeToSRLTree(tree1, roles1);
-		headtree1 = toheadtree.srlTreeToSRLHeadTree(roletree1);		
-		TreePreTreatment.travelTree(headtree1);
+		TreePreTreatment.travelTree(roletree1);
+		headtree1 = toheadtree.srlTreeToSRLHeadTree(roletree1);				
 		result1 = "(S{will[MD]}(NP{Pierre[NNP]}_{ARG0}(NP{Pierre[NNP]}(NNP{Pierre[NNP]} Pierre_[0])(NNP{Vinken[NNP]} Vinken_[1]))(,{,[,]} ,_[2])"
 				+ "(ADJP{old[JJ]}(NP{years[NNS]}(CD{61[CD]} 61_[3])(NNS{years[NNS]} years_[4]))"
 				+ "(JJ{old[JJ]} old_[5]))(,{,[,]} ,_[6]))(VP{will[MD]}(MD{will[MD]}_{ARGM-MOD} will_[7])(VP{join[VB]}(VB{join[VB]}_{rel} join_[8])"

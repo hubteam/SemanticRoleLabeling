@@ -22,11 +22,10 @@ public class SRLTreeToSRLHeadTree {
 	 * @return
 	 */
 	public SRLHeadTreeNode srlTreeToSRLHeadTree(SRLTreeNode treenode){
-		String strtree = "("+treenode.toRoleString()+")";
+		String strtree = "("+treenode.toNoNoneSRLBracket()+")";
 		PhraseGenerateTree pgt = new PhraseGenerateTree();
 		String format = pgt.format(strtree);
 		List<String> parts = pgt.stringToList(format);
-		int wordindex = 0;
 		Stack<SRLHeadTreeNode> tree = new Stack<SRLHeadTreeNode>();
 		for (int i = 0; i < parts.size(); i++) {
 			if(!parts.get(i).equals(")") && !parts.get(i).equals(" ")){
@@ -53,12 +52,15 @@ public class SRLTreeToSRLHeadTree {
 				while(!temp.isEmpty()){		
 					temp.peek().setParent(node);					
 					if(temp.peek().getChildren().size() == 0){
-						SRLTreeNode wordindexnode = temp.pop();
-						wordindexnode.setWordIndex(wordindex++);
+						SRLHeadTreeNode wordindexnode = temp.peek();
+						String[] str = temp.peek().getNodeName().split("\\[");
+						wordindexnode.setNewName(str[0]);
+						wordindexnode.setWordIndex(Integer.parseInt(str[1].substring(0, str[1].length()-1)));
 						node.addChild(wordindexnode);
 					}else{
-						node.addChild(temp.pop());
+						node.addChild(temp.peek());
 					}
+					temp.pop();
 				}
 				//设置头节点和头结点对应的词性
 				//为每一个非终结符，且不是词性标记的设置头节点

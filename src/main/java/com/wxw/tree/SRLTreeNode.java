@@ -71,23 +71,27 @@ public class SRLTreeNode extends TreeNode{
 	}
 	
 	/**
-	 * 输出没有终结点标记的括号表达式
+	 * 输出无空节点的语义角色树的括号表达式
 	 * @return
 	 */
-	public String toRoleString(){
-		if(this.children.size() == 0){
-			return " "+this.nodename;
+	public String toNoNoneSRLBracket(){
+		if(this.children.size() == 0 && getFlag() == true){
+			return " "+this.nodename+"["+this.wordIndex+"]";
 		}else{
 			String treestr = "";
-			if(this.semanticRole != null){
-				treestr = "("+this.nodename+"{"+this.semanticRole+"}";
-			}else{
-				treestr = "("+this.nodename;
-			}			
+			if(getFlag() == true){
+				if(this.semanticRole != null){
+					treestr = "("+this.nodename+"{"+this.semanticRole+"}";
+				}else{
+					treestr = "("+this.nodename;
+				}	
+			}					
 			for (TreeNode node:this.children) {
-				treestr += ((SRLTreeNode) node).toRoleString();
+				treestr += ((SRLTreeNode) node).toNoNoneSRLBracket();
 			}
-			treestr += ")";
+			if(getFlag() == true){
+				treestr += ")";
+			}			
 			return treestr;
 		}
 	}
