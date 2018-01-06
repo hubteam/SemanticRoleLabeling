@@ -14,15 +14,8 @@ public class SRLTreeNode extends TreeNode{
 		super(nodename);
 	}
 	
-	//词语下标索引
-	private int wordIndex ;
-	
 	//语义角色标注信息
 	private String semanticRole;
-	
-	public void setWordIndex(int wordIndex){
-		this.wordIndex = wordIndex;
-	}
 	
 	public void setSemanticRole(String semanticRole){
 		this.semanticRole = semanticRole;
@@ -31,10 +24,7 @@ public class SRLTreeNode extends TreeNode{
 	public String getSemanticRole(){
 		return this.semanticRole;
 	}
-	
-	public int getWordIndex(){
-		return this.wordIndex;
-	}
+
 	
 //	//返回父节点
 //	public SemanticRoleTree getParent(){
@@ -54,7 +44,7 @@ public class SRLTreeNode extends TreeNode{
 	@Override
 	public String toString() {
 		if(this.children.size() == 0){
-			return " "+this.nodename+"_["+this.wordIndex+"]";
+			return " "+this.nodename+"_["+getWordIndex()+"]";
 		}else{
 			String treestr = "";
 			if(this.semanticRole != null){
@@ -69,14 +59,14 @@ public class SRLTreeNode extends TreeNode{
 			return treestr;
 		}
 	}
-	
+
 	/**
 	 * 输出无空节点的语义角色树的括号表达式
 	 * @return
 	 */
 	public String toNoNoneSRLBracket(){
 		if(this.children.size() == 0 && getFlag() == true){
-			return " "+this.nodename+"["+this.wordIndex+"]";
+			return " "+this.nodename+"["+getWordIndex()+"]";
 		}else{
 			String treestr = "";
 			if(getFlag() == true){

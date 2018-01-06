@@ -3,6 +3,7 @@ package com.wxw.sample;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
@@ -12,37 +13,31 @@ import com.wxw.pretreatRun.TreePreTreatment;
 import com.wxw.stream.SemanticRoleLabelingSample;
 import com.wxw.tree.PhraseGenerateTree;
 import com.wxw.tree.SRLHeadTreeNode;
-import com.wxw.tree.SRLHeadTreeToSample;
-import com.wxw.tree.SRLTreeNode;
-import com.wxw.tree.SRLTreeToSRLHeadTree;
+import com.wxw.tree.TreeToSample;
 import com.wxw.tree.TreeNode;
-import com.wxw.tree.TreeToSRLTree;
 
 /**
  * 带头结点的语义角色标注树转成
  * @author 王馨苇
  *
  */
-public class SRLHeadTreeToSampleTest {
+public class TreeToSampleTest {
 
 	private String roles1;
+	private String result1;
 	private String result2;
 	private String result3;
-	private List<String> result1;
-	private SRLTreeToSRLHeadTree toheadtree;
+	private String result4;
+	private List<String> label;
+	private List<String> srlinfo;
 	private PhraseGenerateTree pgt ;
-	private TreeToSRLTree ttst ;
 	private TreeNode tree1;
-	private SRLTreeNode roletree1;
-	private SRLHeadTreeNode headtree1;
-	private SRLHeadTreeToSample shtts;
+	private TreeToSample shtts;
 	private SemanticRoleLabelingSample<SRLHeadTreeNode> sample;
 	
 	@Before
 	public void setUp(){
 		pgt = new PhraseGenerateTree();
-		ttst = new TreeToSRLTree();	
-		toheadtree = new SRLTreeToSRLHeadTree();
 		
 		roles1 = "wsj/00/wsj_0012.mrg 9 12 gold shore.01 i---a 4:1*10:0-ARG0 12:0,13:1-rel 14:2-ARG1";
 		tree1 = pgt.generateTree(""
@@ -53,23 +48,36 @@ public class SRLHeadTreeToSampleTest {
 				+ "(: ;)(S(NP-SBJ(NP(NNP Newsweek)(POS 's))(NN ad)(NNS pages))(VP(VBD totaled)(NP"
 				+ "(NP(CD 1,620))(, ,)(NP(NP(DT a)(NN drop))(PP(IN of)(NP (CD 3.2)(NN %)))"
 				+ "(PP-DIR(IN from)(NP(JJ last)(NN year)))))(, ,)(PP(VBG according)(PP(TO to)"
-				+ "(NP(NNP Publishers)(NNP Information)(NNP Bureau))))))(. .)))");
-		roletree1 = ttst.treeToSRLTree(tree1, roles1);
-		TreePreTreatment.travelTree(roletree1);
-		headtree1 = toheadtree.srlTreeToSRLHeadTree(roletree1);				
-//		System.out.println(headtree1.toString());
-		shtts = new SRLHeadTreeToSample();
-		sample = shtts.getSample(headtree1, roles1);
+				+ "(NP(NNP Publishers)(NNP Information)(NNP Bureau))))))(. .)))");		
+		TreePreTreatment.travelTree(tree1);
+		shtts = new TreeToSample();
+		sample = shtts.getSample(tree1, roles1);
 		
-		result1 = new ArrayList<>();		
-		result1.add("12");
-		result1.add("shore_up");
-		result1.add("i---a");
-		result1.add("4_ARG0");
-		result1.add("14_ARG1");
+		srlinfo = new ArrayList<>();		
+		srlinfo.add("12");
+		srlinfo.add("shore_up");
+		srlinfo.add("i---a");
+		srlinfo.add("4");
+		srlinfo.add("14");
+		
+		label = new ArrayList<>();
+		label.add("ARG0");
+		label.add("ARG1");
 
-		result2 = "(NP{plan[NN]}_{ARG0}(DT{the[DT]} the_[4])(NN{plan[NN]} plan_[5]))";
-		result3 = "(NP{decline[NN]}_{ARG1}(NP{decline[NN]}(DT{a[DT]} a_[14])(NN{decline[NN]} decline_[15]))(PP{in[IN]}(IN{in[IN]} in_[16])"
+		result1 = "(S(S(NP(NNP Mr.[0])(NNP Spoon[1]))(VP(VBD said[2])(S(NP(DT the[4])(NN plan[5]))"
+				+ "(VP(VBZ is[6])(RB not[7])(NP(DT an[8])(NN attempt[9])(VP(TO to[11])(VP(VB shore[12])"
+				+ "(PRT(RP up[13]))(NP(NP(DT a[14])(NN decline[15]))(PP(IN in[16])(NP(NN ad[17])(NNS pages[18])))(PP(IN in[19])"
+				+ "(NP(NP(DT the[20])(JJ first[21])(CD nine[22])(NNS months[23]))(PP(IN of[24])(NP(CD 1989[25])))))))))))))"
+				+ "(: ;[26])(S(NP(NP(NNP Newsweek[27])(POS 's[28]))(NN ad[29])(NNS pages[30]))(VP(VBD totaled[31])(NP"
+				+ "(NP(CD 1,620[32]))(, ,[33])(NP(NP(DT a[34])(NN drop[35]))(PP(IN of[36])(NP(CD 3.2[37])(NN %[38])))"
+				+ "(PP(IN from[39])(NP(JJ last[40])(NN year[41])))))(, ,[42])(PP(VBG according[43])(PP(TO to[44])"
+				+ "(NP(NNP Publishers[45])(NNP Information[46])(NNP Bureau[47]))))))(. .[48]))";
+		
+		result2 = "(VB{shore[VB]}_{rel} shore_[12])";
+		
+		result3 = "(NP{plan[NN]}_{ARG0}(DT{the[DT]} the_[4])(NN{plan[NN]} plan_[5]))";
+		
+		result4 = "(NP{decline[NN]}_{ARG1}(NP{decline[NN]}(DT{a[DT]} a_[14])(NN{decline[NN]} decline_[15]))(PP{in[IN]}(IN{in[IN]} in_[16])"
 				+ "(NP{ad[NN]}(NN{ad[NN]} ad_[17])(NNS{pages[NNS]} pages_[18])))(PP{in[IN]}(IN{in[IN]} in_[19])"+ 
                   "(NP{months[NNS]}(NP{months[NNS]}(DT{the[DT]} the_[20])(JJ{first[JJ]} first_[21])(CD{nine[CD]} nine_[22])"
                   + "(NNS{months[NNS]} months_[23]))(PP{of[IN]}(IN{of[IN]} of_[24])(NP{1989[CD]}(CD{1989[CD]} 1989_[25]))))))";
@@ -77,8 +85,11 @@ public class SRLHeadTreeToSampleTest {
 	
 	@Test
 	public void test(){
-		assertEquals(sample.getSemanticInfo(),result1);
+		assertEquals(Arrays.asList(sample.getLabelInfo()),label);
+		assertEquals(Arrays.asList(sample.getSemanticInfo()),srlinfo);
+		assertEquals(sample.getTree().toNoNoneSample(),result1);
 		assertEquals(sample.getRoleTree().get(0).toString(),result2);
 		assertEquals(sample.getRoleTree().get(1).toString(),result3);
+		assertEquals(sample.getRoleTree().get(2).toString(),result4);
 	}
 }

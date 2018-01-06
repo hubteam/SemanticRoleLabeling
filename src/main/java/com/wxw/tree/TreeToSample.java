@@ -4,30 +4,41 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.wxw.stream.SemanticRoleLabelingSample;
+import com.wxw.tool.IsFunctionLabelTool;
 
 /**
  * 将树转换成样本类样式
  * @author 王馨苇
  *
  */
-public class SRLHeadTreeToSample {
+public class TreeToSample {
 
 	private List<String> semanticinfo = new ArrayList<>();
+	private List<String> labelinfo = new ArrayList<>();
 	private List<SRLHeadTreeNode> listtree = new ArrayList<>();
+	private TreeToSRLTree tosrltree = new TreeToSRLTree();
+	private SRLTreeToSRLHeadTree tosrlheadtree = new SRLTreeToSRLHeadTree();
 	/**
 	 * 将树转换成语义角色标注所需的样本类格式
 	 * @param tree 带头结点的语义角色树
 	 * @param semanticRole 语义角色标注信息
 	 * @return
 	 */
-	public SemanticRoleLabelingSample<SRLHeadTreeNode> getSample(SRLHeadTreeNode tree, String semanticRole){
+	public SemanticRoleLabelingSample<SRLHeadTreeNode> getSample(TreeNode tree, String semanticRole){
+		
+		SRLTreeNode srltree = tosrltree.treeToSRLTree(tree, semanticRole);	
+		SRLHeadTreeNode srlheadtree = tosrlheadtree.srlTreeToSRLHeadTree(srltree);
 		String[] roles = semanticRole.split(" ");
+		//加入动词的下标和动词
 		semanticinfo.add(roles[2]);
-		semanticinfo.add(getPredicate(tree, semanticRole));
+		semanticinfo.add(getPredicate(srlheadtree, semanticRole));
+		//加入动词的描述，比如主动被动等五个信息
 		semanticinfo.add(roles[5]);
-		addLabelInfo(tree,semanticRole);
-		return new SemanticRoleLabelingSample<SRLHeadTreeNode>(listtree,semanticinfo);
+		//加入以当前论元或者谓词作为根节点的树，和语义标记信息
+		addLabelInfo(srlheadtree,semanticRole);
+		return new SemanticRoleLabelingSample<SRLHeadTreeNode>(tree, listtree,semanticinfo,labelinfo);
 	}
+
 	
 	/**
 	 * 加入谓词本身，由argument作为根节点的树，argument标记信息
@@ -76,13 +87,11 @@ public class SRLHeadTreeToSample {
 	 * @return
 	 */
 	private String getRole(String[] digitandrole){
-		String role = "";
-		for (int j = 1; j < digitandrole.length; j++) {
-			if(j == digitandrole.length-1){
-				role += digitandrole[j];
-			}else{
-				role += digitandrole[j] + "-";
-			}
+		String role = digitandrole[1];		
+		for (int j = 2; j < digitandrole.length; j++) {
+			if(IsFunctionLabelTool.isFunction(digitandrole[j])){
+				role += "-"+digitandrole[j];
+			}				
 		}
 		return role;
 	}
@@ -94,12 +103,42 @@ public class SRLHeadTreeToSample {
 	 */
 	private void addLabelInfo(SRLHeadTreeNode tree,String semanticRole){
 		String[] roles = semanticRole.split(" ");
+		//对谓词的处理
 		for (int i = 6; i < roles.length; i++) {
 			//拆开为argument下标和语义标记部分
 			String[] digitandrole = roles[i].split("-");
 			//处理语义角色部分
 			String role = getRole(digitandrole);
-			//处理argument部分   7:3*28:0-ARG1   0:1,1:1*5:1*6:0-ARG1
+			//加入以论元作为根节点的树
+			if(role.equals("rel")){
+				String[] digits = digitandrole[0].split("\\*");
+				//处理,隔开的部分
+				String[] comma = digits[0].split(",");
+				for (int j = 0; j < comma.length; j++) {
+					String[] digit = comma[j].split(":");
+					int begin = Integer.parseInt(digit[0]);
+					int up = Integer.parseInt(digit[1]);
+					if(begin == Integer.parseInt(roles[2])){
+						addTreeAndLabels(tree,begin,up,role);
+					}					
+				}
+				for (int j = 1; j < digits.length; j++) {
+					String[] digit = digits[j].split(":");
+					int begin = Integer.parseInt(digit[0]);
+					int up = Integer.parseInt(digit[1]);
+					if(begin == Integer.parseInt(roles[2])){
+						addTreeAndLabels(tree,begin,up,role);
+					}
+				}
+			}
+		}
+		//处理论元的部分
+		for (int i = 6; i < roles.length; i++) {
+			//拆开为argument下标和语义标记部分
+			String[] digitandrole = roles[i].split("-");
+			//处理语义角色部分
+			String role = getRole(digitandrole);
+			//加入以论元作为根节点的树
 			if(!role.equals("rel")){
 				String[] digits = digitandrole[0].split("\\*");
 				//处理,隔开的部分
@@ -152,12 +191,17 @@ public class SRLHeadTreeToSample {
 				tree = (SRLHeadTreeNode) tree.getParent();
 			}
 			if(tree.getSemanticRole().equals(role)){
-				listtree.add(tree);
-				semanticinfo.add(begin+"_"+role);
+				if(role.equals("rel")){
+					listtree.add(tree);
+				}else{
+					listtree.add(tree);
+					semanticinfo.add(begin+"");
+					labelinfo.add(role);
+				}
+				
 			}
 		}else{
-			for (TreeNode treenode : tree.getChildren()) {
-				
+			for (TreeNode treenode : tree.getChildren()) {			
 				addTreeAndLabels((SRLHeadTreeNode)treenode,begin,up,role);
 			}
 		}

@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.wxw.tree.SRLHeadTreeNode;
 import com.wxw.tree.SRLTreeNode;
+import com.wxw.tree.TreeNode;
 
 /**
  * 语义角色标注的样本类格式
@@ -15,16 +15,20 @@ import com.wxw.tree.SRLTreeNode;
  */
 public class SemanticRoleLabelingSample<T extends SRLTreeNode> {
 	
+	private TreeNode tree;
 	private List<T> roleTree;//带语义角色的子树序列
 	private List<String> semanticinfo = new ArrayList<String>();//角色标注信息
+	private List<String> labelinfo = new ArrayList<String>();//角色标注信息
 	private String[][] addtionalContext;
 	
-	public SemanticRoleLabelingSample(List<T> roleTree, List<String> semanticinfo) {
-		this(roleTree,semanticinfo,null);
+	public SemanticRoleLabelingSample(TreeNode tree, List<T> roleTree,  List<String> semanticinfo, List<String> labelinfo) {
+		this(tree, roleTree,semanticinfo,labelinfo,null);
 	}
 	
-	public SemanticRoleLabelingSample(List<T> roleTree, List<String> semanticinfo,String[][] addtionalContext) {
+	public SemanticRoleLabelingSample(TreeNode tree, List<T> roleTree,  List<String> semanticinfo, List<String> labelinfo,String[][] addtionalContext) {
+		this.tree = tree;
 		this.roleTree = Collections.unmodifiableList(roleTree);
+		this.labelinfo = Collections.unmodifiableList(labelinfo);
         this.semanticinfo = Collections.unmodifiableList(semanticinfo);
         String[][] ac;
         if (addtionalContext != null) {
@@ -40,12 +44,20 @@ public class SemanticRoleLabelingSample<T extends SRLTreeNode> {
         this.addtionalContext = ac;
 	}
 	
+	public TreeNode getTree(){
+		return this.tree;
+	}
+	
 	public List<T> getRoleTree(){
 		return this.roleTree;
 	}
 	
-	public List<String> getSemanticInfo(){
-		return this.semanticinfo;
+	public String[] getSemanticInfo(){
+		return this.semanticinfo.toArray(new String[this.semanticinfo.size()]);
+	}
+	
+	public String[] getLabelInfo(){
+		return this.labelinfo.toArray(new String[this.labelinfo.size()]);
 	}
 	
 	public String[][] getAdditionalContext(){

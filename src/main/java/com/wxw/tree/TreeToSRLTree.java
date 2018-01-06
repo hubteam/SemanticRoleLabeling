@@ -3,6 +3,8 @@ package com.wxw.tree;
 import java.util.List;
 import java.util.Stack;
 
+import com.wxw.tool.IsFunctionLabelTool;
+
 /**
  * 将一棵树转换成语义角色标注树
  * @author 王馨苇
@@ -11,17 +13,16 @@ import java.util.Stack;
 public class TreeToSRLTree {
 	
 	/**
-	 * 为树加上词下标
+	 * 将一颗树转成语义角色树
 	 * @param tree
 	 * @return
 	 */
-	public SRLTreeNode treeAddWordIndex(TreeNode treenode){
-		String strtree = "("+treenode.toString()+")";
+	public SRLTreeNode transferToSRLTree(TreeNode treenode){
+		String strtree = "("+treenode.toNoNoneSample()+")";
 		PhraseGenerateTree pgt = new PhraseGenerateTree();
 		String format = pgt.format(strtree);
 		List<String> parts = pgt.stringToList(format);
 		Stack<SRLTreeNode> tree = new Stack<SRLTreeNode>();
-		int wordindex = 0;
         for (int i = 0; i < parts.size(); i++) {
 			if(!parts.get(i).equals(")") && !parts.get(i).equals(" ")){
 				SRLTreeNode tn = new SRLTreeNode(parts.get(i));
@@ -40,12 +41,15 @@ public class TreeToSRLTree {
 				while(!temp.isEmpty()){		
 					temp.peek().setParent(node);					
 					if(temp.peek().getChildren().size() == 0){
-						SRLTreeNode wordindexnode = temp.pop();
-						wordindexnode.setWordIndex(wordindex++);
+						SRLTreeNode wordindexnode = temp.peek();
+						String[] str = temp.peek().getNodeName().split("\\[");
+						wordindexnode.setNewName(str[0]);
+						wordindexnode.setWordIndex(Integer.parseInt(str[1].substring(0, str[1].length()-1)));
 						node.addChild(wordindexnode);
 					}else{
-						node.addChild(temp.pop());
+						node.addChild(temp.peek());
 					}
+					temp.pop();
 				}
 				tree.push(node);
 			}
@@ -66,13 +70,11 @@ public class TreeToSRLTree {
 			//拆开为argument下标和语义标记部分
 			String[] digitandrole = roles[i].split("-");
 			//处理语义角色部分
-			String role = "";
-			for (int j = 1; j < digitandrole.length; j++) {
-				if(j == digitandrole.length-1){
-					role += digitandrole[j];
-				}else{
-					role += digitandrole[j] + "-";
-				}
+			String role = digitandrole[1];		
+			for (int j = 2; j < digitandrole.length; j++) {
+				if(IsFunctionLabelTool.isFunction(digitandrole[j])){
+					role += "-"+digitandrole[j];
+				}				
 			}
 			//处理argument部分
 			//7:3*28:0-ARG1
@@ -111,6 +113,7 @@ public class TreeToSRLTree {
 			}
 		}
 	}
+
 	
 	/**
 	 * 将树转换成语义角色树
@@ -119,6 +122,6 @@ public class TreeToSRLTree {
 	 * @return
 	 */
 	public SRLTreeNode treeToSRLTree(TreeNode tree, String semanticRole){		
-		return treeAddSemanticRole(treeAddWordIndex(tree),semanticRole);
+		return treeAddSemanticRole(transferToSRLTree(tree),semanticRole);
 	}
 }
