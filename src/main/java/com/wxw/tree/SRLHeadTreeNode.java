@@ -49,7 +49,7 @@ public class SRLHeadTreeNode extends SRLTreeNode{
 	@Override
 	public String toString() {
 		if(this.children.size() == 0){
-			return " "+this.nodename+"_["+getWordIndex()+"]";
+			return " "+this.nodename+"["+getWordIndex()+"]";
 		}else{
 			String treestr = "";
 			if(getSemanticRole() != null){

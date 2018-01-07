@@ -1,33 +1,31 @@
-package com.wxw.stream;
+package com.wxw.sample;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.wxw.tree.SRLTreeNode;
 import com.wxw.tree.TreeNode;
 
 /**
- * 语义角色标注的样本类格式
+ * 样本类
  * @author 王馨苇
  *
- * @param <T> 语义角色标注树及其子类
+ * @param <T>
  */
-public class SemanticRoleLabelingSample<T extends SRLTreeNode> {
-	
+public class SRLSample <T extends TreeNode>{
 	private TreeNode tree;//句法分析得到的树
-	private List<T> roleTree;//带语义角色的子树序列
+	private List<T> headTree;//子树序列
 	private List<String> semanticinfo = new ArrayList<String>();//角色标注信息
 	private List<String> labelinfo = new ArrayList<String>();//角色标注论元标记信息
 	private String[][] addtionalContext;
 	
-	public SemanticRoleLabelingSample(TreeNode tree, List<T> roleTree,  List<String> semanticinfo, List<String> labelinfo) {
-		this(tree, roleTree,semanticinfo,labelinfo,null);
+	public SRLSample(TreeNode tree, List<T> headTree,  List<String> semanticinfo, List<String> labelinfo) {
+		this(tree, headTree,semanticinfo,labelinfo,null);
 	}
 	
-	public SemanticRoleLabelingSample(TreeNode tree, List<T> roleTree,  List<String> semanticinfo, List<String> labelinfo,String[][] addtionalContext) {
+	public SRLSample(TreeNode tree, List<T> headTree,  List<String> semanticinfo, List<String> labelinfo,String[][] addtionalContext) {
 		this.tree = tree;
-		this.roleTree = Collections.unmodifiableList(roleTree);
+		this.headTree = Collections.unmodifiableList(headTree);
 		this.labelinfo = Collections.unmodifiableList(labelinfo);
         this.semanticinfo = Collections.unmodifiableList(semanticinfo);
         String[][] ac;
@@ -56,8 +54,8 @@ public class SemanticRoleLabelingSample<T extends SRLTreeNode> {
 	 * 获取以谓词和论元为树根的树
 	 * @return
 	 */
-	public List<T> getRoleTree(){
-		return this.roleTree;
+	public List<T> getHeadTree(){
+		return this.headTree;
 	}
 	
 	/**
@@ -80,3 +78,4 @@ public class SemanticRoleLabelingSample<T extends SRLTreeNode> {
 		return this.addtionalContext;
 	}
 }
+

@@ -1,8 +1,5 @@
 package com.wxw.tree;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * 语义角色标注树
  * @author 王馨苇
@@ -44,7 +41,7 @@ public class SRLTreeNode extends TreeNode{
 	@Override
 	public String toString() {
 		if(this.children.size() == 0){
-			return " "+this.nodename+"_["+getWordIndex()+"]";
+			return " "+this.nodename+"["+getWordIndex()+"]";
 		}else{
 			String treestr = "";
 			if(this.semanticRole != null){
