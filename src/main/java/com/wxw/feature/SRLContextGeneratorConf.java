@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Properties;
 
 import com.wxw.tree.HeadTreeNode;
-import com.wxw.tree.SRLHeadTreeNode;
 
 /**
  * 生成上下文特征
@@ -85,19 +84,6 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
                 ", predicateAndPhrasetypeSet=" + predicateAndPhrasetypeSet +
                 '}';
 	}	
-	
-	/**
-	 * 为训练语料生成上下文特征
-	 * @param i 当前位置
-	 * @param roleTree 以谓词和论元为根的角色树数组
-	 * @param semanticinfo 语义角色信息
-	 * @param labelinfo 标记信息
-	 * @return
-	 */
-	@Override
-	public String[] getContextForTrain(int i, SRLHeadTreeNode[] roleTree, String[] semanticinfo, Object[] labelinfo) {
-		return getContextForTrain(i,roleTree,semanticinfo,(String[])labelinfo);
-	}
 
 	/**
 	 * 为测试语料生成上下文特征
@@ -110,19 +96,6 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
 	@Override
 	public String[] getContext(int i, HeadTreeNode[] roleTree, String[] semanticinfo, Object[] labelinfo) {
 		return getContext(i,roleTree,semanticinfo,(String[])labelinfo);
-	}
-	
-	/**
-	 * 为训练语料生成上下文特征
-	 * @param i 当前位置
-	 * @param roleTree 以谓词和论元为根的角色树数组
-	 * @param semanticinfo 语义角色信息
-	 * @param labelinfo 标记信息
-	 * @return
-	 */
-	public String[] getContextForTrain(int i, SRLHeadTreeNode[] roleTree, String[] semanticinfo, String[] labelinfo) {
-		
-		return null;
 	}
 	
 	/**

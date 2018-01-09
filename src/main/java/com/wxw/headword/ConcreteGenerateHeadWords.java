@@ -114,7 +114,7 @@ public class ConcreteGenerateHeadWords extends AbsractGenerateHeadWords<SRLHeadT
 			//如果所有的规则都没有匹配，返回最左边的第一个
 			return node.getChildren().get(0).getHeadWords()+"_"+node.getChildren().get(0).getHeadWordsPos();
 		}else{
-			return null;
+			return node.getChildren().get(0).getHeadWords()+"_"+node.getChildren().get(0).getHeadWordsPos();
 		}
 	}
 }

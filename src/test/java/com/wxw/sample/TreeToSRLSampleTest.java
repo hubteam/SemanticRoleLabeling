@@ -50,7 +50,17 @@ public class TreeToSRLSampleTest {
 				+ "(: ;)(S(NP-SBJ(NP(NNP Newsweek)(POS 's))(NN ad)(NNS pages))(VP(VBD totaled)(NP"
 				+ "(NP(CD 1,620))(, ,)(NP(NP(DT a)(NN drop))(PP(IN of)(NP (CD 3.2)(NN %)))"
 				+ "(PP-DIR(IN from)(NP(JJ last)(NN year)))))(, ,)(PP(VBG according)(PP(TO to)"
-				+ "(NP(NNP Publishers)(NNP Information)(NNP Bureau))))))(. .)))");		
+				+ "(NP(NNP Publishers)(NNP Information)(NNP Bureau))))))(. .)))");	
+		
+		tree1 = pgt.generateTree("( (S(NP-SBJ-15(NP(NP (NNP Norman) (NNP Ricken) )(, ,)"
+				+ "(UCP(ADJP(NP (CD 52) (NNS years) )(JJ old) )(CC and)(NP(NP (JJ former)"
+				+ "(NX(NX (NN president) )(CC and)(NX (NN chief) (VBG operating) (NN officer) )))"
+				+ "(PP (IN of)(NP (NNPS Toys) (`` ``) (NNP R) ('' '') (NNP Us) (NNP Inc.) )))))(, ,)"
+				+ "(CC and)(NP(NP (NNP Frederick) (NNP Deane) (NNP Jr.) )(, ,)(NP (CD 63) )(, ,)"
+				+ "(NP(NP (NN chairman) )(PP (IN of)(NP (NNP Signet) (NNP Banking) (NNP Corp.) ))))"
+				+ "(, ,) )(VP (VBD were)(VP (VBN elected)(S(NP-SBJ (-NONE- *-15) )"
+				+ "(NP-PRD(NP (NNS directors) )(PP (IN of)(NP (DT this) (NN consumer) "
+				+ "(NNS electronics)(CC and)(NNS appliances) (NN retailing) (NN chain) ))))))(. .) ))");
 		TreePreTreatment.travelTree(tree1);
 		shtts = new TreeToSRLSample();
 		sample = shtts.getSample(tree1, roles1);

@@ -82,12 +82,12 @@ public class PlainTextByTreeStream  implements ObjectStream<String[]>{
 					}
 				}
 				if(left == right){
+					result[0] = readContent;
+					result[1] = this.in.readLine().replaceAll("\n","").trim();
 					break;
 				}
 			}
 		}
-		result[0] = readContent;
-		result[1] = this.in.readLine().replaceAll("\n","").trim();
 		return result;
 	}
 
