@@ -1,6 +1,6 @@
 package com.wxw.evaluate;
 
-import com.wxw.sample.SRLSample;
+import com.wxw.onestep.SRLSample;
 import com.wxw.tree.HeadTreeNode;
 
 import opennlp.tools.util.eval.EvaluationMonitor;

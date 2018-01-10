@@ -10,9 +10,9 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.wxw.onestep.SRLSample;
+import com.wxw.onestepparse.SRLParseNormal;
 import com.wxw.pretreatRun.TreePreTreatment;
-import com.wxw.sample.SRLSample;
-import com.wxw.sample.TreeToSRLSample;
 import com.wxw.tree.HeadTreeNode;
 import com.wxw.tree.PhraseGenerateTree;
 import com.wxw.tree.TreeNode;
@@ -27,7 +27,7 @@ public class SRLContextGeneratorTest {
 	private SRLContextGenerator generator ;
 	private PhraseGenerateTree pgt ;
 	private TreeNode tree1;
-	private TreeToSRLSample ttss;
+	private SRLParseNormal ttss;
 	private SRLSample<HeadTreeNode> sample;
 	private String roles1;
 	private String[] context1;
@@ -50,9 +50,9 @@ public class SRLContextGeneratorTest {
 		
 		TreePreTreatment.travelTree(tree1);
 		
-		ttss = new TreeToSRLSample();
+		ttss = new SRLParseNormal();
 		roles1 = "wsj/00/wsj0012.mrg 9 12 gold shore.01 i---a 4:1*10:0-ARG0 12:0,13:1-rel 14:2-ARG1";
-		sample = ttss.getSample(tree1, roles1);
+		sample = ttss.toSample(tree1, roles1);
 
 		generator = new SRLContextGeneratorConf();	
 		HeadTreeNode[] headtree = sample.getHeadTree().toArray(new HeadTreeNode[sample.getHeadTree().size()]);	

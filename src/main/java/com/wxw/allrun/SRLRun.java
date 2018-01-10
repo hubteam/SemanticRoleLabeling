@@ -8,7 +8,7 @@ import java.util.Properties;
 
 import com.wxw.feature.SRLContextGenerator;
 import com.wxw.feature.SRLContextGeneratorConf;
-import com.wxw.model.SRLME;
+import com.wxw.onestep.SRLME;
 
 import opennlp.tools.util.TrainingParameters;
 

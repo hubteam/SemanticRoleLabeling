@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.wxw.feature.SRLContextGenerator;
-import com.wxw.sample.SRLSample;
+import com.wxw.onestep.SRLSample;
 import com.wxw.tree.HeadTreeNode;
 
 import opennlp.tools.ml.model.Event;
