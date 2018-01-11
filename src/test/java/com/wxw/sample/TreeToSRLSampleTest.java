@@ -9,14 +9,14 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.wxw.pretreatRun.TreePreTreatment;
-import com.wxw.stream.SemanticRoleLabelingSample;
+import com.wxw.onestep.SRLSample;
+import com.wxw.onestepparse.AbstractParseStrategy;
+import com.wxw.onestepparse.SRLParseNormal;
+import com.wxw.tool.PostTreatTool;
+import com.wxw.tool.PreTreatTool;
 import com.wxw.tree.HeadTreeNode;
 import com.wxw.tree.PhraseGenerateTree;
-import com.wxw.tree.SRLHeadTreeNode;
 import com.wxw.tree.TreeNode;
-import com.wxw.tree.TreeToHeadTree;
-import com.wxw.tree.TreeToSample;
 
 /**
  * 树转成样本类的测试
@@ -25,24 +25,21 @@ import com.wxw.tree.TreeToSample;
  */
 public class TreeToSRLSampleTest {
 
-	private String roles1;
-	private String result1;
-	private String result2;
-	private String result3;
-	private String result4;
+	private String roles;
+	private String list1;
 	private List<String> label;
 	private List<String> srlinfo;
 	private PhraseGenerateTree pgt ;
-	private TreeNode tree1;
-	private TreeToSRLSample shtts;
+	private TreeNode tree;
+	private AbstractParseStrategy<HeadTreeNode> parse;
 	private SRLSample<HeadTreeNode> sample;
 	
 	@Before
 	public void setUp(){
 		pgt = new PhraseGenerateTree();
 		
-		roles1 = "wsj/00/wsj0012.mrg 9 12 gold shore.01 i---a 4:1*10:0-ARG0 12:0,13:1-rel 14:2-ARG1";
-		tree1 = pgt.generateTree(""
+		roles = "wsj/00/wsj0012.mrg 9 12 gold shore.01 i---a 4:1*10:0-ARG0 12:0,13:1-rel 14:2-ARG1";
+		tree = pgt.generateTree(""
 				+ "((S(S(NP-SBJ(NNP Mr.)(NNP Spoon))(VP(VBD said)(SBAR (-NONE- 0)(S(NP-SBJ(DT the)(NN plan))"
 				+ "(VP(VBZ is)(RB not)(NP-PRD(DT an)(NN attempt)(S(NP-SBJ(-NONE- *))(VP(TO to)(VP(VB shore)"
 				+ "(PRT(RP up))(NP(NP(DT a)(NN decline))(PP-LOC(IN in)(NP(NN ad)(NNS pages)))(PP-TMP(IN in)"
@@ -51,57 +48,181 @@ public class TreeToSRLSampleTest {
 				+ "(NP(CD 1,620))(, ,)(NP(NP(DT a)(NN drop))(PP(IN of)(NP (CD 3.2)(NN %)))"
 				+ "(PP-DIR(IN from)(NP(JJ last)(NN year)))))(, ,)(PP(VBG according)(PP(TO to)"
 				+ "(NP(NNP Publishers)(NNP Information)(NNP Bureau))))))(. .)))");	
-		
-		tree1 = pgt.generateTree("( (S(NP-SBJ-15(NP(NP (NNP Norman) (NNP Ricken) )(, ,)"
-				+ "(UCP(ADJP(NP (CD 52) (NNS years) )(JJ old) )(CC and)(NP(NP (JJ former)"
-				+ "(NX(NX (NN president) )(CC and)(NX (NN chief) (VBG operating) (NN officer) )))"
-				+ "(PP (IN of)(NP (NNPS Toys) (`` ``) (NNP R) ('' '') (NNP Us) (NNP Inc.) )))))(, ,)"
-				+ "(CC and)(NP(NP (NNP Frederick) (NNP Deane) (NNP Jr.) )(, ,)(NP (CD 63) )(, ,)"
-				+ "(NP(NP (NN chairman) )(PP (IN of)(NP (NNP Signet) (NNP Banking) (NNP Corp.) ))))"
-				+ "(, ,) )(VP (VBD were)(VP (VBN elected)(S(NP-SBJ (-NONE- *-15) )"
-				+ "(NP-PRD(NP (NNS directors) )(PP (IN of)(NP (DT this) (NN consumer) "
-				+ "(NNS electronics)(CC and)(NNS appliances) (NN retailing) (NN chain) ))))))(. .) ))");
-		TreePreTreatment.travelTree(tree1);
-		shtts = new TreeToSRLSample();
-		sample = shtts.getSample(tree1, roles1);
+
+		PreTreatTool.preTreat(tree);
+		parse = new SRLParseNormal();
+		sample = parse.parse(tree, roles);
 
 		srlinfo = new ArrayList<>();		
 		srlinfo.add("12");
-		srlinfo.add("shore_up");
+		srlinfo.add("shore");
 		srlinfo.add("i---a");
+		srlinfo.add("0");
+		srlinfo.add("0");
+		srlinfo.add("0");
+		srlinfo.add("1");
+		srlinfo.add("2");
+		srlinfo.add("2");
 		srlinfo.add("4");
+		srlinfo.add("4");
+		srlinfo.add("4");
+		srlinfo.add("4");
+		srlinfo.add("5");
+		srlinfo.add("6");
+		srlinfo.add("6");
+		srlinfo.add("7");
+		srlinfo.add("8");
+		srlinfo.add("8");
+		srlinfo.add("9");
+		srlinfo.add("11");
+		srlinfo.add("11");
+		srlinfo.add("11");
+		srlinfo.add("12");
+		srlinfo.add("13");
+		srlinfo.add("13");
 		srlinfo.add("14");
+		srlinfo.add("14");
+		srlinfo.add("14");
+		srlinfo.add("15");
+		srlinfo.add("16");
+		srlinfo.add("16");
+		srlinfo.add("17");
+		srlinfo.add("17");
+		srlinfo.add("18");
+		srlinfo.add("19");
+		srlinfo.add("19");
+		srlinfo.add("20");
+		srlinfo.add("20");
+		srlinfo.add("20");
+		srlinfo.add("21");
+		srlinfo.add("22");
+		srlinfo.add("23");
+		srlinfo.add("24");
+		srlinfo.add("24");
+		srlinfo.add("25");
+		srlinfo.add("25");
+		srlinfo.add("27");
+		srlinfo.add("27");
+		srlinfo.add("27");
+		srlinfo.add("27");
+		srlinfo.add("28");
+		srlinfo.add("29");
+		srlinfo.add("30");
+		srlinfo.add("31");
+		srlinfo.add("31");
+		srlinfo.add("32");
+		srlinfo.add("32");
+		srlinfo.add("32");
+		srlinfo.add("34");
+		srlinfo.add("34");
+		srlinfo.add("34");
+		srlinfo.add("35");
+		srlinfo.add("36");
+		srlinfo.add("36");
+		srlinfo.add("37");
+		srlinfo.add("37");
+		srlinfo.add("38");
+		srlinfo.add("39");
+		srlinfo.add("39");
+		srlinfo.add("40");
+		srlinfo.add("40");
+		srlinfo.add("41");
+		srlinfo.add("43");
+		srlinfo.add("43");
+		srlinfo.add("44");
+		srlinfo.add("44");
+		srlinfo.add("45");
+		srlinfo.add("45");
+		srlinfo.add("46");
+		srlinfo.add("47");
 		
 		label = new ArrayList<>();
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
 		label.add("ARG0");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
 		label.add("ARG1");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
+		label.add("NULL");
 
-		result1 = "(S(S(NP(NNP Mr.[0])(NNP Spoon[1]))(VP(VBD said[2])(S(NP(DT the[4])(NN plan[5]))"
-				+ "(VP(VBZ is[6])(RB not[7])(NP(DT an[8])(NN attempt[9])(VP(TO to[11])(VP(VB shore[12])"
-				+ "(PRT(RP up[13]))(NP(NP(DT a[14])(NN decline[15]))(PP(IN in[16])(NP(NN ad[17])(NNS pages[18])))(PP(IN in[19])"
-				+ "(NP(NP(DT the[20])(JJ first[21])(CD nine[22])(NNS months[23]))(PP(IN of[24])(NP(CD 1989[25])))))))))))))"
-				+ "(: ;[26])(S(NP(NP(NNP Newsweek[27])(POS 's[28]))(NN ad[29])(NNS pages[30]))(VP(VBD totaled[31])(NP"
-				+ "(NP(CD 1,620[32]))(, ,[33])(NP(NP(DT a[34])(NN drop[35]))(PP(IN of[36])(NP(CD 3.2[37])(NN %[38])))"
-				+ "(PP(IN from[39])(NP(JJ last[40])(NN year[41])))))(, ,[42])(PP(VBG according[43])(PP(TO to[44])"
-				+ "(NP(NNP Publishers[45])(NNP Information[46])(NNP Bureau[47]))))))(. .[48]))";
-		
-		result2 = "(VB{shore[VB]} shore[12])";
-		
-		result3 = "(NP{plan[NN]}(DT{the[DT]} the[4])(NN{plan[NN]} plan[5]))";
-		
-		result4 = "(NP{decline[NN]}(NP{decline[NN]}(DT{a[DT]} a[14])(NN{decline[NN]} decline[15]))(PP{in[IN]}(IN{in[IN]} in[16])"
-				+ "(NP{ad[NN]}(NN{ad[NN]} ad[17])(NNS{pages[NNS]} pages[18])))(PP{in[IN]}(IN{in[IN]} in[19])"+ 
-                  "(NP{months[NNS]}(NP{months[NNS]}(DT{the[DT]} the[20])(JJ{first[JJ]} first[21])(CD{nine[CD]} nine[22])"
-                  + "(NNS{months[NNS]} months[23]))(PP{of[IN]}(IN{of[IN]} of[24])(NP{1989[CD]}(CD{1989[CD]} 1989[25]))))))";
+		list1 = "(VB{shore[VB]} shore[12])";
 	}
 	
 	@Test
 	public void test(){
 		assertEquals(Arrays.asList(sample.getLabelInfo()),label);
 		assertEquals(Arrays.asList(sample.getSemanticInfo()),srlinfo);
-		assertEquals(sample.getTree().toNoNoneSample(),result1);
-		assertEquals(sample.getHeadTree().get(0).toString(),result2);
-		assertEquals(sample.getHeadTree().get(1).toString(),result3);
-		assertEquals(sample.getHeadTree().get(2).toString(),result4);
+		assertEquals(sample.getHeadTree().get(0).toString(),list1);
 	}
 }

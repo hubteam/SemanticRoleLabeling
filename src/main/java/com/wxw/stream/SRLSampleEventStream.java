@@ -60,7 +60,7 @@ public class SRLSampleEventStream extends AbstractEventStream<SRLSample<HeadTree
 		List<Event> events = new ArrayList<Event>(labelinfo.length);
 		HeadTreeNode[] tree = headTree.toArray(new HeadTreeNode[headTree.size()]);
 		for (int i = 0; i < labelinfo.length; i++) {
-			String[] context = generator.getContext(i+1, tree, semanticinfo, labelinfo);
+			String[] context = generator.getContext(i+1, tree, labelinfo, semanticinfo);
 			events.add(new Event(labelinfo[i],context));
 			hs.add(labelinfo[i]);
 		}

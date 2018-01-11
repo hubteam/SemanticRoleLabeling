@@ -18,5 +18,5 @@ public interface SRLContextGenerator extends BeamSearchContextGenerator<HeadTree
 	 * @param labelinfo 标记信息
 	 * @return
 	 */
-	String[] getContext(int i, HeadTreeNode[] roleTree, String[] semanticinfo, Object[] labelinfo);
+	String[] getContext(int i, HeadTreeNode[] roleTree, String[] labelinfo, Object[] semanticinfo);
 }

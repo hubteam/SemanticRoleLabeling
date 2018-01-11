@@ -37,7 +37,7 @@ public class SRLSampleStream extends FilterObjectStream<String[],SRLSample<HeadT
 			try{
 				TreeNode tree = pgt.generateTree(sentence[0]);
 				TreePreTreatment.travelTree(tree);
-                sample = ttst.toSample(tree, sentence[1]);
+                sample = ttst.parse(tree, sentence[1]);
 			}catch(Exception e){
 				if (logger.isLoggable(Level.WARNING)) {						
 	                logger.warning("Error during parsing, ignoring sentence: " + sentence[1]);

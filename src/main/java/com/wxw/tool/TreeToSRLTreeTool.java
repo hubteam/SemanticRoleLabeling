@@ -1,23 +1,25 @@
-package com.wxw.tree;
+package com.wxw.tool;
 
 import java.util.List;
 import java.util.Stack;
 
-import com.wxw.tool.IsFunctionLabelTool;
+import com.wxw.tree.PhraseGenerateTree;
+import com.wxw.tree.SRLTreeNode;
+import com.wxw.tree.TreeNode;
 
 /**
  * 将一棵树转换成语义角色标注树
  * @author 王馨苇
  *
  */
-public class TreeToSRLTree {
+public class TreeToSRLTreeTool {
 	
 	/**
 	 * 将一颗树转成语义角色树
 	 * @param tree
 	 * @return
 	 */
-	public SRLTreeNode transferToSRLTree(TreeNode treenode){
+	public static SRLTreeNode transferToSRLTreeNodeStructure(TreeNode treenode){
 		String strtree = "("+treenode.toNoNoneSample()+")";
 		PhraseGenerateTree pgt = new PhraseGenerateTree();
 		String format = pgt.format(strtree);
@@ -64,7 +66,7 @@ public class TreeToSRLTree {
 	 * @param semanticRole 语义角色标注信息
 	 * @return
 	 */
-	public SRLTreeNode treeAddSemanticRole(SRLTreeNode tree, String semanticRole){
+	public static SRLTreeNode treeAddSemanticRole(SRLTreeNode tree, String semanticRole){
 		String[] roles = semanticRole.split(" ");
 		for (int i = 6; i < roles.length; i++) {
 			//拆开为argument下标和语义标记部分
@@ -98,7 +100,7 @@ public class TreeToSRLTree {
 		return tree;
 	}
 	
-	private void treeAddSingleSemanticRole(SRLTreeNode tree,int begin,int up,String role){
+	private static void treeAddSingleSemanticRole(SRLTreeNode tree,int begin,int up,String role){
 		if(tree.getChildren().size() == 0 && tree.getWordIndex() == begin){
 			SRLTreeNode temp = tree;
 			tree = (SRLTreeNode) tree.getParent();;
@@ -121,7 +123,7 @@ public class TreeToSRLTree {
 	 * @param semanticRole 语义角色信息
 	 * @return
 	 */
-	public SRLTreeNode treeToSRLTree(TreeNode tree, String semanticRole){		
-		return treeAddSemanticRole(transferToSRLTree(tree),semanticRole);
+	public static SRLTreeNode treeToSRLTree(TreeNode tree, String semanticRole){		
+		return treeAddSemanticRole(transferToSRLTreeNodeStructure(tree),semanticRole);
 	}
 }

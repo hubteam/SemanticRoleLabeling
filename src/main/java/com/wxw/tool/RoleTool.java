@@ -28,4 +28,12 @@ public class RoleTool {
 	public String getRole(){
 		return this.role;
 	}
+
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return this.up+"_"+this.role;
+	}
+	
+	
 }

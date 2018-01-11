@@ -8,13 +8,11 @@ import com.wxw.onestep.SRLSample;
 import com.wxw.tool.RoleTool;
 import com.wxw.tree.HeadTreeNode;
 import com.wxw.tree.TreeNode;
-import com.wxw.tree.TreeToHeadTree;
 
 public class SRLParseNormal extends AbstractParseStrategy<HeadTreeNode>{
 	private List<String> semanticinfo = new ArrayList<>();
 	private List<String> labelinfo = new ArrayList<>();
 	private List<HeadTreeNode> listtree = new ArrayList<>();
-	private TreeToHeadTree toheadtree = new TreeToHeadTree();
 
 	/**
 	 * 将树转换成语义角色标注所需的样本类格式
@@ -22,9 +20,8 @@ public class SRLParseNormal extends AbstractParseStrategy<HeadTreeNode>{
 	 * @param semanticRole 语义角色标注信息
 	 * @return
 	 */
-	public SRLSample<HeadTreeNode> toSample(TreeNode tree, String semanticRole){
+	public SRLSample<HeadTreeNode> toSample(HeadTreeNode headtree, String semanticRole){
 
-		HeadTreeNode headtree = toheadtree.treeToHeadTree(tree);
 		String[] roles = semanticRole.split(" ");
 		//加入动词的下标和动词
 		semanticinfo.add(roles[2]);
@@ -32,7 +29,7 @@ public class SRLParseNormal extends AbstractParseStrategy<HeadTreeNode>{
 		semanticinfo.add(roles[5]);
 		//加入以当前论元或者谓词作为根节点的树，和语义标记信息
 		addInfo(headtree,getRoleMap(semanticRole));		
-		return new SRLSample<HeadTreeNode>(tree, listtree,semanticinfo,labelinfo);
+		return new SRLSample<HeadTreeNode>(headtree, listtree,semanticinfo,labelinfo);
 	}
 	
 	/**
@@ -42,13 +39,14 @@ public class SRLParseNormal extends AbstractParseStrategy<HeadTreeNode>{
 	 */
 	private void addInfo(HeadTreeNode tree,HashMap<Integer,RoleTool> map){
 		boolean flag = true;
-		if(tree.getFlag()){
-			if(tree.getChildren().size() != 0 || tree.getParent() != null){
+		if(tree.getChildren().size() != 0 && tree.getParent() != null){
+			if(tree.getFlag() == true){
 				if(map.containsKey(getLeftIndexAndDownSteps(tree)[0])){
 					if(getLeftIndexAndDownSteps(tree)[1] == map.get(getLeftIndexAndDownSteps(tree)[0]).getUp()){
 						flag = false;
 						if(map.get(getLeftIndexAndDownSteps(tree)[0]).getRole().equals("rel")){
 							listtree.add(0,tree);
+							semanticinfo.add(1,tree.getChildren().get(0).getNodeName());
 						}else{
 							listtree.add(tree);
 							semanticinfo.add(getLeftIndexAndDownSteps(tree)[0]+"");
@@ -62,10 +60,9 @@ public class SRLParseNormal extends AbstractParseStrategy<HeadTreeNode>{
 					labelinfo.add("NULL");
 				}
 			}
-		}else{
-			for (TreeNode treenode : tree.getChildren()) {			
-				addInfo((HeadTreeNode)treenode,map);
-			}
+		}
+		for (TreeNode treenode : tree.getChildren()) {			
+			addInfo((HeadTreeNode)treenode,map);
 		}
 	}
 
@@ -75,7 +72,7 @@ public class SRLParseNormal extends AbstractParseStrategy<HeadTreeNode>{
 	 * @return
 	 */
 	private int[] getLeftIndexAndDownSteps(HeadTreeNode tree){
-		int step = 0;
+		int step = -1;
 		int[] leftanddown = new int[2];
 		while(tree.getChildren().size() != 0){
 			tree = tree.getChildren().get(0);
@@ -91,7 +88,18 @@ public class SRLParseNormal extends AbstractParseStrategy<HeadTreeNode>{
 	 */
 	@Override
 	public boolean hasPrePruning() {
+		return false;
+	}
+
+
+	@Override
+	public boolean hasHeadWord() {
 		return true;
+	}
+
+	@Override
+	public HeadTreeNode prePruning(HeadTreeNode tree, int verbindex) {
+		return null;
 	}
 }
 

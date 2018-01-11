@@ -1,14 +1,14 @@
 package com.wxw.onestepparse;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import com.wxw.onestep.SRLSample;
 import com.wxw.tool.IsFunctionLabelTool;
+import com.wxw.tool.IsPunctuationTool;
 import com.wxw.tool.RoleTool;
 import com.wxw.tree.HeadTreeNode;
 import com.wxw.tree.TreeNode;
+import com.wxw.tree.TreeToHeadTree;
 
 /**
  * 一步完成识别和分类的解析策略类
@@ -17,40 +17,39 @@ import com.wxw.tree.TreeNode;
  */
 public abstract class AbstractParseStrategy<T extends TreeNode> {
 
+	private TreeToHeadTree toheadtree = new TreeToHeadTree();
+	
 	/**
 	 * 是否有剪枝操作
 	 * @return
 	 */
 	public abstract boolean hasPrePruning();
 	
+	public abstract boolean hasHeadWord();
 	/**
-	 * 根据规则进行剪枝操作
-	 * @param tree
+	 * 根据规则进行剪枝操作[剪掉标点符号和动词及动词父节点是并列结构的节点]
+	 * @param tree 要剪枝的树
 	 * @return
 	 */
-	public TreeNode prePruning(TreeNode tree,int verbindex){
-		if(tree.getChildren().size() != 0){
-			if(getAllLeafIndex(tree).contains(verbindex)){
+	public abstract T prePruning(T tree,int verbindex);
+	
+	/**
+	 * 去除标点符号，将其flag设置为false
+	 * @param tree 要处理的树
+	 * @return
+	 */
+	private T removePunctuation(T tree){
+		if(tree.getChildren().size() == 0){
+			if(IsPunctuationTool.isPunctuation(tree.getParent().getNodeName())){
+				tree.getParent().setFlag(false);
 				tree.setFlag(false);
 			}
 		}else{
 			for (TreeNode treenode : tree.getChildren()) {			
-				prePruning(treenode,verbindex);
+				removePunctuation((T) treenode);
 			}
 		}
 		return tree;
-	}
-	
-	private List<Integer> getAllLeafIndex(TreeNode tree){
-		List<Integer> list = new ArrayList<>();
-		if(tree.getChildren().size() == 0){
-			list.add(tree.getWordIndex());
-		}else{
-			for (TreeNode treenode : tree.getChildren()) {			
-				list.addAll(getAllLeafIndex(treenode));
-			}
-		}
-		return list;
 	}
 	
 	/**
@@ -59,7 +58,7 @@ public abstract class AbstractParseStrategy<T extends TreeNode> {
 	 * @param semanticRole 语义信息
 	 * @return
 	 */
-	public abstract SRLSample<T> toSample(TreeNode tree, String semanticRole);
+	public abstract SRLSample<T> toSample(T tree, String semanticRole);
 	
 	/**
 	 * 根据是否要进行剪枝，解析样本
@@ -68,10 +67,21 @@ public abstract class AbstractParseStrategy<T extends TreeNode> {
 	 * @return
 	 */
 	public SRLSample<T> parse(TreeNode tree, String semanticRole){
-		if(hasPrePruning()){
-			tree = prePruning(tree,Integer.parseInt(semanticRole.split(" ")[2]));
+		if(hasHeadWord()){
+			HeadTreeNode headtree = toheadtree.treeToHeadTree(tree);
+			if(hasPrePruning()){
+				return toSample(prePruning(removePunctuation((T) headtree),Integer.parseInt(semanticRole.split(" ")[2])), semanticRole);
+			}else{
+				return toSample(removePunctuation((T) headtree), semanticRole);
+			}
+		}else{
+			if(hasPrePruning()){
+				return toSample(prePruning(removePunctuation((T) tree),Integer.parseInt(semanticRole.split(" ")[2])), semanticRole);
+			}else{
+				return toSample(removePunctuation((T) tree), semanticRole);
+			}
 		}
-		return toSample(tree, semanticRole);
+				
 	}
 	
 	/**

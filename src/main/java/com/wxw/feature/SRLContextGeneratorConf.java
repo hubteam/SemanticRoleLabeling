@@ -94,8 +94,8 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
 	 * @return
 	 */
 	@Override
-	public String[] getContext(int i, HeadTreeNode[] roleTree, String[] semanticinfo, Object[] labelinfo) {
-		return getContext(i,roleTree,semanticinfo,(String[])labelinfo);
+	public String[] getContext(int i, HeadTreeNode[] roleTree, String[] labelinfo, Object[] semanticinfo) {
+		return getContext(i,roleTree,labelinfo,(String[])semanticinfo);
 	}
 	
 	/**
@@ -106,7 +106,7 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
 	 * @param labelinfo 标记信息
 	 * @return
 	 */
-	public String[] getContext(int i, HeadTreeNode[] roleTree, String[] semanticinfo, String[] labelinfo) {
+	public String[] getContext(int i, HeadTreeNode[] roleTree, String[] labelinfo, String[] semanticinfo) {
 		List<String> features = new ArrayList<String>();
 		int predicateposition = Integer.parseInt(semanticinfo[0]);
 		int argumentposition = Integer.parseInt(semanticinfo[i+2]);

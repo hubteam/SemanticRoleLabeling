@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import com.wxw.onestep.SRLSample;
 import com.wxw.onestepparse.SRLParseNormal;
-import com.wxw.pretreatRun.TreePreTreatment;
+import com.wxw.tool.PreTreatTool;
 import com.wxw.tree.HeadTreeNode;
 import com.wxw.tree.PhraseGenerateTree;
 import com.wxw.tree.TreeNode;
@@ -48,16 +48,16 @@ public class SRLContextGeneratorTest {
 				+ "(PP-DIR(IN from)(NP(JJ last)(NN year)))))(, ,)(PP(VBG according)(PP(TO to)"
 				+ "(NP(NNP Publishers)(NNP Information)(NNP Bureau))))))(. .)))");	
 		
-		TreePreTreatment.travelTree(tree1);
+		PreTreatTool.preTreat(tree1);
 		
 		ttss = new SRLParseNormal();
 		roles1 = "wsj/00/wsj0012.mrg 9 12 gold shore.01 i---a 4:1*10:0-ARG0 12:0,13:1-rel 14:2-ARG1";
-		sample = ttss.toSample(tree1, roles1);
+		sample = ttss.parse(tree1, roles1);
 
 		generator = new SRLContextGeneratorConf();	
 		HeadTreeNode[] headtree = sample.getHeadTree().toArray(new HeadTreeNode[sample.getHeadTree().size()]);	
-		context1 = generator.getContext(1, headtree, sample.getSemanticInfo(), sample.getLabelInfo());
-		context2 = generator.getContext(2, headtree, sample.getSemanticInfo(), sample.getLabelInfo());
+		context1 = generator.getContext(1, headtree, sample.getLabelInfo(), sample.getSemanticInfo());
+		context2 = generator.getContext(2, headtree, sample.getLabelInfo(), sample.getSemanticInfo());
 		
 		result1 = new ArrayList<>();
 		result1.add("predicate=shore_up");

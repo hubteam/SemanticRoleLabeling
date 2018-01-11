@@ -5,10 +5,10 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.wxw.tool.TreeToSRLTreeTool;
 import com.wxw.tree.PhraseGenerateTree;
 import com.wxw.tree.SRLTreeNode;
 import com.wxw.tree.TreeNode;
-import com.wxw.tree.TreeToSRLTree;
 
 /**
  * 将树转成语义角色标注树的单元测试
@@ -18,7 +18,7 @@ import com.wxw.tree.TreeToSRLTree;
 public class TreeToSRLTreeTest {
 
 	private PhraseGenerateTree pgt ;
-	private TreeToSRLTree ttst ;
+	private TreeToSRLTreeTool ttst ;
 	private TreeNode tree1;
 	private SRLTreeNode roletree1;
 	private String roles1;
@@ -42,7 +42,7 @@ public class TreeToSRLTreeTest {
 	@Before
 	public void setUp(){
 		pgt = new PhraseGenerateTree();
-		ttst = new TreeToSRLTree();		
+		ttst = new TreeToSRLTreeTool();		
 		roles1 = "wsj/00/wsj_0001.mrg 0 8 gold join.01 vf--a 0:2-ARG0 7:0-ARGM-MOD 8:0-rel 9:1-ARG1 11:1-ARGM-PRD 15:1-ARGM-TMP";
 		tree1 = pgt.generateTree("((S(NP-SBJ(NP(NNP Pierre)(NNP Vinken))(, ,)(ADJP(NP(CD 61)(NNS years))(JJ old))(, ,))(VP(MD will)(VP(VB join)(NP(DT the)(NN board))(PP-CLR(IN as)(NP (DT a)(JJ nonexecutive)(NN director)))(NP-TMP(NNP Nov.)(CD 29))))(. .)))");
 		roletree1 = ttst.treeToSRLTree(tree1, roles1);

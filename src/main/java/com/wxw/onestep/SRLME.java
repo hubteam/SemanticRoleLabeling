@@ -176,6 +176,26 @@ public class SRLME {
         }	
 		return null;
 	}
+	
+	/**
+	 * 得到最好的结果序列
+	 * @param headtree 子树序列
+	 * @param semanticinfo 语义信息
+	 * @return
+	 */
+	public Sequence topSequences(HeadTreeNode[] headtree, Object[] semanticinfo) {
+        return model.bestSequences(1, headtree, (String[])semanticinfo, contextGenerator, sequenceValidator)[0];
+    }
+	
+	/**
+	 * 得到最好的结果序列
+	 * @param headtree 子树序列
+	 * @param semanticinfo 语义信息
+	 * @return
+	 */
+	public Sequence[] topKSequences(HeadTreeNode[] headtree, Object[] semanticinfo) {
+        return model.bestSequences(size, headtree, (String[])semanticinfo, contextGenerator, sequenceValidator);
+    }
 }
 
 
