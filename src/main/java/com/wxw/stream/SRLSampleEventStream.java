@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.wxw.feature.SRLContextGenerator;
 import com.wxw.onestep.SRLSample;
+import com.wxw.tool.TreeNodeWrapper;
 import com.wxw.tree.HeadTreeNode;
 
 import opennlp.tools.ml.model.Event;
@@ -38,36 +39,29 @@ public class SRLSampleEventStream extends AbstractEventStream<SRLSample<HeadTree
 	 */
 	@Override
 	protected Iterator<Event> createEvents(SRLSample<HeadTreeNode> sample) {
-		String[] semanticinfo = sample.getSemanticInfo();
 		String[] labelinfo = sample.getLabelInfo();
-		List<HeadTreeNode> headtree = sample.getHeadTree();
+		TreeNodeWrapper<HeadTreeNode>[] argumenttree = sample.getArgumentTree();
+		TreeNodeWrapper<HeadTreeNode>[] predicatetree = sample.getPredicateTree();
 		String[][] ac = sample.getAdditionalContext();
-		List<Event> events = generateEvents(headtree, semanticinfo,labelinfo,ac);
+		List<Event> events = generateEvents(argumenttree, predicatetree,labelinfo,ac);
         return events.iterator();
 	}
 
 	/**
 	 * 事件生成
-	 * @param words 词语序列
-	 * @param posTree pos得到的子树
-	 * @param chunkTree chunk得到的子树
-	 * @param buildAndCheck buildAndCheck得到的子树
-	 * @param actions 动作序列
+	 * @param argumenttree 以论元为根节点的树
+	 * @param predicatetree 以谓词为根节点的树
+	 * @param labelinfo 标记序列
 	 * @param ac
 	 * @return
 	 */
-	private List<Event> generateEvents(List<HeadTreeNode> headTree, String[] semanticinfo, String[] labelinfo, String[][] ac) {
+	private List<Event> generateEvents(TreeNodeWrapper<HeadTreeNode>[] argumenttree, TreeNodeWrapper<HeadTreeNode>[] predicatetree, String[] labelinfo, String[][] ac) {
 		List<Event> events = new ArrayList<Event>(labelinfo.length);
-		HeadTreeNode[] tree = headTree.toArray(new HeadTreeNode[headTree.size()]);
 		for (int i = 0; i < labelinfo.length; i++) {
-			String[] context = generator.getContext(i+1, tree, labelinfo, semanticinfo);
+			String[] context = generator.getContext(i, argumenttree, labelinfo, predicatetree);
 			events.add(new Event(labelinfo[i],context));
 			hs.add(labelinfo[i]);
 		}
-//		for (String str : hs) {
-//			System.out.print(str + " ");
-//		}
-//		System.out.println();
 		return events;
 	}
 }

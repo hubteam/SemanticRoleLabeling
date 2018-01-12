@@ -14,11 +14,22 @@ public class SRLMeasure {
 	public void update(String[] references,String[] predictions){
 		for (int i = 0; i < predictions.length; i++) {
 			if(references[i].equals(predictions[i])){
-				truePositive++;
+				if(!references[i].equals("NULL") && !predictions[i].equals("NULL")){
+					truePositive++;
+				}
 			}
 		}
-		selected += predictions.length;
-        target += references.length;
+		for (int i = 0; i < predictions.length; i++) {
+			if(!predictions[i].equals("NULL")){
+				selected++;
+			}
+		}
+		
+		for (int i = 0; i < references.length; i++) {
+			if(!references[i].equals("NULL")){
+				target++;
+			}
+		}
 	}
 	
 	public double getPrecisionScore() {

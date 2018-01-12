@@ -6,7 +6,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.wxw.onestep.SRLSample;
+import com.wxw.onestepparse.AbstractParseStrategy;
 import com.wxw.onestepparse.SRLParseNormal;
+import com.wxw.onestepparse.SRLParserAddNULL_101;
 import com.wxw.pretreatRun.TreePreTreatment;
 import com.wxw.tree.HeadTreeNode;
 import com.wxw.tree.PhraseGenerateTree;
@@ -32,7 +34,7 @@ public class SRLSampleStream extends FilterObjectStream<String[],SRLSample<HeadT
 		String[] sentence = samples.read();	
 		SRLSample<HeadTreeNode> sample = null;
 		PhraseGenerateTree pgt = new PhraseGenerateTree();
-		SRLParseNormal ttst = new SRLParseNormal();
+		AbstractParseStrategy<HeadTreeNode> ttst = new SRLParserAddNULL_101();
 		if(sentence[0]!= null && sentence[1] != null){
 			try{
 				TreeNode tree = pgt.generateTree(sentence[0]);

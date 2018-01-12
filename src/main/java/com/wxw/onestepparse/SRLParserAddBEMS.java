@@ -11,11 +11,12 @@ import com.wxw.tree.HeadTreeNode;
 import com.wxw.tree.TreeNode;
 
 /**
- * 解析成样本类，没有剪枝操作
+ * 解析样本类，对连续的论元标签标上BEMS
  * @author 王馨苇
  *
  */
-public class SRLParseNormal extends AbstractParseStrategy<HeadTreeNode>{
+public class SRLParserAddBEMS  extends AbstractParseStrategy<HeadTreeNode>{
+	private boolean containPredicateFlag;
 	private List<String> labelinfo = new ArrayList<>();
 	private List<TreeNodeWrapper<HeadTreeNode>> argumenttree = new ArrayList<>();
 	private List<TreeNodeWrapper<HeadTreeNode>> predicatetree = new ArrayList<>();
@@ -27,8 +28,9 @@ public class SRLParseNormal extends AbstractParseStrategy<HeadTreeNode>{
 	 * @return
 	 */
 	public SRLSample<HeadTreeNode> toSample(HeadTreeNode headtree, String semanticRole){
+		String[] roles = semanticRole.split(" ");
 		//加入以当前论元或者谓词作为根节点的树，和语义标记信息
-		addInfo(headtree,getRoleMap(semanticRole));		
+		addInfo(headtree,getRoleMap(semanticRole),Integer.parseInt(roles[2]));		
 		return new SRLSample<HeadTreeNode>(headtree, argumenttree,predicatetree,labelinfo);
 	}
 	
@@ -36,8 +38,9 @@ public class SRLParseNormal extends AbstractParseStrategy<HeadTreeNode>{
 	 * 往列表中加入标记信息
 	 * @param tree 带头结点的语义角色树
 	 * @param semanticRole 语义角色标注信息
+	 * @param verbindex 动词的下标
 	 */
-	private void addInfo(HeadTreeNode tree,HashMap<Integer,RoleTool> map){
+	private void addInfo(HeadTreeNode tree,HashMap<Integer,RoleTool> map,int verbindex){
 		boolean flag = true;
 		if(tree.getChildren().size() != 0 && tree.getParent() != null){
 			if(tree.getFlag() == true){
@@ -59,7 +62,7 @@ public class SRLParseNormal extends AbstractParseStrategy<HeadTreeNode>{
 			}
 		}
 		for (TreeNode treenode : tree.getChildren()) {			
-			addInfo((HeadTreeNode)treenode,map);
+			addInfo((HeadTreeNode)treenode,map,verbindex);
 		}
 	}
 
@@ -71,9 +74,9 @@ public class SRLParseNormal extends AbstractParseStrategy<HeadTreeNode>{
 		return false;
 	}
 
+
 	@Override
 	public boolean hasHeadWord() {
 		return true;
 	}
 }
-

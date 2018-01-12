@@ -11,11 +11,11 @@ import com.wxw.tree.HeadTreeNode;
 import com.wxw.tree.TreeNode;
 
 /**
- * 解析成样本类，没有剪枝操作
+ * 有剪枝的操作
  * @author 王馨苇
  *
  */
-public class SRLParseNormal extends AbstractParseStrategy<HeadTreeNode>{
+public class SRLParseNormalHasPruning extends AbstractParseStrategy<HeadTreeNode>{
 	private List<String> labelinfo = new ArrayList<>();
 	private List<TreeNodeWrapper<HeadTreeNode>> argumenttree = new ArrayList<>();
 	private List<TreeNodeWrapper<HeadTreeNode>> predicatetree = new ArrayList<>();
@@ -68,7 +68,7 @@ public class SRLParseNormal extends AbstractParseStrategy<HeadTreeNode>{
 	 */
 	@Override
 	public boolean hasPrePruning() {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -76,4 +76,3 @@ public class SRLParseNormal extends AbstractParseStrategy<HeadTreeNode>{
 		return true;
 	}
 }
-

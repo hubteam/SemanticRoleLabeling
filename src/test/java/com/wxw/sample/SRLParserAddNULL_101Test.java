@@ -11,20 +11,18 @@ import org.junit.Test;
 
 import com.wxw.onestep.SRLSample;
 import com.wxw.onestepparse.AbstractParseStrategy;
-import com.wxw.onestepparse.SRLParseNormal;
-import com.wxw.tool.PostTreatTool;
+import com.wxw.onestepparse.SRLParserAddNULL_101;
 import com.wxw.tool.PreTreatTool;
 import com.wxw.tree.HeadTreeNode;
 import com.wxw.tree.PhraseGenerateTree;
 import com.wxw.tree.TreeNode;
 
 /**
- * 树转成样本类的测试
+ * 转成样本类的测试，此时样本类标签增加NULL_1 NULL0 NULL1
  * @author 王馨苇
  *
  */
-public class TreeToSRLSampleTest {
-
+public class SRLParserAddNULL_101Test {
 	private String roles;
 	private String list1;
 	private List<String> label;
@@ -50,13 +48,10 @@ public class TreeToSRLSampleTest {
 				+ "(NP(NNP Publishers)(NNP Information)(NNP Bureau))))))(. .)))");	
 
 		PreTreatTool.preTreat(tree);
-		parse = new SRLParseNormal();
+		parse = new SRLParserAddNULL_101();
 		sample = parse.parse(tree, roles);
 
 		srlinfo = new ArrayList<>();		
-		srlinfo.add("12");
-		srlinfo.add("shore");
-		srlinfo.add("i---a");
 		srlinfo.add("0");
 		srlinfo.add("0");
 		srlinfo.add("0");
@@ -137,84 +132,84 @@ public class TreeToSRLSampleTest {
 		srlinfo.add("47");
 		
 		label = new ArrayList<>();
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
+		label.add("NULL0");
+		label.add("NULL_1");
+		label.add("NULL_1");
+		label.add("NULL_1");
+		label.add("NULL0");
+		label.add("NULL_1");
+		label.add("NULL0");
+		label.add("NULL0");
 		label.add("ARG0");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
+		label.add("NULL_1");
+		label.add("NULL_1");
+		label.add("NULL0");
+		label.add("NULL_1");
+		label.add("NULL_1");
+		label.add("NULL0");
+		label.add("NULL_1");
+		label.add("NULL_1");
+		label.add("NULL0");
+		label.add("NULL0");
+		label.add("NULL_1");
+		label.add("NULL0");
+		label.add("NULL1");
+		label.add("NULL1");
 		label.add("ARG1");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
+		label.add("NULL1");
 
 		list1 = "(VB{shore[VB]} shore[12])";
 	}
@@ -222,7 +217,9 @@ public class TreeToSRLSampleTest {
 	@Test
 	public void test(){
 		assertEquals(Arrays.asList(sample.getLabelInfo()),label);
-		assertEquals(Arrays.asList(sample.getSemanticInfo()),srlinfo);
-		assertEquals(sample.getHeadTree().get(0).toString(),list1);
+		for (int i = 0; i < srlinfo.size(); i++) {
+			assertEquals(sample.getArgumentTree()[i].getLeftLeafIndex()+"",srlinfo.get(i));
+		}
+		assertEquals(sample.getPredicateTree()[0].getTree().toString(),list1);
 	}
 }

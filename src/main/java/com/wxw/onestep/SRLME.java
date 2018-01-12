@@ -14,6 +14,7 @@ import com.wxw.stream.FileInputStreamFactory;
 import com.wxw.stream.PlainTextByTreeStream;
 import com.wxw.stream.SRLSampleEventStream;
 import com.wxw.stream.SRLSampleStream;
+import com.wxw.tool.TreeNodeWrapper;
 import com.wxw.tree.HeadTreeNode;
 
 import opennlp.tools.ml.BeamSearch;
@@ -38,10 +39,10 @@ public class SRLME {
 	private SRLContextGenerator contextGenerator;
 	private int size;
 	private Sequence bestSequence;
-	private SequenceClassificationModel<HeadTreeNode> model;
+	private SequenceClassificationModel<TreeNodeWrapper<HeadTreeNode>> model;
 	private SRLModel modelPackage;
 
-    private SequenceValidator<HeadTreeNode> sequenceValidator;
+    private SequenceValidator<TreeNodeWrapper<HeadTreeNode>> sequenceValidator;
 	
 	/**
 	 * 构造函数，初始化工作
@@ -183,8 +184,8 @@ public class SRLME {
 	 * @param semanticinfo 语义信息
 	 * @return
 	 */
-	public Sequence topSequences(HeadTreeNode[] headtree, Object[] semanticinfo) {
-        return model.bestSequences(1, headtree, (String[])semanticinfo, contextGenerator, sequenceValidator)[0];
+	public Sequence topSequences(TreeNodeWrapper<HeadTreeNode>[] argumentree, Object[] predicatetree) {
+        return model.bestSequences(1, argumentree, predicatetree, contextGenerator, sequenceValidator)[0];
     }
 	
 	/**
@@ -193,8 +194,8 @@ public class SRLME {
 	 * @param semanticinfo 语义信息
 	 * @return
 	 */
-	public Sequence[] topKSequences(HeadTreeNode[] headtree, Object[] semanticinfo) {
-        return model.bestSequences(size, headtree, (String[])semanticinfo, contextGenerator, sequenceValidator);
+	public Sequence[] topKSequences(TreeNodeWrapper<HeadTreeNode>[] argumentree, Object[] predicatetree) {
+        return model.bestSequences(size, argumentree, predicatetree, contextGenerator, sequenceValidator);
     }
 }
 

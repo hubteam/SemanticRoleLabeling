@@ -1,7 +1,5 @@
 package com.wxw.tool;
 
-import java.util.List;
-
 import com.wxw.tree.HeadTreeNode;
 import com.wxw.tree.TreeNode;
 
@@ -19,30 +17,32 @@ public class PostTreatTool {
 	 * @param result 结果序列
 	 * @return
 	 */
-	public static String[] postTreat(HeadTreeNode[] tree,Sequence result){
+	public static String[] postTreat(TreeNodeWrapper<HeadTreeNode>[] tree,Sequence result){
 		String[] lastres = result.getOutcomes().toArray(new String[result.getOutcomes().size()]);
-		for (int i = 0; i < result.getOutcomes().size(); i++) {
+		for (int i = 1; i < result.getOutcomes().size(); i++) {
 			if(!result.getOutcomes().get(i).equals("NULL")){
 				double max = result.getProbs()[i];
 				int record = -1;
-				for (int j = i+1; j < i+getSonTreeCount(tree[i+1]); j++) {
+				for (int j = i+1; j < i+getSonTreeCount(tree[i].getTree()) && j < result.getOutcomes().size(); j++) {
 					if(result.getProbs()[j] > max){
 						max = result.getProbs()[j];
 						record = j;
 					}
 				}
-				for (int j = i; j < i+getSonTreeCount(tree[i+1]); j++) {
-					if(j == record){
-						
-					}else{
-						lastres[j] = "NULL";
+				if(record != -1){
+					for (int j = i; j < i+getSonTreeCount(tree[i].getTree()) && j < result.getOutcomes().size(); j++) {
+						if(j == record){
+							
+						}else{
+							lastres[j] = "NULL";
+						}
 					}
 				}			
-				i = i+getSonTreeCount(tree[i+1])-1;
+				i = i+getSonTreeCount(tree[i].getTree())-1;
 			}
 			
 		}
-		return null;
+		return lastres;
 	}
 	
 	public static int getSonTreeCount(HeadTreeNode headtree){

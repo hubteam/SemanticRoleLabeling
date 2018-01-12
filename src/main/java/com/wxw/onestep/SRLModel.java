@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
 
+import com.wxw.tool.TreeNodeWrapper;
 import com.wxw.tree.HeadTreeNode;
 
 import opennlp.tools.ml.BeamSearch;
@@ -77,7 +78,7 @@ public class SRLModel extends BaseModel{
         }
 	}
 	
-	public SequenceClassificationModel<HeadTreeNode> getSRLTreeSequenceModel() {
+	public SequenceClassificationModel<TreeNodeWrapper<HeadTreeNode>> getSRLTreeSequenceModel() {
 
         Properties manifest = (Properties) artifactMap.get(MANIFEST_ENTRY);
 
@@ -91,7 +92,7 @@ public class SRLModel extends BaseModel{
 
             return new BeamSearch(beamSize, (MaxentModel) artifactMap.get(SRL_MODEL_ENTRY_NAME));
         } else if (artifactMap.get(SRL_MODEL_ENTRY_NAME) instanceof SequenceClassificationModel) {
-            return (SequenceClassificationModel<HeadTreeNode>) artifactMap.get(SRL_MODEL_ENTRY_NAME);
+            return (SequenceClassificationModel<TreeNodeWrapper<HeadTreeNode>>) artifactMap.get(SRL_MODEL_ENTRY_NAME);
         } else {
             return null;
         }

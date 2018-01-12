@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.wxw.tool.TreeNodeWrapper;
 import com.wxw.tree.TreeNode;
 
 /**
@@ -14,20 +15,20 @@ import com.wxw.tree.TreeNode;
  */
 public class SRLSample <T extends TreeNode>{
 	private TreeNode tree;//句法分析得到的树
-	private List<T> headTree;//子树序列
-	private List<String> semanticinfo = new ArrayList<String>();//角色标注信息
+	private List<TreeNodeWrapper<T>> argumenttree = new ArrayList<>();//论元为根的树
+	private List<TreeNodeWrapper<T>> predicatetree = new ArrayList<>();//谓词为根的树
 	private List<String> labelinfo = new ArrayList<String>();//角色标注论元标记信息
 	private String[][] addtionalContext;
 	
-	public SRLSample(TreeNode tree, List<T> headTree,  List<String> semanticinfo, List<String> labelinfo) {
-		this(tree, headTree,semanticinfo,labelinfo,null);
+	public SRLSample(TreeNode tree, List<TreeNodeWrapper<T>> argumenttree,  List<TreeNodeWrapper<T>> predicatetree, List<String> labelinfo) {
+		this(tree, argumenttree,predicatetree,labelinfo,null);
 	}
 	
-	public SRLSample(TreeNode tree, List<T> headTree,  List<String> semanticinfo, List<String> labelinfo,String[][] addtionalContext) {
+	public SRLSample(TreeNode tree, List<TreeNodeWrapper<T>> argumenttree,  List<TreeNodeWrapper<T>> predicatetree, List<String> labelinfo,String[][] addtionalContext) {
 		this.tree = tree;
-		this.headTree = Collections.unmodifiableList(headTree);
+		this.argumenttree = Collections.unmodifiableList(argumenttree);
 		this.labelinfo = Collections.unmodifiableList(labelinfo);
-        this.semanticinfo = Collections.unmodifiableList(semanticinfo);
+        this.predicatetree = Collections.unmodifiableList(predicatetree);
         String[][] ac;
         if (addtionalContext != null) {
             ac = new String[addtionalContext.length][];
@@ -51,19 +52,21 @@ public class SRLSample <T extends TreeNode>{
 	}
 	
 	/**
-	 * 获取以谓词和论元为树根的树
+	 * 获取以论元为树根的树
 	 * @return
 	 */
-	public List<T> getHeadTree(){
-		return this.headTree;
+	@SuppressWarnings("unchecked")
+	public TreeNodeWrapper<T>[] getArgumentTree(){
+		return this.argumenttree.toArray(new TreeNodeWrapper[this.argumenttree.size()]);
 	}
 	
 	/**
-	 * 获取语义角色标注信息
+	 * 获取以谓词为树根的树
 	 * @return
 	 */
-	public String[] getSemanticInfo(){
-		return this.semanticinfo.toArray(new String[this.semanticinfo.size()]);
+	@SuppressWarnings("unchecked")
+	public TreeNodeWrapper<T>[] getPredicateTree(){
+		return this.predicatetree.toArray(new TreeNodeWrapper[this.predicatetree.size()]);
 	}
 	
 	/**

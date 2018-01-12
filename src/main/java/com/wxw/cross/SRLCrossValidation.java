@@ -33,7 +33,7 @@ import opennlp.tools.util.eval.CrossValidationPartitioner;
  * @author 王馨苇
  *
  */
-public class SRLCrossValidator {
+public class SRLCrossValidation {
 	private final String languageCode;
 	private final TrainingParameters params;
 	private SRLEvaluateMonitor[] monitor;
@@ -44,7 +44,7 @@ public class SRLCrossValidator {
 	 * @param params 训练的参数
 	 * @param listeners 监听器
 	 */
-	public SRLCrossValidator(String languageCode,TrainingParameters params,SRLEvaluateMonitor... monitor){
+	public SRLCrossValidation(String languageCode,TrainingParameters params,SRLEvaluateMonitor... monitor){
 		this.languageCode = languageCode;
 		this.params = params;
 		this.monitor = monitor;
@@ -58,7 +58,7 @@ public class SRLCrossValidator {
 	 * @param contextGenerator 上下文
 	 * @throws IOException io异常
 	 */
-	public void evaluate(File file,ObjectStream<SRLSample<HeadTreeNode>> sample, int nFolds,
+	public void evaluate(ObjectStream<SRLSample<HeadTreeNode>> sample, int nFolds,
 			SRLContextGenerator contextGenerator) throws IOException{
 		CrossValidationPartitioner<SRLSample<HeadTreeNode>> partitioner = new CrossValidationPartitioner<SRLSample<HeadTreeNode>>(sample, nFolds);
 		int run = 1;

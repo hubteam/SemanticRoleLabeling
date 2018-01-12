@@ -9,6 +9,7 @@ import com.wxw.modelBystep.SyntacticAnalysisMEForChunk;
 import com.wxw.onestep.SRLME;
 import com.wxw.onestep.SRLSample;
 import com.wxw.tool.PostTreatTool;
+import com.wxw.tool.TreeNodeWrapper;
 import com.wxw.tree.HeadTreeNode;
 import com.wxw.tree.TreeNode;
 
@@ -48,13 +49,21 @@ public class SRLEvaluator extends Evaluator<SRLSample<HeadTreeNode>>{
 	@Override
 	protected SRLSample<HeadTreeNode> processSample(SRLSample<HeadTreeNode> sample) {
 		TreeNode node = sample.getTree();
-		HeadTreeNode[] headtree = sample.getHeadTree().toArray(new HeadTreeNode[sample.getHeadTree().size()]);
-		String[] semanticinfo = sample.getSemanticInfo();
+		TreeNodeWrapper<HeadTreeNode>[] argumenttree = sample.getArgumentTree();
+		TreeNodeWrapper<HeadTreeNode>[] predicatetree = sample.getPredicateTree();
 		String[] labelinfo = sample.getLabelInfo();
-		Sequence result = tagger.topSequences(headtree, semanticinfo);
-		String[] newlabelinfo = PostTreatTool.postTreat(headtree,result);
+		for (int i = 0; i < labelinfo.length; i++) {
+			System.out.print(labelinfo[i]);
+		}
+		System.out.println();
+		Sequence result = tagger.topSequences(argumenttree, predicatetree);
+		String[] newlabelinfo = PostTreatTool.postTreat(argumenttree,result);
+		for (int i = 0; i < newlabelinfo.length; i++) {
+			System.out.print(newlabelinfo[i]);
+		}
+		System.out.println();
 		measure.update(labelinfo, newlabelinfo);
-		SRLSample<HeadTreeNode> newsample = new SRLSample<HeadTreeNode>(node,Arrays.asList(headtree),Arrays.asList(semanticinfo),Arrays.asList(newlabelinfo));
+		SRLSample<HeadTreeNode> newsample = new SRLSample<HeadTreeNode>(node,Arrays.asList(argumenttree),Arrays.asList(predicatetree),Arrays.asList(newlabelinfo));
 		return newsample;
 	}
 }

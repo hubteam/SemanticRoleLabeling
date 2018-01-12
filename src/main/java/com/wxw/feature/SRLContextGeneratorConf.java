@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import com.wxw.tool.TreeNodeWrapper;
 import com.wxw.tree.HeadTreeNode;
 
 /**
@@ -84,19 +85,6 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
                 ", predicateAndPhrasetypeSet=" + predicateAndPhrasetypeSet +
                 '}';
 	}	
-
-	/**
-	 * 为测试语料生成上下文特征
-	 * @param i 当前位置
-	 * @param roleTree 以谓词和论元为根的树数组
-	 * @param semanticinfo 语义角色信息
-	 * @param labelinfo 标记信息
-	 * @return
-	 */
-	@Override
-	public String[] getContext(int i, HeadTreeNode[] roleTree, String[] labelinfo, Object[] semanticinfo) {
-		return getContext(i,roleTree,labelinfo,(String[])semanticinfo);
-	}
 	
 	/**
 	 * 为测试语料生成上下文特征
@@ -106,19 +94,24 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
 	 * @param labelinfo 标记信息
 	 * @return
 	 */
-	public String[] getContext(int i, HeadTreeNode[] roleTree, String[] labelinfo, String[] semanticinfo) {
+	public String[] getContext(int i, TreeNodeWrapper<HeadTreeNode>[] argumenttree , String[] labelinfo, TreeNodeWrapper<HeadTreeNode>[] predicatetree) {
 		List<String> features = new ArrayList<String>();
-		int predicateposition = Integer.parseInt(semanticinfo[0]);
-		int argumentposition = Integer.parseInt(semanticinfo[i+2]);
-		String voice = semanticinfo[2].toCharArray()[4]+"";
+		int predicateposition = predicatetree[0].getLeftLeafIndex();
+		int argumentposition = argumenttree[i].getLeftLeafIndex();
+		String voice;
+		if(predicatetree[0].getTree().getNodeName().equals("VBN")){
+			voice = "p";
+		}else{
+			voice = "a";
+		}
 		if(predicateSet){
-			features.add("predicate="+semanticinfo[1]);
+			features.add("predicate="+predicatetree[0].getTree().getChildren().get(0).getNodeName());
 		}
 		if(pathSet){
-			features.add("path="+getPath(roleTree[0],roleTree[i]));
+			features.add("path="+getPath(predicatetree[0].getTree(),argumenttree[i].getTree()));
 		}
 		if(phrasetypeSet){
-			features.add("phrasetype="+roleTree[i].getNodeName());
+			features.add("phrasetype="+argumenttree[i].getTree().getNodeName());
 		}
 		if(positionSet){
 			if(argumentposition < predicateposition){
@@ -131,26 +124,26 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
 			features.add("voice="+voice);
 		}
 		if(headwordSet){
-			features.add("headword="+roleTree[i].getHeadWords());
+			features.add("headword="+argumenttree[i].getTree().getHeadWords());
 		}
 		if(headwordposSet){
-			features.add("headwordpos="+roleTree[i].getHeadWordsPos());
+			features.add("headwordpos="+argumenttree[i].getTree().getHeadWordsPos());
 		}
 		if(subcategorizationSet){
-			features.add("subcategorization="+getSubcategorization(roleTree[0]));
+			features.add("subcategorization="+getSubcategorization(predicatetree[0].getTree()));
 		}
 		if(firstargumentSet){
-			features.add("firstargument="+getFirstArgument(roleTree[i]));
+			features.add("firstargument="+getFirstArgument(argumenttree[i].getTree()));
 		}
 		if(lastargumentSet){
-			features.add("lastargument="+getLastArgument(roleTree[i]));
+			features.add("lastargument="+getLastArgument(argumenttree[i].getTree()));
 		}
 		if(predicateAndHeadwordSet){
-			features.add("predicateAndHeadword="+semanticinfo[1]+"|"+roleTree[i].getHeadWords());
+			features.add("predicateAndHeadword="+predicatetree[0].getTree().getChildren().get(0).getNodeName()+"|"+argumenttree[i].getTree().getHeadWords());
 		}
 		if(predicateAndPhrasetypeSet){
-			features.add("predicateAndPhrasetype="+semanticinfo[1]+"|"+roleTree[i].getNodeName());
-		}
+			features.add("predicateAndPhrasetype="+predicatetree[0].getTree().getChildren().get(0).getNodeName()+"|"+argumenttree[i].getTree().getNodeName());
+		}	
 		String[] contexts = features.toArray(new String[features.size()]);
         return contexts;
 	}
@@ -241,5 +234,19 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
 		
 		path += argumentpath+predicatetree.getNodeName()+predicatepath;
 		return path;
+	}
+
+	/**
+	 * 为语料生成上下文特征
+	 * @param i 当前位置
+	 * @param argumenttree 以论元为根的树数组
+	 * @param predicatetree 以谓词为根的树
+	 * @param labelinfo 标记信息
+	 * @return
+	 */
+	@Override
+	public String[] getContext(int i, TreeNodeWrapper<HeadTreeNode>[] argumenttree, String[] labelinfo,
+			Object[] predicatetree) {
+		return getContext(i,argumenttree,labelinfo,(TreeNodeWrapper<HeadTreeNode>[])predicatetree);
 	}
 }

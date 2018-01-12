@@ -6,10 +6,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import com.wxw.cross.SRLCrossValidation;
 import com.wxw.feature.SRLContextGenerator;
 import com.wxw.feature.SRLContextGeneratorConf;
 import com.wxw.onestep.SRLME;
+import com.wxw.onestep.SRLSample;
+import com.wxw.stream.FileInputStreamFactory;
+import com.wxw.stream.PlainTextByTreeStream;
+import com.wxw.stream.SRLSampleStream;
+import com.wxw.tree.HeadTreeNode;
 
+import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.TrainingParameters;
 
 /**
@@ -46,7 +53,7 @@ public class SRLRun {
 			runFeature();
 		}else if(cmd.equals("-cross")){
 			String corpus = args[1];
-//			crossValidation(corpus);
+			crossValidation(corpus);
 		}
 	}
 
@@ -55,28 +62,28 @@ public class SRLRun {
 	 * @param corpus 语料的名称
 	 * @throws IOException 
 	 */
-//	private static void crossValidation(String corpusName) throws IOException {
-//		Properties config = new Properties();
-//		InputStream configStream = SRLRun.class.getClassLoader().getResourceAsStream("com/wxw/run/corpus.properties");
-//		config.load(configStream);
-//		Corpus[] corpora = getCorporaFromConf(config);
-//        //定位到某一语料
-//        Corpus corpus = getCorpus(corpora, corpusName);
-//        SRLContextGenerator contextGen = getContextGenerator(config);
-//        ObjectStream<String[]> lineStream = new PlainTextByTreeStream(new FileInputStreamFactory(new File(corpus.trainFile)), corpus.encoding);
-//        
-//        ObjectStream<SRLSample> sampleStream = new SRLSampleStream(lineStream);
-//
-//        //默认参数
-//        TrainingParameters params = TrainingParameters.defaultParams();
-//        params.put(TrainingParameters.CUTOFF_PARAM, Integer.toString(3));
-//
-//        //把刚才属性信息封装
-//        WordPosCrossValidation crossValidator = new WordPosCrossValidation("zh", params);
-//
-//        System.out.println(contextGen);
-//        crossValidator.evaluate(sampleStream, 10, contextGen);
-//	}
+	private static void crossValidation(String corpusName) throws IOException {
+		Properties config = new Properties();
+		InputStream configStream = SRLRun.class.getClassLoader().getResourceAsStream("com/wxw/run/corpus.properties");
+		config.load(configStream);
+		Corpus[] corpora = getCorporaFromConf(config);
+        //定位到某一语料
+        Corpus corpus = getCorpus(corpora, corpusName);
+        SRLContextGenerator contextGen = getContextGenerator(config);
+        ObjectStream<String[]> lineStream = new PlainTextByTreeStream(new FileInputStreamFactory(new File(corpus.trainFile)), corpus.encoding);
+        
+        ObjectStream<SRLSample<HeadTreeNode>> sampleStream = new SRLSampleStream(lineStream);
+
+        //默认参数
+        TrainingParameters params = TrainingParameters.defaultParams();
+        params.put(TrainingParameters.CUTOFF_PARAM, Integer.toString(3));
+
+        //把刚才属性信息封装
+        SRLCrossValidation crossValidator = new SRLCrossValidation("zh", params);
+
+        System.out.println(contextGen);
+        crossValidator.evaluate(sampleStream, 10, contextGen);
+	}
 	
 	/**
 	 * 根据语料名称获取某个语料

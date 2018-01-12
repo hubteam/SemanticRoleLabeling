@@ -18,6 +18,7 @@ import com.wxw.tree.TreeToHeadTree;
 public abstract class AbstractParseStrategy<T extends TreeNode> {
 
 	private TreeToHeadTree toheadtree = new TreeToHeadTree();
+	protected boolean containPredicateFlag;
 	
 	/**
 	 * 是否有剪枝操作
@@ -31,7 +32,22 @@ public abstract class AbstractParseStrategy<T extends TreeNode> {
 	 * @param tree 要剪枝的树
 	 * @return
 	 */
-	public abstract T prePruning(T tree,int verbindex);
+	public T prePruning(T tree,int verbindex){
+		if(containsPredicate(tree, verbindex)){
+			containPredicateFlag = false;
+			if(tree.getChildren().size() > 0){
+				if(tree.getChildren().size() == 1 && tree.getChildren().get(0).getChildren().size() == 0){
+					
+				}else{
+					tree.setFlag(false);
+				}
+			}
+		}
+		for (TreeNode treenode : tree.getChildren()) {			
+			prePruning((T)treenode,verbindex);
+		}
+		return tree;
+	}
 	
 	/**
 	 * 去除标点符号，将其flag设置为false
@@ -70,6 +86,7 @@ public abstract class AbstractParseStrategy<T extends TreeNode> {
 		if(hasHeadWord()){
 			HeadTreeNode headtree = toheadtree.treeToHeadTree(tree);
 			if(hasPrePruning()){
+				prePruning(removePunctuation((T) headtree),Integer.parseInt(semanticRole.split(" ")[2]));
 				return toSample(prePruning(removePunctuation((T) headtree),Integer.parseInt(semanticRole.split(" ")[2])), semanticRole);
 			}else{
 				return toSample(removePunctuation((T) headtree), semanticRole);
@@ -80,8 +97,7 @@ public abstract class AbstractParseStrategy<T extends TreeNode> {
 			}else{
 				return toSample(removePunctuation((T) tree), semanticRole);
 			}
-		}
-				
+		}				
 	}
 	
 	/**
@@ -163,5 +179,40 @@ public abstract class AbstractParseStrategy<T extends TreeNode> {
 			}				
 		}
 		return role;
+	}
+	
+
+	/**
+	 * 获取当前树最左端终结点的下标和记录得到下标走过的步数
+	 * @param tree 树
+	 * @return
+	 */
+	public int[] getLeftIndexAndDownSteps(HeadTreeNode tree){
+		int step = -1;
+		int[] leftanddown = new int[2];
+		while(tree.getChildren().size() != 0){
+			tree = tree.getChildren().get(0);
+			step++;
+		}
+		leftanddown[0] = tree.getWordIndex();
+		leftanddown[1] = step;
+		return leftanddown;
+	}
+	
+	/**
+	 * 判断一棵树的子节点中是否包含谓词
+	 * @param tree 要判断的树
+	 * @param verbindex 动词的下标
+	 * @return
+	 */
+	public boolean containsPredicate(T tree,int verbindex){
+		if(tree.getWordIndex() == verbindex){
+			containPredicateFlag = true;
+		}else{
+			for (TreeNode treenode : tree.getChildren()) {			
+				containsPredicate((T)treenode,verbindex);
+			}
+		}	
+		return containPredicateFlag;
 	}
 }

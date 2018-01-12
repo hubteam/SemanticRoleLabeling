@@ -55,13 +55,12 @@ public class SRLContextGeneratorTest {
 		sample = ttss.parse(tree1, roles1);
 
 		generator = new SRLContextGeneratorConf();	
-		HeadTreeNode[] headtree = sample.getHeadTree().toArray(new HeadTreeNode[sample.getHeadTree().size()]);	
-		context1 = generator.getContext(1, headtree, sample.getLabelInfo(), sample.getSemanticInfo());
-		context2 = generator.getContext(2, headtree, sample.getLabelInfo(), sample.getSemanticInfo());
+		context1 = generator.getContext(8, sample.getArgumentTree(), sample.getLabelInfo(), sample.getPredicateTree());
+		context2 = generator.getContext(23, sample.getArgumentTree(), sample.getLabelInfo(), sample.getPredicateTree());
 		
 		result1 = new ArrayList<>();
-		result1.add("predicate=shore_up");
-		result1.add("path=NP↑S↓VP↓NP↓VP↓VP↓VB");
+		result1.add("predicate=shore");
+		result1.add("path=NP↑S↓VP↓NP↓S↓VP↓VP↓VB");
 		result1.add("phrasetype=NP");
 		result1.add("position=before");
 		result1.add("voice=a");	
@@ -70,11 +69,11 @@ public class SRLContextGeneratorTest {
 		result1.add("subcategorization=VP→PRT NP");
 		result1.add("firstargument=the");
 		result1.add("lastargument=plan");
-		result1.add("predicateAndHeadword=shore_up|plan");
-		result1.add("predicateAndPhrasetype=shore_up|NP");
+		result1.add("predicateAndHeadword=shore|plan");
+		result1.add("predicateAndPhrasetype=shore|NP");
 		
 		result2 = new ArrayList<>();
-		result2.add("predicate=shore_up");
+		result2.add("predicate=shore");
 		result2.add("path=NP↑VP↓VB");
 		result2.add("phrasetype=NP");
 		result2.add("position=after");
@@ -84,8 +83,8 @@ public class SRLContextGeneratorTest {
 		result2.add("subcategorization=VP→PRT NP");
 		result2.add("firstargument=a");
 		result2.add("lastargument=1989");
-		result2.add("predicateAndHeadword=shore_up|decline");
-		result2.add("predicateAndPhrasetype=shore_up|NP");
+		result2.add("predicateAndHeadword=shore|decline");
+		result2.add("predicateAndPhrasetype=shore|NP");
 	}
 	
 	@Test
