@@ -14,17 +14,18 @@ import com.wxw.tree.TreeNode;
  * @param <T>
  */
 public class SRLSample <T extends TreeNode>{
-	private TreeNode tree;//句法分析得到的树
+	private T tree;//句法分析得到的树
 	private List<TreeNodeWrapper<T>> argumenttree = new ArrayList<>();//论元为根的树
 	private List<TreeNodeWrapper<T>> predicatetree = new ArrayList<>();//谓词为根的树
 	private List<String> labelinfo = new ArrayList<String>();//角色标注论元标记信息
 	private String[][] addtionalContext;
+	private boolean isPruning;
 	
-	public SRLSample(TreeNode tree, List<TreeNodeWrapper<T>> argumenttree,  List<TreeNodeWrapper<T>> predicatetree, List<String> labelinfo) {
+	public SRLSample(T tree, List<TreeNodeWrapper<T>> argumenttree,  List<TreeNodeWrapper<T>> predicatetree, List<String> labelinfo) {
 		this(tree, argumenttree,predicatetree,labelinfo,null);
 	}
 	
-	public SRLSample(TreeNode tree, List<TreeNodeWrapper<T>> argumenttree,  List<TreeNodeWrapper<T>> predicatetree, List<String> labelinfo,String[][] addtionalContext) {
+	public SRLSample(T tree, List<TreeNodeWrapper<T>> argumenttree,  List<TreeNodeWrapper<T>> predicatetree, List<String> labelinfo,String[][] addtionalContext) {
 		this.tree = tree;
 		this.argumenttree = Collections.unmodifiableList(argumenttree);
 		this.labelinfo = Collections.unmodifiableList(labelinfo);
@@ -47,7 +48,7 @@ public class SRLSample <T extends TreeNode>{
 	 * 获取句法分析得到的树
 	 * @return
 	 */
-	public TreeNode getTree(){
+	public T getTree(){
 		return this.tree;
 	}
 	
@@ -79,6 +80,22 @@ public class SRLSample <T extends TreeNode>{
 	
 	public String[][] getAdditionalContext(){
 		return this.addtionalContext;
+	}
+	
+	/**
+	 * 设置是否进行了剪枝
+	 * @param isPruning
+	 */
+	public void setPruning(boolean isPruning){
+		this.isPruning = isPruning;
+	}
+	
+	/**
+	 * 获取是否剪枝的设置信息
+	 * @return
+	 */
+	public boolean getIsPruning(){
+		return this.isPruning;
 	}
 }
 

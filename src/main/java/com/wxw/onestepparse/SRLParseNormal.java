@@ -27,8 +27,9 @@ public class SRLParseNormal extends AbstractParseStrategy<HeadTreeNode>{
 	 * @return
 	 */
 	public SRLSample<HeadTreeNode> toSample(HeadTreeNode headtree, String semanticRole){
+		String[] roles = semanticRole.split(" ");
 		//加入以当前论元或者谓词作为根节点的树，和语义标记信息
-		addInfo(headtree,getRoleMap(semanticRole));		
+		addInfo(headtree,getRoleMap(semanticRole),Integer.parseInt(roles[2]));		
 		return new SRLSample<HeadTreeNode>(headtree, argumenttree,predicatetree,labelinfo);
 	}
 	
@@ -36,8 +37,9 @@ public class SRLParseNormal extends AbstractParseStrategy<HeadTreeNode>{
 	 * 往列表中加入标记信息
 	 * @param tree 带头结点的语义角色树
 	 * @param semanticRole 语义角色标注信息
+	 * @param verbindex 动词的位置标记
 	 */
-	private void addInfo(HeadTreeNode tree,HashMap<Integer,RoleTool> map){
+	private void addInfo(HeadTreeNode tree,HashMap<Integer,RoleTool> map,int verbindex){
 		boolean flag = true;
 		if(tree.getChildren().size() != 0 && tree.getParent() != null){
 			if(tree.getFlag() == true){
@@ -45,7 +47,11 @@ public class SRLParseNormal extends AbstractParseStrategy<HeadTreeNode>{
 					if(getLeftIndexAndDownSteps(tree)[1] == map.get(getLeftIndexAndDownSteps(tree)[0]).getUp()){
 						flag = false;
 						if(map.get(getLeftIndexAndDownSteps(tree)[0]).getRole().equals("rel")){
-							predicatetree.add(new TreeNodeWrapper<HeadTreeNode>(tree,getLeftIndexAndDownSteps(tree)[0]));
+							if(getLeftIndexAndDownSteps(tree)[0] == verbindex){
+								predicatetree.add(new TreeNodeWrapper<HeadTreeNode>(tree,getLeftIndexAndDownSteps(tree)[0]));
+							}else{
+								
+							}
 						}else{
 							labelinfo.add(map.get(getLeftIndexAndDownSteps(tree)[0]).getRole());
 							argumenttree.add(new TreeNodeWrapper<HeadTreeNode>(tree,getLeftIndexAndDownSteps(tree)[0]));
@@ -59,7 +65,7 @@ public class SRLParseNormal extends AbstractParseStrategy<HeadTreeNode>{
 			}
 		}
 		for (TreeNode treenode : tree.getChildren()) {			
-			addInfo((HeadTreeNode)treenode,map);
+			addInfo((HeadTreeNode)treenode,map,verbindex);
 		}
 	}
 

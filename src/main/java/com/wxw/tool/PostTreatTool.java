@@ -17,20 +17,21 @@ public class PostTreatTool {
 	 * @param result 结果序列
 	 * @return
 	 */
-	public static String[] postTreat(TreeNodeWrapper<HeadTreeNode>[] tree,Sequence result){
-		String[] lastres = result.getOutcomes().toArray(new String[result.getOutcomes().size()]);
-		for (int i = 1; i < result.getOutcomes().size(); i++) {
-			if(!result.getOutcomes().get(i).equals("NULL")){
+	public static String[] postTreat(TreeNodeWrapper<HeadTreeNode>[] tree,Sequence result,int length){
+		String[] null_101 = result.getOutcomes().toArray(new String[result.getOutcomes().size()]);
+		String[] lastres = NULL_1012NULL(null_101);
+		for (int i = 0; i < length; i++) {
+			if(!lastres[i].equals("NULL")){
 				double max = result.getProbs()[i];
 				int record = -1;
-				for (int j = i+1; j < i+getSonTreeCount(tree[i].getTree()) && j < result.getOutcomes().size(); j++) {
-					if(result.getProbs()[j] > max){
+				for (int j = i+1; j < i+getSonTreeCount(tree[i].getTree()) && j < length; j++) {
+					if((result.getProbs()[j] > max) && (!lastres[j].equals("NULL"))){
 						max = result.getProbs()[j];
 						record = j;
 					}
 				}
 				if(record != -1){
-					for (int j = i; j < i+getSonTreeCount(tree[i].getTree()) && j < result.getOutcomes().size(); j++) {
+					for (int j = i; j < i+getSonTreeCount(tree[i].getTree()) && j < length; j++) {
 						if(j == record){
 							
 						}else{
@@ -40,7 +41,6 @@ public class PostTreatTool {
 				}			
 				i = i+getSonTreeCount(tree[i].getTree())-1;
 			}
-			
 		}
 		return lastres;
 	}
@@ -58,5 +58,17 @@ public class PostTreatTool {
 			}	
 		}
 		return count;
+	}
+	
+	public static String[] NULL_1012NULL(String[] str){
+		String[] res = new String[str.length];
+		for (int i = 0; i < str.length; i++) {
+			if(str[i].contains("NULL")){
+				res[i] = "NULL";
+			}else{
+				res[i] = str[i];
+			}
+		}
+		return res;
 	}
 }

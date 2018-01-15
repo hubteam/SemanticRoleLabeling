@@ -12,6 +12,7 @@ import org.junit.Test;
 import com.wxw.onestep.SRLSample;
 import com.wxw.onestepparse.AbstractParseStrategy;
 import com.wxw.onestepparse.SRLParseNormal;
+import com.wxw.onestepparse.SRLParseNormalHasPruning;
 import com.wxw.tool.PostTreatTool;
 import com.wxw.tool.PreTreatTool;
 import com.wxw.tree.HeadTreeNode;
@@ -21,13 +22,14 @@ import com.wxw.tree.TreeNode;
 import opennlp.tools.util.Sequence;
 
 /**
- * 对没有剪枝得到的结果后处理的测试
+ * 对剪枝的样本得到结果后的后处理
  * 后处理是为了防止嵌套情况的出现，当一颗树的根被标记成论元，根的子节点也有被标记成论元的，就是嵌套结构
+ * 有剪枝操作存在嵌套，只是在动词的兄弟节点中存在嵌套
  * 解决：保留一棵树中概率最大的论元
  * @author 王馨苇
  *
  */
-public class PostTreatTest {
+public class PostTreatForPruningTest {
 
 	private String roles;
 	private Sequence sequence;
@@ -55,101 +57,34 @@ public class PostTreatTest {
 				+ "(NP(NNP Publishers)(NNP Information)(NNP Bureau))))))(. .)))");	
 
 		PreTreatTool.preTreat(tree);
-		parse = new SRLParseNormal();
+		parse = new SRLParseNormalHasPruning();
 		sample = parse.parse(tree, roles);
 		
 		label = new ArrayList<>();
 		label.add("NULL1");
-		
-		label.add("NULL2");
+		label.add("ARG1");
 		label.add("NULL3");
+		label.add("A");
+		label.add("B");
 		label.add("NULL");
-		
 		label.add("NULL");
-		
 		label.add("NULL");
-		
-		label.add("NULL");
-		
-		label.add("NULL");
-		
 		label.add("A");
 		label.add("B");
 		label.add("C");
-		
 		label.add("NULL");
-		
 		label.add("F");
-		
 		label.add("NULL");
-		
 		label.add("NULL");
-		
 		label.add("NULL");
-		
 		label.add("NULL");
-		
 		label.add("NULL");
-		
-		label.add("NULL");
-		
-		label.add("NULL");
-		
-		label.add("NULL");
-		
-		label.add("D");
-		label.add("NULL");
-		
-		label.add("NULL");
-		
 		label.add("NULL");
 		label.add("NULL");
 		label.add("NULL");
 		
 		label.add("NULL");
-		label.add("M");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
+		label.add("W");
 		label.add("NULL");
 		label.add("NULL");
 		label.add("NULL");
@@ -159,10 +94,10 @@ public class PostTreatTest {
 		
 		prop = new ArrayList<>();
 		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
+		prop.add(5.0);
+		prop.add(7.0);
+		prop.add(6.0);
+		prop.add(1.0);
 		prop.add(0.0);
 		prop.add(0.0);
 		prop.add(0.0);
@@ -176,58 +111,12 @@ public class PostTreatTest {
 		prop.add(0.0);
 		prop.add(0.0);
 		prop.add(0.0);
-		prop.add(1.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(6.0);
 		prop.add(0.0);
 		prop.add(0.0);
 		prop.add(0.0);
+		
 		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(8.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
-		prop.add(0.0);
+		prop.add(7.0);
 		prop.add(0.0);
 		prop.add(0.0);
 		prop.add(0.0);
@@ -239,76 +128,27 @@ public class PostTreatTest {
 		result.add("NULL");
 		result.add("NULL");
 		result.add("NULL");
+		result.add("A");
 		result.add("NULL");
 		result.add("NULL");
 		result.add("NULL");
 		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
+		result.add("A");
 		result.add("NULL");
 		result.add("C");
+		result.add("NULL");
+		result.add("NULL");
+		result.add("NULL");
+		result.add("NULL");
+		result.add("NULL");
+		result.add("NULL");
+		result.add("NULL");
+		result.add("NULL");
+		result.add("NULL");
+		result.add("NULL");
 		
 		result.add("NULL");
-		
-		result.add("F");
-		
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("M");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
-		result.add("NULL");
+		result.add("W");
 		result.add("NULL");
 		result.add("NULL");
 		result.add("NULL");
@@ -321,12 +161,13 @@ public class PostTreatTest {
 		for (int i = 0; i < label.size() && i < prop.size(); i++) {
 			sequence.add(label.get(i), prop.get(i));
 		}
-		
 		if(sample.getIsPruning() == true){
-			pre = PostTreatTool.postTreat(sample.getArgumentTree(), sequence,PostTreatTool.getSonTreeCount(sample.getPredicateTree()[0].getTree()));
+			System.out.println(PostTreatTool.getSonTreeCount(sample.getPredicateTree()[0].getTree().getParent()));
+			pre = PostTreatTool.postTreat(sample.getArgumentTree(), sequence,PostTreatTool.getSonTreeCount(sample.getPredicateTree()[0].getTree().getParent()));
 		}else{
 			pre = PostTreatTool.postTreat(sample.getArgumentTree(), sequence,sample.getArgumentTree().length);
 		}
+		
 	}
 	
 	@Test

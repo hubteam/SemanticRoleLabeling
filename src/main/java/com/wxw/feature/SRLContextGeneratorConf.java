@@ -17,6 +17,10 @@ import com.wxw.tree.HeadTreeNode;
 public class SRLContextGeneratorConf implements SRLContextGenerator{
 	
 	private boolean predicateSet;
+	private boolean predicateposSet;
+	private boolean predicatesuffixSet;
+	private boolean pathlengthSet;
+	private boolean partialpathSet;
 	private boolean pathSet; 
 	private boolean phrasetypeSet; 
 	private boolean positionSet;  
@@ -24,12 +28,19 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
 	private boolean headwordSet;
 	private boolean headwordposSet;
 	private boolean subcategorizationSet; 
-	private boolean firstargumentSet;   
+	private boolean firstargumentSet; 
+	private boolean firstargumentposSet;   
 	private boolean lastargumentSet;  
+	private boolean lastargumentposSet;  
+	private boolean positionAndvoiceSet;
+	private boolean predicateAndpathSet;
+	private boolean pathAndpositionAndvoiceSet;
+	private boolean pathAndpositionAndvoiceAndpredicateSet;
+	private boolean headwordAndpredicateAndpathSet;
+	private boolean headwordAndPhraseSet;
 	private boolean predicateAndHeadwordSet;   
 	private boolean predicateAndPhrasetypeSet;
-		
-		
+				
 	/**
 	 * 无参构造
 	 * @throws IOException 		 
@@ -58,6 +69,10 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
 	private void init(Properties config) {
 			
 		predicateSet = (config.getProperty("tree.predicate", "true").equals("true"));
+		predicateposSet = (config.getProperty("tree.predicatepos", "true").equals("true"));
+		predicatesuffixSet = (config.getProperty("tree.predicatesuffix", "true").equals("true"));
+		pathlengthSet = (config.getProperty("tree.pathlength", "true").equals("true"));
+		partialpathSet = (config.getProperty("tree.partialpath", "true").equals("true"));
 		pathSet = (config.getProperty("tree.path", "true").equals("true"));
 		phrasetypeSet = (config.getProperty("tree.phrasetype", "true").equals("true"));
 		positionSet = (config.getProperty("tree.position", "true").equals("true"));
@@ -66,7 +81,15 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
 		headwordposSet = (config.getProperty("tree.headwordpos", "true").equals("true"));
 		subcategorizationSet = (config.getProperty("tree.subcategorization", "true").equals("true"));
 		firstargumentSet = (config.getProperty("tree.firstargument", "true").equals("true"));
+		firstargumentposSet = (config.getProperty("tree.firstargumentpos", "true").equals("true"));
 		lastargumentSet = (config.getProperty("tree.lastargument", "true").equals("true"));
+		lastargumentposSet = (config.getProperty("tree.lastargumentpos", "true").equals("true"));
+		positionAndvoiceSet = (config.getProperty("tree.positionAndvoice", "true").equals("true"));
+		predicateAndpathSet = (config.getProperty("tree.predicateAndpath", "true").equals("true"));
+		pathAndpositionAndvoiceSet = (config.getProperty("tree.pathAndpositionAndvoice", "true").equals("true"));
+		pathAndpositionAndvoiceAndpredicateSet = (config.getProperty("tree.pathAndpositionAndvoiceAndpredicate", "true").equals("true"));
+		headwordAndpredicateAndpathSet = (config.getProperty("tree.headwordAndpredicateAndpath", "true").equals("true"));
+		headwordAndPhraseSet = (config.getProperty("tree.headwordAndPhrase", "true").equals("true"));
 		predicateAndHeadwordSet = (config.getProperty("tree.predicateAndHeadword", "true").equals("true"));		
 		predicateAndPhrasetypeSet = (config.getProperty("tree.predicateAndPhrasetype", "true").equals("true"));		
 	}
@@ -76,12 +99,19 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
 	 */
 	@Override
 	public String toString() {
-		return "SRLContextGeneratorConf{" + "predicateSet=" + predicateSet + 
+		return "SRLContextGeneratorConf{" + "predicateSet=" + predicateSet + "predicateposSet=" + predicateposSet + 
                 ", pathSet=" + pathSet + ", phrasetypeSet=" + phrasetypeSet + 
                 ", positionSet=" + positionSet + ", voiceSet=" + voiceSet +  
                 ", headwordSet=" + headwordSet + ", headwordposSet=" + headwordposSet + 
                 ", subcategorizationSet=" + subcategorizationSet + ", firstargumentSet=" + firstargumentSet + 
-                ", lastargumentSet=" + lastargumentSet + ", predicateAndHeadwordSet=" + predicateAndHeadwordSet +  
+                ", firstargumentposSet=" + firstargumentposSet + 
+                ", lastargumentSet=" + lastargumentSet + ", lastargumentposSet=" + lastargumentposSet + 
+                ", positionAndvoiceSet=" + positionAndvoiceSet + ", predicateAndpathSet=" + predicateAndpathSet + 
+                ", pathAndpositionAndvoiceSet=" + pathAndpositionAndvoiceSet + 
+                ", pathAndpositionAndvoiceAndpredicateSet=" + pathAndpositionAndvoiceAndpredicateSet + 
+                ", headwordAndpredicateAndpathSet=" + headwordAndpredicateAndpathSet + 
+                ", headwordAndPhraseSet=" + headwordAndPhraseSet + 
+                ", predicateAndHeadwordSet=" + predicateAndHeadwordSet +  
                 ", predicateAndPhrasetypeSet=" + predicateAndPhrasetypeSet +
                 '}';
 	}	
@@ -98,27 +128,51 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
 		List<String> features = new ArrayList<String>();
 		int predicateposition = predicatetree[0].getLeftLeafIndex();
 		int argumentposition = argumenttree[i].getLeftLeafIndex();
+		HeadTreeNode headtree = predicatetree[0].getTree();
+		while(headtree.getChildren().size() != 0){
+			headtree = headtree.getChildren().get(0);
+		}
 		String voice;
-		if(predicatetree[0].getTree().getNodeName().equals("VBN")){
+		if(headtree.getParent().getNodeName().equals("VBN")){
 			voice = "p";
 		}else{
 			voice = "a";
 		}
+		String position;
+		if(argumentposition < predicateposition){
+			position = "before";
+		}else{
+			position = "after";
+		}
+		String predicate = headtree.getNodeName();
+		String path = getPath(predicatetree[0].getTree(),argumenttree[i].getTree());
 		if(predicateSet){
-			features.add("predicate="+predicatetree[0].getTree().getChildren().get(0).getNodeName());
+			features.add("predicate="+predicate);
+		}
+		if(predicateposSet){
+			features.add("predicatepos="+headtree.getParent().getNodeName());
+		}
+		if(predicatesuffixSet){
+			if(predicate.length() >= 3){
+				features.add("predicatesuffix="+predicate.substring(predicate.length()-3, predicate.length()));
+			}else{
+				features.add("predicatesuffix="+predicate);
+			}
 		}
 		if(pathSet){
-			features.add("path="+getPath(predicatetree[0].getTree(),argumenttree[i].getTree()));
+			features.add("path="+path);
+		}
+		if(pathlengthSet){
+			features.add("pathlength="+getPathLength(path));
+		}
+		if(partialpathSet){
+			features.add("partialpath="+getPartialPath(path));
 		}
 		if(phrasetypeSet){
 			features.add("phrasetype="+argumenttree[i].getTree().getNodeName());
 		}
 		if(positionSet){
-			if(argumentposition < predicateposition){
-				features.add("position="+"before");
-			}else{
-				features.add("position="+"after");
-			}			
+			features.add("position="+position);			
 		}
 		if(voiceSet){
 			features.add("voice="+voice);
@@ -133,16 +187,40 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
 			features.add("subcategorization="+getSubcategorization(predicatetree[0].getTree()));
 		}
 		if(firstargumentSet){
-			features.add("firstargument="+getFirstArgument(argumenttree[i].getTree()));
+			features.add("firstargument="+getFirstArgument(argumenttree[i].getTree()).split("_")[0]);
+		}
+		if(firstargumentposSet){
+			features.add("firstargumentpos="+getFirstArgument(argumenttree[i].getTree()).split("_")[1]);
 		}
 		if(lastargumentSet){
-			features.add("lastargument="+getLastArgument(argumenttree[i].getTree()));
+			features.add("lastargument="+getLastArgument(argumenttree[i].getTree()).split("_")[0]);
+		}
+		if(lastargumentposSet){
+			features.add("lastargumentpos="+getLastArgument(argumenttree[i].getTree()).split("_")[1]);
+		}
+		if(positionAndvoiceSet){
+			features.add("positionAndvoice="+position+"|"+voice);
+		}
+		if(predicateAndpathSet){
+			features.add("predicateAndpath="+predicate+"|"+path);
+		}
+		if(pathAndpositionAndvoiceSet){
+			features.add("pathAndpositionAndvoice="+path+"|"+position+"|"+voice);
+		}
+		if(pathAndpositionAndvoiceAndpredicateSet){
+			features.add("pathAndpositionAndvoiceAndpredicate="+path+"|"+position+"|"+voice+"|"+predicate);
+		}
+		if(headwordAndpredicateAndpathSet){
+			features.add("headwordAndpredicateAndpath="+argumenttree[i].getTree().getHeadWords()+"|"+predicate+"|"+path);
+		}
+		if(headwordAndPhraseSet){
+			features.add("headwordAndPhrase="+argumenttree[i].getTree().getHeadWords()+"|"+argumenttree[i].getTree().getNodeName());
 		}
 		if(predicateAndHeadwordSet){
-			features.add("predicateAndHeadword="+predicatetree[0].getTree().getChildren().get(0).getNodeName()+"|"+argumenttree[i].getTree().getHeadWords());
+			features.add("predicateAndHeadword="+predicate+"|"+argumenttree[i].getTree().getHeadWords());
 		}
 		if(predicateAndPhrasetypeSet){
-			features.add("predicateAndPhrasetype="+predicatetree[0].getTree().getChildren().get(0).getNodeName()+"|"+argumenttree[i].getTree().getNodeName());
+			features.add("predicateAndPhrasetype="+predicate+"|"+argumenttree[i].getTree().getNodeName());
 		}	
 		String[] contexts = features.toArray(new String[features.size()]);
         return contexts;
@@ -154,7 +232,7 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
 		if(headTree.getParent() != null){
 			headTree = headTree.getParent();
 			str += headTree.getNodeName()+"→";
-			for (int i = index+1; i < headTree.getChildren().size(); i++) {
+			for (int i = index; i < headTree.getChildren().size(); i++) {
 				if(i == headTree.getChildren().size()-1){
 					str += headTree.getChildren().get(i).getNodeName();
 				}else{
@@ -174,7 +252,7 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
 		while(headTree.getChildren().size() != 0){
 			headTree = headTree.getChildren().get(0);
 		}
-		return headTree.getNodeName();
+		return headTree.getNodeName()+"_"+headTree.getParent().getNodeName();
 	}
 	
 	/**
@@ -186,7 +264,7 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
 		while(headTree.getChildren().size() != 0){
 			headTree = headTree.getChildren().get(headTree.getChildren().size()-1);
 		}
-		return headTree.getNodeName();
+		return headTree.getNodeName()+"_"+headTree.getParent().getNodeName();
 	}
 	
 	/**
@@ -202,22 +280,21 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
 		HeadTreeNode initargument = argumenttree;
 		HeadTreeNode initpredicate = predicatetree;
 		//找到共同的根节点
-		while(argumenttree.getParent() != null){
-			boolean flag = false;
+		while(!argumenttree.toString().equals(predicatetree.toString())){
 			HeadTreeNode tree = predicatetree;
-			while(predicatetree.getParent() != null){
-				if(argumenttree.toString().equals(predicatetree.toString())){
-					flag = true;
-					break;
-				}else{
+			while(!argumenttree.toString().equals(predicatetree.toString())){
+				if(predicatetree.getParent() != null){
 					predicatetree = predicatetree.getParent();
+				}else{
+					break;
 				}
 			}
-			if(flag == true){
+			if(argumenttree.getParent() != null && !argumenttree.toString().equals(predicatetree.toString())){
+				argumenttree = argumenttree.getParent();
+				predicatetree = tree;
+			}else{
 				break;
 			}
-			argumenttree = argumenttree.getParent();
-			predicatetree = tree;
 		}
 		
 		while(!argumenttree.toString().equals(initargument.toString())){
@@ -236,6 +313,35 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
 		return path;
 	}
 
+	/**
+	 * 获取路径的长度
+	 * @param path 路径
+	 * @return
+	 */
+	public int getPathLength(String path){
+		int count = 1;
+		char[] c = path.toCharArray();
+		for (int i = 0; i < c.length; i++) {
+			if(c[i] == '↓' || c[i] == '↑'){
+				count++;
+			}
+		}
+		return count;
+	}
+	
+	public String getPartialPath(String path){
+		String partialpath = "";
+		char[] c = path.toCharArray();
+		for (int i = 0; i < c.length; i++) {
+			if(c[i] == '↓'){
+				break;
+			}else{
+				partialpath += c[i];
+			}
+		}
+		return partialpath;
+	}
+	
 	/**
 	 * 为语料生成上下文特征
 	 * @param i 当前位置

@@ -48,7 +48,9 @@ public class SRLParserAddNULL_101 extends AbstractParseStrategy<HeadTreeNode>{
 					if(getLeftIndexAndDownSteps(tree)[1] == map.get(getLeftIndexAndDownSteps(tree)[0]).getUp()){
 						flag = false;
 						if(map.get(getLeftIndexAndDownSteps(tree)[0]).getRole().equals("rel")){
-							predicatetree.add(new TreeNodeWrapper<HeadTreeNode>(tree,getLeftIndexAndDownSteps(tree)[0]));
+							if(getLeftIndexAndDownSteps(tree)[0] == verbindex){
+								predicatetree.add(new TreeNodeWrapper<HeadTreeNode>(tree,getLeftIndexAndDownSteps(tree)[0]));
+							}
 						}else{
 							labelinfo.add(map.get(getLeftIndexAndDownSteps(tree)[0]).getRole());
 							argumenttree.add(new TreeNodeWrapper<HeadTreeNode>(tree,getLeftIndexAndDownSteps(tree)[0]));

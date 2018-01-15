@@ -26,13 +26,20 @@ import com.wxw.tree.TreeNode;
 public class SRLParseNormalHasPruningTest {
 
 	private String roles;
-	private String list1;
+	private String list;
 	private List<String> label;
 	private List<String> srlinfo;
 	private PhraseGenerateTree pgt ;
 	private TreeNode tree;
+	private String roles1;
+	private String list1;
+	private List<String> label1;
+	private List<String> srlinfo1;
+	private TreeNode tree1;
 	private AbstractParseStrategy<HeadTreeNode> parse;
+	private AbstractParseStrategy<HeadTreeNode> parse1;
 	private SRLSample<HeadTreeNode> sample;
+	private SRLSample<HeadTreeNode> sample1;
 	
 	@Before
 	public void setUp(){
@@ -54,22 +61,6 @@ public class SRLParseNormalHasPruningTest {
 		sample = parse.parse(tree, roles);
 
 		srlinfo = new ArrayList<>();		
-		srlinfo.add("0");
-		srlinfo.add("0");
-		srlinfo.add("1");
-		srlinfo.add("2");
-		srlinfo.add("4");
-		srlinfo.add("4");
-		srlinfo.add("5");
-
-		srlinfo.add("6");
-		srlinfo.add("7");
-		srlinfo.add("8");
-		srlinfo.add("9");
-		
-		srlinfo.add("11");
-		srlinfo.add("13");
-		srlinfo.add("13");
 		srlinfo.add("14");
 		srlinfo.add("14");
 		srlinfo.add("14");
@@ -92,58 +83,16 @@ public class SRLParseNormalHasPruningTest {
 		srlinfo.add("25");
 		srlinfo.add("25");
 		
-		srlinfo.add("27");
-		srlinfo.add("27");
-		srlinfo.add("27");
-		srlinfo.add("27");
-		srlinfo.add("28");
-		srlinfo.add("29");
-		srlinfo.add("30");
-		srlinfo.add("31");
-		srlinfo.add("31");
-		srlinfo.add("32");
-		srlinfo.add("32");
-		srlinfo.add("32");
-		srlinfo.add("34");
-		srlinfo.add("34");
-		srlinfo.add("34");
-		srlinfo.add("35");
-		srlinfo.add("36");
-		srlinfo.add("36");
-		srlinfo.add("37");
-		srlinfo.add("37");
-		srlinfo.add("38");
-		srlinfo.add("39");
-		srlinfo.add("39");
-		srlinfo.add("40");
-		srlinfo.add("40");
-		srlinfo.add("41");
-		srlinfo.add("43");
-		srlinfo.add("43");
-		srlinfo.add("44");
-		srlinfo.add("44");
-		srlinfo.add("45");
-		srlinfo.add("45");
-		srlinfo.add("46");
-		srlinfo.add("47");
+		srlinfo.add("11");
+		srlinfo.add("8");
+		srlinfo.add("9");
+		srlinfo.add("6");
+		srlinfo.add("7");
+		srlinfo.add("4");
+		srlinfo.add("2");
+		srlinfo.add("0");
 		
 		label = new ArrayList<>();
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("ARG0");
-		label.add("NULL");
-		label.add("NULL");
-		
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
 
 		label.add("ARG1");
 		label.add("NULL");
@@ -166,42 +115,32 @@ public class SRLParseNormalHasPruningTest {
 		label.add("NULL");
 		label.add("NULL");
 		label.add("NULL");
+		
 		label.add("NULL");
 		label.add("NULL");
 		label.add("NULL");
 		label.add("NULL");
 		label.add("NULL");
+		label.add("ARG0");
 		label.add("NULL");
 		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
+		
+		list = "(VB{shore[VB]} shore[12])";
+		
+		parse1 = new SRLParseNormalHasPruning();
+		roles1 = "wsj/00/wsj_0071.mrg 37 9 gold go.13 pn--a 7:1-ARG1 9:1-rel";
+		tree1 = pgt.generateTree("((S(S(NP-SBJ (PRP We))(VP (VBD got)(NP(PRP$ our)(CD two)(NNS six-packs))))(: --)(CC and)(S(NP-SBJ(PRP they))(VP (VBP 're) (VP (VBN gone) )))(. .)('' '')))");	
+		PreTreatTool.preTreat(tree1);		
+		sample1 = parse1.parse(tree1, roles1);
+		srlinfo1 = new ArrayList<>();		
+		srlinfo1.add("8");
+		srlinfo1.add("7");
+		
+		label1 = new ArrayList<>();
+		label1.add("NULL");
+		label1.add("ARG1");
 
-		list1 = "(VB{shore[VB]} shore[12])";
+		list1 = "(VP{gone[VBN]}(VBN{gone[VBN]} gone[9]))";
 	}
 	
 	@Test
@@ -210,6 +149,12 @@ public class SRLParseNormalHasPruningTest {
 		for (int i = 0; i < srlinfo.size(); i++) {
 			assertEquals(sample.getArgumentTree()[i].getLeftLeafIndex()+"",srlinfo.get(i));
 		}
-		assertEquals(sample.getPredicateTree()[0].getTree().toString(),list1);
+		assertEquals(sample.getPredicateTree()[0].getTree().toString(),list);
+
+		assertEquals(Arrays.asList(sample1.getLabelInfo()),label1);
+		for (int i = 0; i < srlinfo1.size(); i++) {
+			assertEquals(sample1.getArgumentTree()[i].getLeftLeafIndex()+"",srlinfo1.get(i));
+		}
+		assertEquals(sample1.getPredicateTree()[0].getTree().toString(),list1);
 	}
 }

@@ -1,8 +1,11 @@
 package com.wxw.onestepparse;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import com.wxw.onestep.SRLSample;
+import com.wxw.tool.IsCordinateStructure;
 import com.wxw.tool.IsFunctionLabelTool;
 import com.wxw.tool.IsPunctuationTool;
 import com.wxw.tool.RoleTool;
@@ -27,26 +30,62 @@ public abstract class AbstractParseStrategy<T extends TreeNode> {
 	public abstract boolean hasPrePruning();
 	
 	public abstract boolean hasHeadWord();
+	
 	/**
 	 * 根据规则进行剪枝操作[剪掉标点符号和动词及动词父节点是并列结构的节点]
-	 * @param tree 要剪枝的树
+	 * @param tree 要剪枝的树[由谓词为根表示的树]
 	 * @return
 	 */
-	public T prePruning(T tree,int verbindex){
-		if(containsPredicate(tree, verbindex)){
-			containPredicateFlag = false;
-			if(tree.getChildren().size() > 0){
-				if(tree.getChildren().size() == 1 && tree.getChildren().get(0).getChildren().size() == 0){
-					
-				}else{
-					tree.setFlag(false);
+	public T prePruning(T tree){
+		int count = 0;
+		List<Integer> list = new ArrayList<>();
+		while(tree.getParent() != null){
+			count++;
+			list.add(tree.getIndex());
+			tree = (T) tree.getParent();
+			tree.setFlag(false);
+			if(IsCordinateStructure.isCordinate(tree)){
+				for (int i = 0; i < tree.getChildren().size(); i++) {
+					tree.getChildren().get(i).setFlag(false);
 				}
 			}
 		}
-		for (TreeNode treenode : tree.getChildren()) {			
-			prePruning((T)treenode,verbindex);
+		
+		for (int i = 0; i < count; i++) {
+			tree = (T) tree.getChildren().get(list.get(list.size()-1-i));
 		}
 		return tree;
+	}
+	
+	/**
+	 * 得到以谓词为根节点的树
+	 * @param tree 正常的一棵树
+	 * @return
+	 */
+	private List<T> getPredicateTree(T tree,HashMap<Integer,RoleTool> map,int verbindex){
+		List<T> list = new ArrayList<>();
+		if(tree.getChildren().size() == 0){
+			if(map.containsKey(tree.getWordIndex())){
+				if(map.get(tree.getWordIndex()).getRole().equals("rel")){
+					int begin = tree.getWordIndex();
+					int up = map.get(begin).getUp();
+					for (int i = 0; i <= up; i++) {
+						tree = (T) tree.getParent();
+					}
+					if(verbindex == begin){
+						list.add(tree);
+					}
+					for (int i = 0; i <= up; i++) {
+						tree = (T) tree.getChildren().get(0);
+					}
+				}			
+			}
+		}else{
+			for (TreeNode treenode : tree.getChildren()) {
+				list.addAll(getPredicateTree((T)treenode,map,verbindex));
+			}
+		}
+		return list;
 	}
 	
 	/**
@@ -68,6 +107,32 @@ public abstract class AbstractParseStrategy<T extends TreeNode> {
 		return tree;
 	}
 	
+	private T removePredicateSon(T tree,HashMap<Integer,RoleTool> map,int verbindex){
+		if(tree.getChildren().size() == 0){
+			if(map.containsKey(tree.getWordIndex())){
+				if(map.get(tree.getWordIndex()).getRole().equals("rel")){
+					int begin = tree.getWordIndex();
+					int up = map.get(tree.getWordIndex()).getUp();
+					for (int i = 0; i <= up; i++) {
+						tree = (T) tree.getParent();
+						tree.setFlag(false);
+					}
+					if(verbindex == begin){
+						tree.setFlag(true);
+					}
+					for (int i = 0; i <= up; i++) {
+						tree = (T) tree.getChildren().get(0);
+					}
+				}			
+			}
+		}else{
+			for (TreeNode treenode : tree.getChildren()) {
+				removePredicateSon((T)treenode,map,verbindex);
+			}
+		}
+		return tree;
+	}
+	
 	/**
 	 * 将树转成训练要用的样本样式
 	 * @param tree 树
@@ -83,19 +148,29 @@ public abstract class AbstractParseStrategy<T extends TreeNode> {
 	 * @return
 	 */
 	public SRLSample<T> parse(TreeNode tree, String semanticRole){
+		SRLSample<T> sample;
+		String[] roles = semanticRole.split(" ");
+		int verbindex = Integer.parseInt(roles[2]);
 		if(hasHeadWord()){
 			HeadTreeNode headtree = toheadtree.treeToHeadTree(tree);
 			if(hasPrePruning()){
-				prePruning(removePunctuation((T) headtree),Integer.parseInt(semanticRole.split(" ")[2]));
-				return toSample(prePruning(removePunctuation((T) headtree),Integer.parseInt(semanticRole.split(" ")[2])), semanticRole);
+				sample = toSample(prePruning(getPredicateTree(removePredicateSon(removePunctuation((T) headtree),getRoleMap(semanticRole),verbindex),getRoleMap(semanticRole),verbindex).get(0)), semanticRole);
+				sample.setPruning(true);
+				return sample;
 			}else{
-				return toSample(removePunctuation((T) headtree), semanticRole);
+				sample = toSample(removePredicateSon(removePunctuation((T) headtree),getRoleMap(semanticRole),verbindex), semanticRole);
+				sample.setPruning(false);
+				return sample;
 			}
 		}else{
 			if(hasPrePruning()){
-				return toSample(prePruning(removePunctuation((T) tree),Integer.parseInt(semanticRole.split(" ")[2])), semanticRole);
+				sample = toSample(prePruning(getPredicateTree(removePredicateSon(removePunctuation((T) tree),getRoleMap(semanticRole),verbindex),getRoleMap(semanticRole),verbindex).get(0)), semanticRole);
+				sample.setPruning(true);
+				return sample;
 			}else{
-				return toSample(removePunctuation((T) tree), semanticRole);
+				sample = toSample(removePredicateSon(removePunctuation((T) tree),getRoleMap(semanticRole),verbindex), semanticRole);
+				sample.setPruning(false);
+				return sample;
 			}
 		}				
 	}
@@ -122,18 +197,14 @@ public abstract class AbstractParseStrategy<T extends TreeNode> {
 				for (int j = 0; j < comma.length; j++) {
 					String[] digit = comma[j].split(":");
 					int begin = Integer.parseInt(digit[0]);
-					int up = Integer.parseInt(digit[1]);
-					if(begin == Integer.parseInt(roles[2])){
-						map.put(begin, new RoleTool(-1,up,role));
-					}					
+					int up = Integer.parseInt(digit[1]);					
+					map.put(begin, new RoleTool(-1,up,role));				
 				}
 				for (int j = 1; j < digits.length; j++) {
 					String[] digit = digits[j].split(":");
 					int begin = Integer.parseInt(digit[0]);
 					int up = Integer.parseInt(digit[1]);
-					if(begin == Integer.parseInt(roles[2])){
-						map.put(begin, new RoleTool(-1,up,role));
-					}
+					map.put(begin, new RoleTool(-1,up,role));
 				}
 			}
 		}
@@ -206,7 +277,7 @@ public abstract class AbstractParseStrategy<T extends TreeNode> {
 	 * @return
 	 */
 	public boolean containsPredicate(T tree,int verbindex){
-		if(tree.getWordIndex() == verbindex){
+		if(tree.getWordIndex() == verbindex){			
 			containPredicateFlag = true;
 		}else{
 			for (TreeNode treenode : tree.getChildren()) {			

@@ -73,8 +73,6 @@ public class SRLParserAddNULL_101Test {
 		srlinfo.add("11");
 		srlinfo.add("11");
 		srlinfo.add("12");
-		srlinfo.add("13");
-		srlinfo.add("13");
 		srlinfo.add("14");
 		srlinfo.add("14");
 		srlinfo.add("14");
@@ -153,8 +151,6 @@ public class SRLParserAddNULL_101Test {
 		label.add("NULL0");
 		label.add("NULL_1");
 		label.add("NULL0");
-		label.add("NULL1");
-		label.add("NULL1");
 		label.add("ARG1");
 		label.add("NULL1");
 		label.add("NULL1");

@@ -17,30 +17,98 @@ public class IsCordinateStructure {
 	public static boolean isCordinate(TreeNode tree){
 		// X CC X
 		// X , CC X [.,but.]
+		// X : CC X
 		// X , X
 		// X : X [. ; .]
-		if(tree.getChildren().get(tree.getChildren().size()-1).equals(".")){
-			if(tree.getChildren().size() == 5){
-				if(tree.getChildren().get(0).equals(tree.getChildren().get(3)) &&
-						tree.getChildren().get(1).equals(",") && tree.getChildren().get(2).equals("CC")){
+		if((tree.getChildren().get(0).getNodeName().equals("''")) && (tree.getChildren().get(tree.getChildren().size()-1).getNodeName().equals("''")) ||
+				(tree.getChildren().get(0).getNodeName().equals("``")) && (tree.getChildren().get(tree.getChildren().size()-1).getNodeName().equals("``")) ||
+				(tree.getChildren().get(0).getNodeName().equals("''")) && (tree.getChildren().get(tree.getChildren().size()-1).getNodeName().equals("``")) ||
+				(tree.getChildren().get(0).getNodeName().equals("``")) && (tree.getChildren().get(tree.getChildren().size()-1).getNodeName().equals("''"))){
+			if(tree.getChildren().size() == 7){
+				if(tree.getChildren().get(5).getNodeName().equals(".")){
+					if(tree.getChildren().get(1).equals(tree.getChildren().get(4)) &&
+							tree.getChildren().get(2).getNodeName().equals(",") && tree.getChildren().get(3).getNodeName().equals("CC")){
+						return true;
+					}
+					if(tree.getChildren().get(1).equals(tree.getChildren().get(4)) &&
+							tree.getChildren().get(2).getNodeName().equals(":") && tree.getChildren().get(3).getNodeName().equals("CC")){
+						return true;
+					}
+				}
+			}else if(tree.getChildren().size() == 6){
+				if(tree.getChildren().get(4).getNodeName().equals(".")){
+					if(tree.getChildren().get(1).getNodeName().equals(tree.getChildren().get(3).getNodeName())){
+						if(tree.getChildren().get(2).getNodeName().equals("CC") || tree.getChildren().get(2).getNodeName().equals(",") || tree.getChildren().get(2).getNodeName().equals(":")){
+							return true;
+						}
+					}
+				}
+			}
+		}
+		if(tree.getChildren().get(tree.getChildren().size()-1).getNodeName().equals("''") || tree.getChildren().get(tree.getChildren().size()-1).getNodeName().equals("``")){
+			if(tree.getChildren().size() == 6){
+				if(tree.getChildren().get(4).getNodeName().equals(".")){
+					if(tree.getChildren().get(0).getNodeName().equals(tree.getChildren().get(3).getNodeName()) &&
+							tree.getChildren().get(1).getNodeName().equals(",") && tree.getChildren().get(2).getNodeName().equals("CC")){
+						return true;
+					}
+					if(tree.getChildren().get(0).getNodeName().equals(tree.getChildren().get(3).getNodeName()) &&
+							tree.getChildren().get(1).getNodeName().equals(":") && tree.getChildren().get(2).getNodeName().equals("CC")){
+						return true;
+					}
+				}
+			}else if(tree.getChildren().size() == 5){
+				if(tree.getChildren().get(3).getNodeName().equals(".")){
+					if(tree.getChildren().get(0).getNodeName().equals(tree.getChildren().get(2).getNodeName())){
+						if(tree.getChildren().get(1).getNodeName().equals("CC") || tree.getChildren().get(1).getNodeName().equals(",") || tree.getChildren().get(1).getNodeName().equals(":")){
+							return true;
+						}
+					}
+				}
+			}
+		}
+				
+		if(tree.getChildren().get(tree.getChildren().size()-1).getNodeName().equals(".")){	
+			if(tree.getChildren().size() == 6){
+				if(tree.getChildren().get(0).getNodeName().equals("''") || tree.getChildren().get(0).getNodeName().equals("``")){
+					if(tree.getChildren().get(1).getNodeName().equals(tree.getChildren().get(4).getNodeName()) &&
+							tree.getChildren().get(2).getNodeName().equals(",") && tree.getChildren().get(3).getNodeName().equals("CC")){
+						return true;
+					}
+					if(tree.getChildren().get(1).getNodeName().equals(tree.getChildren().get(4).getNodeName()) &&
+							tree.getChildren().get(2).getNodeName().equals(":") && tree.getChildren().get(3).getNodeName().equals("CC")){
+						return true;
+					}
+				}
+			}else if(tree.getChildren().size() == 5){
+				if(tree.getChildren().get(0).getNodeName().equals(tree.getChildren().get(3).getNodeName()) &&
+						tree.getChildren().get(1).getNodeName().equals(",") && tree.getChildren().get(2).getNodeName().equals("CC")){
+					return true;
+				}
+				if(tree.getChildren().get(0).getNodeName().equals(tree.getChildren().get(3).getNodeName()) &&
+						tree.getChildren().get(1).getNodeName().equals(":") && tree.getChildren().get(2).getNodeName().equals("CC")){
 					return true;
 				}
 			}else if(tree.getChildren().size() == 4){
-				if(tree.getChildren().get(0).equals(tree.getChildren().get(2))){
-					if(tree.getChildren().get(1).equals("CC") || tree.getChildren().get(1).equals(",") || tree.getChildren().get(1).equals(":")){
+				if(tree.getChildren().get(0).getNodeName().equals(tree.getChildren().get(2).getNodeName())){
+					if(tree.getChildren().get(1).getNodeName().equals("CC") || tree.getChildren().get(1).getNodeName().equals(",") || tree.getChildren().get(1).getNodeName().equals(":")){
 						return true;
 					}
 				}
 			}
 		}else{
 			if(tree.getChildren().size() == 4){
-				if(tree.getChildren().get(0).equals(tree.getChildren().get(3)) &&
-						tree.getChildren().get(1).equals(",") && tree.getChildren().get(2).equals("CC")){
+				if(tree.getChildren().get(0).getNodeName().equals(tree.getChildren().get(3).getNodeName()) &&
+						tree.getChildren().get(1).getNodeName().equals(",") && tree.getChildren().get(2).getNodeName().equals("CC")){
+					return true;
+				}
+				if(tree.getChildren().get(0).getNodeName().equals(tree.getChildren().get(3).getNodeName()) &&
+						tree.getChildren().get(1).getNodeName().equals(":") && tree.getChildren().get(2).getNodeName().equals("CC")){
 					return true;
 				}
 			}else if(tree.getChildren().size() == 3){
-				if(tree.getChildren().get(0).equals(tree.getChildren().get(2))){
-					if(tree.getChildren().get(1).equals("CC") || tree.getChildren().get(1).equals(",") || tree.getChildren().get(1).equals(":")){
+				if(tree.getChildren().get(0).getNodeName().equals(tree.getChildren().get(2).getNodeName())){
+					if(tree.getChildren().get(1).getNodeName().equals("CC") || tree.getChildren().get(1).getNodeName().equals(",") || tree.getChildren().get(1).getNodeName().equals(":")){
 						return true;
 					}
 				}

@@ -21,6 +21,8 @@ import opennlp.tools.ml.BeamSearch;
 import opennlp.tools.ml.EventTrainer;
 import opennlp.tools.ml.TrainerFactory;
 import opennlp.tools.ml.TrainerFactory.TrainerType;
+import opennlp.tools.ml.maxent.GIS;
+import opennlp.tools.ml.maxent.GISModel;
 import opennlp.tools.ml.model.Event;
 import opennlp.tools.ml.model.MaxentModel;
 import opennlp.tools.ml.model.SequenceClassificationModel;
@@ -35,7 +37,7 @@ import opennlp.tools.util.TrainingParameters;
  *
  */
 public class SRLME {
-	public static final int DEFAULT_BEAM_SIZE = 5;
+	public static final int DEFAULT_BEAM_SIZE = 15;
 	private SRLContextGenerator contextGenerator;
 	private int size;
 	private Sequence bestSequence;
@@ -123,7 +125,7 @@ public class SRLME {
         if (beamSizeString != null) {
             beamSize = Integer.parseInt(beamSizeString);
         }
-        MaxentModel posModel = null;
+        MaxentModel SRLModel = null;
         Map<String, String> manifestInfoEntries = new HashMap<String, String>();
         TrainerType trainerType = TrainerFactory.getTrainerType(params.getSettings());
         SequenceClassificationModel<String> seqPosModel = null;
@@ -131,11 +133,12 @@ public class SRLME {
             ObjectStream<Event> es = new SRLSampleEventStream(sampleStream, contextGen);
             EventTrainer trainer = TrainerFactory.getEventTrainer(params.getSettings(),
                     manifestInfoEntries);
-            posModel = trainer.train(es);                       
+//            SRLModel = GIS.trainModel(es, 100, 1, /2.0);
+            SRLModel = trainer.train(es);                       
         }
 
-        if (posModel != null) {
-            return new SRLModel(languageCode, posModel, beamSize, manifestInfoEntries);
+        if (SRLModel != null) {
+            return new SRLModel(languageCode, SRLModel, beamSize, manifestInfoEntries);
         } else {
             return new SRLModel(languageCode, seqPosModel, manifestInfoEntries);
         }

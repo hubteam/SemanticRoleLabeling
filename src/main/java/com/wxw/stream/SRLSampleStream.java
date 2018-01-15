@@ -7,9 +7,8 @@ import java.util.logging.Logger;
 
 import com.wxw.onestep.SRLSample;
 import com.wxw.onestepparse.AbstractParseStrategy;
-import com.wxw.onestepparse.SRLParseNormal;
-import com.wxw.onestepparse.SRLParserAddNULL_101;
-import com.wxw.pretreatRun.TreePreTreatment;
+import com.wxw.onestepparse.SRLParserAddNULL_101HasPruning;
+import com.wxw.tool.PreTreatTool;
 import com.wxw.tree.HeadTreeNode;
 import com.wxw.tree.PhraseGenerateTree;
 import com.wxw.tree.TreeNode;
@@ -34,17 +33,18 @@ public class SRLSampleStream extends FilterObjectStream<String[],SRLSample<HeadT
 		String[] sentence = samples.read();	
 		SRLSample<HeadTreeNode> sample = null;
 		PhraseGenerateTree pgt = new PhraseGenerateTree();
-		AbstractParseStrategy<HeadTreeNode> ttst = new SRLParserAddNULL_101();
+		AbstractParseStrategy<HeadTreeNode> ttst = new SRLParserAddNULL_101HasPruning();
 		if(sentence[0]!= null && sentence[1] != null){
 			try{
 				TreeNode tree = pgt.generateTree(sentence[0]);
-				TreePreTreatment.travelTree(tree);
+				PreTreatTool.preTreat(tree);
+				System.out.println(sentence[1]);
                 sample = ttst.parse(tree, sentence[1]);
 			}catch(Exception e){
 				if (logger.isLoggable(Level.WARNING)) {						
 	                logger.warning("Error during parsing, ignoring sentence: " + sentence[1]);
 	            }	
-				sample = new SRLSample<HeadTreeNode>(new TreeNode(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+				sample = new SRLSample<HeadTreeNode>(new HeadTreeNode(""), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
 				}
 			return sample;
 		}else {

@@ -11,7 +11,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.wxw.onestep.SRLSample;
+import com.wxw.onestepparse.AbstractParseStrategy;
 import com.wxw.onestepparse.SRLParseNormal;
+import com.wxw.onestepparse.SRLParserAddNULL_101HasPruning;
 import com.wxw.tool.PreTreatTool;
 import com.wxw.tree.HeadTreeNode;
 import com.wxw.tree.PhraseGenerateTree;
@@ -27,7 +29,7 @@ public class SRLContextGeneratorTest {
 	private SRLContextGenerator generator ;
 	private PhraseGenerateTree pgt ;
 	private TreeNode tree1;
-	private SRLParseNormal ttss;
+	private AbstractParseStrategy<HeadTreeNode> ttss;
 	private SRLSample<HeadTreeNode> sample;
 	private String roles1;
 	private String[] context1;
@@ -37,7 +39,8 @@ public class SRLContextGeneratorTest {
 	
 	@Before
 	public void setUp() throws IOException{
-        pgt = new PhraseGenerateTree();        		
+        pgt = new PhraseGenerateTree(); 
+        
 		tree1 = pgt.generateTree(""
 				+ "((S(S(NP-SBJ(NNP Mr.)(NNP Spoon))(VP(VBD said)(SBAR (-NONE- 0)(S(NP-SBJ(DT the)(NN plan))"
 				+ "(VP(VBZ is)(RB not)(NP-PRD(DT an)(NN attempt)(S(NP-SBJ(-NONE- *))(VP(TO to)(VP(VB shore)"
@@ -60,29 +63,53 @@ public class SRLContextGeneratorTest {
 		
 		result1 = new ArrayList<>();
 		result1.add("predicate=shore");
+		result1.add("predicatepos=VB");
+		result1.add("predicatesuffix=ore");
 		result1.add("path=NP↑S↓VP↓NP↓S↓VP↓VP↓VB");
+		result1.add("pathlength=8");
+		result1.add("partialpath=NP↑S");
 		result1.add("phrasetype=NP");
 		result1.add("position=before");
 		result1.add("voice=a");	
 		result1.add("headword=plan");
 		result1.add("headwordpos=NN");
-		result1.add("subcategorization=VP→PRT NP");
+		result1.add("subcategorization=VP→VB PRT NP");
 		result1.add("firstargument=the");
+		result1.add("firstargumentpos=DT");
 		result1.add("lastargument=plan");
+		result1.add("lastargumentpos=NN");
+		result1.add("positionAndvoice=before|a");
+		result1.add("predicateAndpath=shore|NP↑S↓VP↓NP↓S↓VP↓VP↓VB");
+		result1.add("pathAndpositionAndvoice=NP↑S↓VP↓NP↓S↓VP↓VP↓VB|before|a");
+		result1.add("pathAndpositionAndvoiceAndpredicate=NP↑S↓VP↓NP↓S↓VP↓VP↓VB|before|a|shore");
+		result1.add("headwordAndpredicateAndpath=plan|shore|NP↑S↓VP↓NP↓S↓VP↓VP↓VB");
+		result1.add("headwordAndPhrase=plan|NP");
 		result1.add("predicateAndHeadword=shore|plan");
 		result1.add("predicateAndPhrasetype=shore|NP");
 		
 		result2 = new ArrayList<>();
 		result2.add("predicate=shore");
+		result2.add("predicatepos=VB");
+		result2.add("predicatesuffix=ore");	
 		result2.add("path=NP↑VP↓VB");
+		result2.add("pathlength=3");
+		result2.add("partialpath=NP↑VP");
 		result2.add("phrasetype=NP");
 		result2.add("position=after");
 		result2.add("voice=a");	
 		result2.add("headword=decline");
 		result2.add("headwordpos=NN");
-		result2.add("subcategorization=VP→PRT NP");
+		result2.add("subcategorization=VP→VB PRT NP");
 		result2.add("firstargument=a");
+		result2.add("firstargumentpos=DT");
 		result2.add("lastargument=1989");
+		result2.add("lastargumentpos=CD");
+		result2.add("positionAndvoice=after|a");
+		result2.add("predicateAndpath=shore|NP↑VP↓VB");
+		result2.add("pathAndpositionAndvoice=NP↑VP↓VB|after|a");
+		result2.add("pathAndpositionAndvoiceAndpredicate=NP↑VP↓VB|after|a|shore");
+		result2.add("headwordAndpredicateAndpath=decline|shore|NP↑VP↓VB");
+		result2.add("headwordAndPhrase=decline|NP");
 		result2.add("predicateAndHeadword=shore|decline");
 		result2.add("predicateAndPhrasetype=shore|NP");
 	}

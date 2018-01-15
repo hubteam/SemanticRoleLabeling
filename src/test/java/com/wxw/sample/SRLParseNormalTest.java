@@ -25,17 +25,25 @@ import com.wxw.tree.TreeNode;
 public class SRLParseNormalTest {
 
 	private String roles;
-	private String list1;
+	private String list;
 	private List<String> label;
 	private List<String> srlinfo;
-	private PhraseGenerateTree pgt ;
 	private TreeNode tree;
+	private String roles1;
+	private String list1;
+	private List<String> label1;
+	private List<String> srlinfo1;
+	private TreeNode tree1;
+	private PhraseGenerateTree pgt ;	
 	private AbstractParseStrategy<HeadTreeNode> parse;
+	private AbstractParseStrategy<HeadTreeNode> parse1;
 	private SRLSample<HeadTreeNode> sample;
+	private SRLSample<HeadTreeNode> sample1;
 	
 	@Before
 	public void setUp(){
 		pgt = new PhraseGenerateTree();
+		parse = new SRLParseNormal();
 		
 		roles = "wsj/00/wsj0012.mrg 9 12 gold shore.01 i---a 4:1*10:0-ARG0 12:0,13:1-rel 14:2-ARG1";
 		tree = pgt.generateTree(""
@@ -47,11 +55,8 @@ public class SRLParseNormalTest {
 				+ "(NP(CD 1,620))(, ,)(NP(NP(DT a)(NN drop))(PP(IN of)(NP (CD 3.2)(NN %)))"
 				+ "(PP-DIR(IN from)(NP(JJ last)(NN year)))))(, ,)(PP(VBG according)(PP(TO to)"
 				+ "(NP(NNP Publishers)(NNP Information)(NNP Bureau))))))(. .)))");	
-
-		PreTreatTool.preTreat(tree);
-		parse = new SRLParseNormal();
+		PreTreatTool.preTreat(tree);		
 		sample = parse.parse(tree, roles);
-
 		srlinfo = new ArrayList<>();		
 		srlinfo.add("0");
 		srlinfo.add("0");
@@ -74,8 +79,6 @@ public class SRLParseNormalTest {
 		srlinfo.add("11");
 		srlinfo.add("11");
 		srlinfo.add("12");
-		srlinfo.add("13");
-		srlinfo.add("13");
 		srlinfo.add("14");
 		srlinfo.add("14");
 		srlinfo.add("14");
@@ -154,8 +157,6 @@ public class SRLParseNormalTest {
 		label.add("NULL");
 		label.add("NULL");
 		label.add("NULL");
-		label.add("NULL");
-		label.add("NULL");
 		label.add("ARG1");
 		label.add("NULL");
 		label.add("NULL");
@@ -212,7 +213,48 @@ public class SRLParseNormalTest {
 		label.add("NULL");
 		label.add("NULL");
 
-		list1 = "(VB{shore[VB]} shore[12])";
+		list = "(VB{shore[VB]} shore[12])";
+	
+		parse1 = new SRLParseNormal();
+		roles1 = "wsj/00/wsj_0071.mrg 37 9 gold go.13 pn--a 7:1-ARG1 9:1-rel";
+		tree1 = pgt.generateTree("((S(S(NP-SBJ (PRP We))(VP (VBD got)(NP(PRP$ our)(CD two)(NNS six-packs))))(: --)(CC and)(S(NP-SBJ(PRP they))(VP (VBP 're) (VP (VBN gone) )))(. .)('' '')))");	
+		PreTreatTool.preTreat(tree1);		
+		sample1 = parse1.parse(tree1, roles1);
+		srlinfo1 = new ArrayList<>();		
+		srlinfo1.add("0");
+		srlinfo1.add("0");
+		srlinfo1.add("0");
+		srlinfo1.add("1");
+		srlinfo1.add("1");
+		srlinfo1.add("2");
+		srlinfo1.add("2");
+		srlinfo1.add("3");
+		srlinfo1.add("4");
+		srlinfo1.add("6");
+		srlinfo1.add("7");
+		srlinfo1.add("7");
+		srlinfo1.add("7");
+		srlinfo1.add("8");
+		srlinfo1.add("8");
+		
+		label1 = new ArrayList<>();
+		label1.add("NULL");
+		label1.add("NULL");
+		label1.add("NULL");
+		label1.add("NULL");
+		label1.add("NULL");
+		label1.add("NULL");
+		label1.add("NULL");
+		label1.add("NULL");
+		label1.add("NULL");
+		label1.add("NULL");
+		label1.add("NULL");
+		label1.add("ARG1");
+		label1.add("NULL");
+		label1.add("NULL");
+		label1.add("NULL");
+		
+		list1 = "(VP{gone[VBN]}(VBN{gone[VBN]} gone[9]))";
 	}
 	
 	@Test
@@ -221,6 +263,12 @@ public class SRLParseNormalTest {
 		for (int i = 0; i < srlinfo.size(); i++) {
 			assertEquals(sample.getArgumentTree()[i].getLeftLeafIndex()+"",srlinfo.get(i));
 		}
-		assertEquals(sample.getPredicateTree()[0].getTree().toString(),list1);
+		assertEquals(sample.getPredicateTree()[0].getTree().toString(),list);
+		
+		assertEquals(Arrays.asList(sample1.getLabelInfo()),label1);
+		for (int i = 0; i < srlinfo1.size(); i++) {
+			assertEquals(sample1.getArgumentTree()[i].getLeftLeafIndex()+"",srlinfo1.get(i));
+		}
+		assertEquals(sample1.getPredicateTree()[0].getTree().toString(),list1);
 	}
 }

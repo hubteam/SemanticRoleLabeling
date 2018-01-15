@@ -76,7 +76,7 @@ public class SRLRun {
 
         //默认参数
         TrainingParameters params = TrainingParameters.defaultParams();
-        params.put(TrainingParameters.CUTOFF_PARAM, Integer.toString(3));
+        params.put(TrainingParameters.CUTOFF_PARAM, Integer.toString(1));
 
         //把刚才属性信息封装
         SRLCrossValidation crossValidator = new SRLCrossValidation("zh", params);

@@ -1,11 +1,7 @@
 package com.wxw.evaluate;
 
 import java.util.Arrays;
-import java.util.List;
 
-import com.wxw.modelBystep.POSTaggerMEExtend;
-import com.wxw.modelBystep.SyntacticAnalysisMEForBuildAndCheck;
-import com.wxw.modelBystep.SyntacticAnalysisMEForChunk;
 import com.wxw.onestep.SRLME;
 import com.wxw.onestep.SRLSample;
 import com.wxw.tool.PostTreatTool;
@@ -48,21 +44,28 @@ public class SRLEvaluator extends Evaluator<SRLSample<HeadTreeNode>>{
 
 	@Override
 	protected SRLSample<HeadTreeNode> processSample(SRLSample<HeadTreeNode> sample) {
-		TreeNode node = sample.getTree();
+		HeadTreeNode node = sample.getTree();
 		TreeNodeWrapper<HeadTreeNode>[] argumenttree = sample.getArgumentTree();
 		TreeNodeWrapper<HeadTreeNode>[] predicatetree = sample.getPredicateTree();
 		String[] labelinfo = sample.getLabelInfo();
-		for (int i = 0; i < labelinfo.length; i++) {
-			System.out.print(labelinfo[i]);
-		}
-		System.out.println();
+		String[] labelinforef = PostTreatTool.NULL_1012NULL(labelinfo);
+//		for (int i = 0; i < labelinfo.length; i++) {
+//			System.out.print(labelinfo[i]);
+//		}
+//		System.out.println();
 		Sequence result = tagger.topSequences(argumenttree, predicatetree);
-		String[] newlabelinfo = PostTreatTool.postTreat(argumenttree,result);
-		for (int i = 0; i < newlabelinfo.length; i++) {
-			System.out.print(newlabelinfo[i]);
+		String[] newlabelinfo = null;
+		if(sample.getIsPruning() == true){
+			newlabelinfo = PostTreatTool.postTreat(argumenttree,result,PostTreatTool.getSonTreeCount(predicatetree[0].getTree().getParent()));
+		}else{
+			newlabelinfo = PostTreatTool.postTreat(argumenttree,result,argumenttree.length);
 		}
-		System.out.println();
-		measure.update(labelinfo, newlabelinfo);
+
+//		for (int i = 0; i < newlabelinfo.length; i++) {
+//			System.out.print(newlabelinfo[i]);
+//		}
+//		System.out.println();
+		measure.update(labelinforef, newlabelinfo);
 		SRLSample<HeadTreeNode> newsample = new SRLSample<HeadTreeNode>(node,Arrays.asList(argumenttree),Arrays.asList(predicatetree),Arrays.asList(newlabelinfo));
 		return newsample;
 	}
