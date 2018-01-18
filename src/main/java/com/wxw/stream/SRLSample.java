@@ -1,4 +1,4 @@
-package com.wxw.onestep;
+package com.wxw.stream;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -76,6 +76,25 @@ public class SRLSample <T extends TreeNode>{
 	 */
 	public String[] getLabelInfo(){
 		return this.labelinfo.toArray(new String[this.labelinfo.size()]);
+	}
+	
+	/**
+	 * 将类别转换为识别阶段要用的类别
+	 * 说明：
+	 * （1）对非类别解析成NULL类别的，识别阶段为二分类
+	 * （2）对非类别解析成NULL_1 NULL0 NULL1的，识别阶段就是多分类
+	 * @return
+	 */
+	public String[] getIdentificationLabelInfo(){
+		String[] recognizeLabelInfo = new String[labelinfo.size()];
+		for (int i = 0; i < recognizeLabelInfo.length; i++) {
+			if(labelinfo.get(i).contains("NULL")){
+				recognizeLabelInfo[i] = labelinfo.get(i);
+			}else{
+				recognizeLabelInfo[i] = "YES";
+			}
+		}
+		return recognizeLabelInfo;
 	}
 	
 	public String[][] getAdditionalContext(){

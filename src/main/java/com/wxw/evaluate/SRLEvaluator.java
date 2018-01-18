@@ -3,11 +3,10 @@ package com.wxw.evaluate;
 import java.util.Arrays;
 
 import com.wxw.onestep.SRLME;
-import com.wxw.onestep.SRLSample;
+import com.wxw.stream.SRLSample;
 import com.wxw.tool.PostTreatTool;
 import com.wxw.tool.TreeNodeWrapper;
 import com.wxw.tree.HeadTreeNode;
-import com.wxw.tree.TreeNode;
 
 import opennlp.tools.util.Sequence;
 import opennlp.tools.util.eval.Evaluator;
@@ -49,18 +48,21 @@ public class SRLEvaluator extends Evaluator<SRLSample<HeadTreeNode>>{
 		TreeNodeWrapper<HeadTreeNode>[] predicatetree = sample.getPredicateTree();
 		String[] labelinfo = sample.getLabelInfo();
 		String[] labelinforef = PostTreatTool.NULL_1012NULL(labelinfo);
-//		for (int i = 0; i < labelinfo.length; i++) {
-//			System.out.print(labelinfo[i]);
+//		for (int i = 0; i < labelinforef.length; i++) {
+//			if(!labelinfo[i].equals(labelinforef[i])){
+//				System.out.print(labelinforef[i]);
+//			}
 //		}
 //		System.out.println();
 		Sequence result = tagger.topSequences(argumenttree, predicatetree);
 		String[] newlabelinfo = null;
+		newlabelinfo = result.getOutcomes().toArray(new String[result.getOutcomes().size()]);
 		if(sample.getIsPruning() == true){
 			newlabelinfo = PostTreatTool.postTreat(argumenttree,result,PostTreatTool.getSonTreeCount(predicatetree[0].getTree().getParent()));
 		}else{
 			newlabelinfo = PostTreatTool.postTreat(argumenttree,result,argumenttree.length);
 		}
-
+//
 //		for (int i = 0; i < newlabelinfo.length; i++) {
 //			System.out.print(newlabelinfo[i]);
 //		}

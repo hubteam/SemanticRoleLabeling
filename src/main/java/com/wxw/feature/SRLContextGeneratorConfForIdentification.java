@@ -10,12 +10,12 @@ import com.wxw.tool.TreeNodeWrapper;
 import com.wxw.tree.HeadTreeNode;
 
 /**
- * 生成上下文特征
+ * 为论元识别阶段生成特征
  * @author 王馨苇
  *
  */
-public class SRLContextGeneratorConf implements SRLContextGenerator{
-	
+public class SRLContextGeneratorConfForIdentification implements SRLContextGenerator{
+
 	private boolean predicateSet;
 	private boolean predicateposSet;
 	private boolean predicatesuffixSet;
@@ -46,9 +46,9 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
 	 * 无参构造
 	 * @throws IOException 		 
 	 */	
-	public SRLContextGeneratorConf() throws IOException{
+	public SRLContextGeneratorConfForIdentification() throws IOException{
 		Properties featureConf = new Properties();	
-		InputStream featureStream = SRLContextGeneratorConf.class.getClassLoader().getResourceAsStream("com/wxw/run/feature.properties");	
+		InputStream featureStream = SRLContextGeneratorConfForIdentification.class.getClassLoader().getResourceAsStream("com/wxw/run/feature.properties");	
 		featureConf.load(featureStream);
 		init(featureConf);
 		
@@ -58,7 +58,7 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
 	 * 有参构造
 	 * @param properties 配置文件
 	 */	
-	public SRLContextGeneratorConf(Properties properties){	
+	public SRLContextGeneratorConfForIdentification(Properties properties){	
 		init(properties);
 	}
 
@@ -69,31 +69,31 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
 		
 	private void init(Properties config) {
 			
-		predicateSet = (config.getProperty("feature.predicate", "true").equals("true"));
-		predicateposSet = (config.getProperty("feature.predicatepos", "true").equals("true"));
-		predicatesuffixSet = (config.getProperty("feature.predicatesuffix", "true").equals("true"));
-		pathlengthSet = (config.getProperty("feature.pathlength", "true").equals("true"));
-		partialpathSet = (config.getProperty("feature.partialpath", "true").equals("true"));
-		pathSet = (config.getProperty("feature.path", "true").equals("true"));
-		phrasetypeSet = (config.getProperty("feature.phrasetype", "true").equals("true"));
-		positionSet = (config.getProperty("feature.position", "true").equals("true"));
-		voiceSet = (config.getProperty("feature.voice", "true").equals("true"));
-		headwordSet = (config.getProperty("feature.headword", "true").equals("true"));
-		headwordposSet = (config.getProperty("feature.headwordpos", "true").equals("true"));
-		governingcategoriesSet = (config.getProperty("feature.governingcategories", "true").equals("true"));
-		subcategorizationSet = (config.getProperty("feature.subcategorization", "true").equals("true"));
-		firstargumentSet = (config.getProperty("feature.firstargument", "true").equals("true"));
-		firstargumentposSet = (config.getProperty("feature.firstargumentpos", "true").equals("true"));
-		lastargumentSet = (config.getProperty("feature.lastargument", "true").equals("true"));
-		lastargumentposSet = (config.getProperty("feature.lastargumentpos", "true").equals("true"));
-		positionAndvoiceSet = (config.getProperty("feature.positionAndvoice", "true").equals("true"));
-		predicateAndpathSet = (config.getProperty("feature.predicateAndpath", "true").equals("true"));
-		pathAndpositionAndvoiceSet = (config.getProperty("feature.pathAndpositionAndvoice", "true").equals("true"));
-		pathAndpositionAndvoiceAndpredicateSet = (config.getProperty("feature.pathAndpositionAndvoiceAndpredicate", "true").equals("true"));
-		headwordAndpredicateAndpathSet = (config.getProperty("feature.headwordAndpredicateAndpath", "true").equals("true"));
-		headwordAndPhraseSet = (config.getProperty("feature.headwordAndPhrase", "true").equals("true"));
-		predicateAndHeadwordSet = (config.getProperty("feature.predicateAndHeadword", "true").equals("true"));		
-		predicateAndPhrasetypeSet = (config.getProperty("feature.predicateAndPhrasetype", "true").equals("true"));		
+		predicateSet = (config.getProperty("tree.predicate", "true").equals("true"));
+		predicateposSet = (config.getProperty("tree.predicatepos", "true").equals("true"));
+		predicatesuffixSet = (config.getProperty("tree.predicatesuffix", "true").equals("true"));
+		pathlengthSet = (config.getProperty("tree.pathlength", "true").equals("true"));
+		partialpathSet = (config.getProperty("tree.partialpath", "true").equals("true"));
+		pathSet = (config.getProperty("tree.path", "true").equals("true"));
+		phrasetypeSet = (config.getProperty("tree.phrasetype", "true").equals("true"));
+		positionSet = (config.getProperty("tree.position", "true").equals("true"));
+		voiceSet = (config.getProperty("tree.voice", "true").equals("true"));
+		headwordSet = (config.getProperty("tree.headword", "true").equals("true"));
+		headwordposSet = (config.getProperty("tree.headwordpos", "true").equals("true"));
+		governingcategoriesSet = (config.getProperty("tree.governingcategories", "true").equals("true"));
+		subcategorizationSet = (config.getProperty("tree.subcategorization", "true").equals("true"));
+		firstargumentSet = (config.getProperty("tree.firstargument", "true").equals("true"));
+		firstargumentposSet = (config.getProperty("tree.firstargumentpos", "true").equals("true"));
+		lastargumentSet = (config.getProperty("tree.lastargument", "true").equals("true"));
+		lastargumentposSet = (config.getProperty("tree.lastargumentpos", "true").equals("true"));
+		positionAndvoiceSet = (config.getProperty("tree.positionAndvoice", "true").equals("true"));
+		predicateAndpathSet = (config.getProperty("tree.predicateAndpath", "true").equals("true"));
+		pathAndpositionAndvoiceSet = (config.getProperty("tree.pathAndpositionAndvoice", "true").equals("true"));
+		pathAndpositionAndvoiceAndpredicateSet = (config.getProperty("tree.pathAndpositionAndvoiceAndpredicate", "true").equals("true"));
+		headwordAndpredicateAndpathSet = (config.getProperty("tree.headwordAndpredicateAndpath", "true").equals("true"));
+		headwordAndPhraseSet = (config.getProperty("tree.headwordAndPhrase", "true").equals("true"));
+		predicateAndHeadwordSet = (config.getProperty("tree.predicateAndHeadword", "true").equals("true"));		
+		predicateAndPhrasetypeSet = (config.getProperty("tree.predicateAndPhrasetype", "true").equals("true"));		
 	}
 	
 	/**
@@ -101,7 +101,7 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
 	 */
 	@Override
 	public String toString() {
-		return "SRLContextGeneratorConf{" + "predicateSet=" + predicateSet + ", predicateposSet=" + predicateposSet + 
+		return "SRLContextGeneratorConf{" + "predicateSet=" + predicateSet + "predicateposSet=" + predicateposSet + 
                 ", pathSet=" + pathSet + ", phrasetypeSet=" + phrasetypeSet + 
                 ", positionSet=" + positionSet + ", voiceSet=" + voiceSet +  
                 ", headwordSet=" + headwordSet + ", headwordposSet=" + headwordposSet + 

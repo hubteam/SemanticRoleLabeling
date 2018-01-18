@@ -1,10 +1,10 @@
-package com.wxw.onestepparse;
+package com.wxw.parse;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.wxw.onestep.SRLSample;
+import com.wxw.stream.SRLSample;
 import com.wxw.tool.IsCordinateStructure;
 import com.wxw.tool.IsFunctionLabelTool;
 import com.wxw.tool.IsPunctuationTool;
@@ -36,6 +36,7 @@ public abstract class AbstractParseStrategy<T extends TreeNode> {
 	 * @param tree 要剪枝的树[由谓词为根表示的树]
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public T prePruning(T tree){
 		int count = 0;
 		List<Integer> list = new ArrayList<>();
@@ -62,6 +63,7 @@ public abstract class AbstractParseStrategy<T extends TreeNode> {
 	 * @param tree 正常的一棵树
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	private List<T> getPredicateTree(T tree,HashMap<Integer,RoleTool> map,int verbindex){
 		List<T> list = new ArrayList<>();
 		if(tree.getChildren().size() == 0){
@@ -93,6 +95,7 @@ public abstract class AbstractParseStrategy<T extends TreeNode> {
 	 * @param tree 要处理的树
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	private T removePunctuation(T tree){
 		if(tree.getChildren().size() == 0){
 			if(IsPunctuationTool.isPunctuation(tree.getParent().getNodeName())){
@@ -107,6 +110,7 @@ public abstract class AbstractParseStrategy<T extends TreeNode> {
 		return tree;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private T removePredicateSon(T tree,HashMap<Integer,RoleTool> map,int verbindex){
 		if(tree.getChildren().size() == 0){
 			if(map.containsKey(tree.getWordIndex())){
@@ -147,6 +151,7 @@ public abstract class AbstractParseStrategy<T extends TreeNode> {
 	 * @param semanticRole 语义信息
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public SRLSample<T> parse(TreeNode tree, String semanticRole){
 		SRLSample<T> sample;
 		String[] roles = semanticRole.split(" ");
@@ -276,6 +281,7 @@ public abstract class AbstractParseStrategy<T extends TreeNode> {
 	 * @param verbindex 动词的下标
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public boolean containsPredicate(T tree,int verbindex){
 		if(tree.getWordIndex() == verbindex){			
 			containPredicateFlag = true;

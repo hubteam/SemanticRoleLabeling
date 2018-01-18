@@ -10,12 +10,12 @@ import com.wxw.tool.TreeNodeWrapper;
 import com.wxw.tree.HeadTreeNode;
 
 /**
- * 生成上下文特征
+ * 为论元分类阶段生成特征
  * @author 王馨苇
  *
  */
-public class SRLContextGeneratorConf implements SRLContextGenerator{
-	
+public class SRLContextGeneratorConfForClassification implements SRLContextGenerator{
+
 	private boolean predicateSet;
 	private boolean predicateposSet;
 	private boolean predicatesuffixSet;
@@ -46,9 +46,9 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
 	 * 无参构造
 	 * @throws IOException 		 
 	 */	
-	public SRLContextGeneratorConf() throws IOException{
+	public SRLContextGeneratorConfForClassification() throws IOException{
 		Properties featureConf = new Properties();	
-		InputStream featureStream = SRLContextGeneratorConf.class.getClassLoader().getResourceAsStream("com/wxw/run/feature.properties");	
+		InputStream featureStream = SRLContextGeneratorConfForClassification.class.getClassLoader().getResourceAsStream("com/wxw/run/feature.properties");	
 		featureConf.load(featureStream);
 		init(featureConf);
 		
@@ -58,7 +58,7 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
 	 * 有参构造
 	 * @param properties 配置文件
 	 */	
-	public SRLContextGeneratorConf(Properties properties){	
+	public SRLContextGeneratorConfForClassification(Properties properties){	
 		init(properties);
 	}
 
@@ -101,7 +101,7 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
 	 */
 	@Override
 	public String toString() {
-		return "SRLContextGeneratorConf{" + "predicateSet=" + predicateSet + ", predicateposSet=" + predicateposSet + 
+		return "SRLContextGeneratorConf{" + "predicateSet=" + predicateSet + "predicateposSet=" + predicateposSet + 
                 ", pathSet=" + pathSet + ", phrasetypeSet=" + phrasetypeSet + 
                 ", positionSet=" + positionSet + ", voiceSet=" + voiceSet +  
                 ", headwordSet=" + headwordSet + ", headwordposSet=" + headwordposSet + 
@@ -368,4 +368,5 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
 			Object[] predicatetree) {
 		return getContext(i,argumenttree,labelinfo,(TreeNodeWrapper<HeadTreeNode>[])predicatetree);
 	}
+
 }

@@ -12,6 +12,7 @@ import java.util.Map;
 import com.wxw.feature.SRLContextGenerator;
 import com.wxw.stream.FileInputStreamFactory;
 import com.wxw.stream.PlainTextByTreeStream;
+import com.wxw.stream.SRLSample;
 import com.wxw.stream.SRLSampleEventStream;
 import com.wxw.stream.SRLSampleStream;
 import com.wxw.tool.TreeNodeWrapper;

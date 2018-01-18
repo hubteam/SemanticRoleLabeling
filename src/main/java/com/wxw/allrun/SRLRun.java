@@ -10,9 +10,9 @@ import com.wxw.cross.SRLCrossValidation;
 import com.wxw.feature.SRLContextGenerator;
 import com.wxw.feature.SRLContextGeneratorConf;
 import com.wxw.onestep.SRLME;
-import com.wxw.onestep.SRLSample;
 import com.wxw.stream.FileInputStreamFactory;
 import com.wxw.stream.PlainTextByTreeStream;
+import com.wxw.stream.SRLSample;
 import com.wxw.stream.SRLSampleStream;
 import com.wxw.tree.HeadTreeNode;
 

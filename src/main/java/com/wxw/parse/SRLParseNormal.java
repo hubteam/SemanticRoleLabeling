@@ -1,10 +1,10 @@
-package com.wxw.onestepparse;
+package com.wxw.parse;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.wxw.onestep.SRLSample;
+import com.wxw.stream.SRLSample;
 import com.wxw.tool.RoleTool;
 import com.wxw.tool.TreeNodeWrapper;
 import com.wxw.tree.HeadTreeNode;
@@ -27,6 +27,9 @@ public class SRLParseNormal extends AbstractParseStrategy<HeadTreeNode>{
 	 * @return
 	 */
 	public SRLSample<HeadTreeNode> toSample(HeadTreeNode headtree, String semanticRole){
+		labelinfo.clear();
+		argumenttree.clear();
+		predicatetree.clear();
 		String[] roles = semanticRole.split(" ");
 		//加入以当前论元或者谓词作为根节点的树，和语义标记信息
 		addInfo(headtree,getRoleMap(semanticRole),Integer.parseInt(roles[2]));		
@@ -48,6 +51,7 @@ public class SRLParseNormal extends AbstractParseStrategy<HeadTreeNode>{
 						flag = false;
 						if(map.get(getLeftIndexAndDownSteps(tree)[0]).getRole().equals("rel")){
 							if(getLeftIndexAndDownSteps(tree)[0] == verbindex){
+								tree.setFlag(false);
 								predicatetree.add(new TreeNodeWrapper<HeadTreeNode>(tree,getLeftIndexAndDownSteps(tree)[0]));
 							}else{
 								

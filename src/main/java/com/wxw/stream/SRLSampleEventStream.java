@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.wxw.feature.SRLContextGenerator;
-import com.wxw.onestep.SRLSample;
 import com.wxw.tool.TreeNodeWrapper;
 import com.wxw.tree.HeadTreeNode;
 
@@ -56,6 +55,7 @@ public class SRLSampleEventStream extends AbstractEventStream<SRLSample<HeadTree
 	 * @return
 	 */
 	private List<Event> generateEvents(TreeNodeWrapper<HeadTreeNode>[] argumenttree, TreeNodeWrapper<HeadTreeNode>[] predicatetree, String[] labelinfo, String[][] ac) {
+
 		List<Event> events = new ArrayList<Event>(labelinfo.length);
 		for (int i = 0; i < labelinfo.length; i++) {
 			String[] context = generator.getContext(i, argumenttree, labelinfo, predicatetree);

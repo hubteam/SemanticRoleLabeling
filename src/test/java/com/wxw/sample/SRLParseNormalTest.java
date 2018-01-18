@@ -9,9 +9,9 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.wxw.onestep.SRLSample;
-import com.wxw.onestepparse.AbstractParseStrategy;
-import com.wxw.onestepparse.SRLParseNormal;
+import com.wxw.parse.AbstractParseStrategy;
+import com.wxw.parse.SRLParseNormal;
+import com.wxw.stream.SRLSample;
 import com.wxw.tool.PreTreatTool;
 import com.wxw.tree.HeadTreeNode;
 import com.wxw.tree.PhraseGenerateTree;

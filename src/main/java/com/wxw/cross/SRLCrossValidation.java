@@ -1,29 +1,16 @@
 package com.wxw.cross;
 
-import java.io.File;
 import java.io.IOException;
 
 import com.wxw.evaluate.SRLEvaluateMonitor;
 import com.wxw.evaluate.SRLEvaluator;
 import com.wxw.evaluate.SRLMeasure;
-import com.wxw.evaluate.SyntacticAnalysisEvaluateMonitor;
-import com.wxw.evaluate.SyntacticAnalysisMeasure;
 import com.wxw.feature.SRLContextGenerator;
-import com.wxw.feature.SyntacticAnalysisContextGenerator;
-import com.wxw.modelBystep.POSTaggerMEExtend;
-import com.wxw.modelBystep.SyntacticAnalysisEvaluatorForByStep;
-import com.wxw.modelBystep.SyntacticAnalysisMEForBuildAndCheck;
-import com.wxw.modelBystep.SyntacticAnalysisMEForChunk;
-import com.wxw.modelBystep.SyntacticAnalysisModelForBuildAndCheck;
-import com.wxw.modelBystep.SyntacticAnalysisModelForChunk;
 import com.wxw.onestep.SRLME;
 import com.wxw.onestep.SRLModel;
-import com.wxw.onestep.SRLSample;
-import com.wxw.stream.SyntacticAnalysisSample;
+import com.wxw.stream.SRLSample;
 import com.wxw.tree.HeadTreeNode;
 
-import opennlp.tools.cmdline.postag.POSModelLoader;
-import opennlp.tools.postag.POSModel;
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.TrainingParameters;
 import opennlp.tools.util.eval.CrossValidationPartitioner;
@@ -64,9 +51,11 @@ public class SRLCrossValidation {
 		int run = 1;
 		//小于折数的时候
 		while(partitioner.hasNext()){
+			long start = System.currentTimeMillis();
 			System.out.println("Run"+run+"...");
 			CrossValidationPartitioner.TrainingSampleStream<SRLSample<HeadTreeNode>> trainingSampleStream = partitioner.next();			
 			SRLModel model = SRLME.train(languageCode, trainingSampleStream, params, contextGenerator);
+			System.out.println("训练时间："+(System.currentTimeMillis()-start));
 			SRLEvaluator evaluator = new SRLEvaluator(new SRLME(model,contextGenerator), monitor);
 			SRLMeasure measure = new SRLMeasure();
 			

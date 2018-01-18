@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.wxw.onestep.SRLSample;
-import com.wxw.onestepparse.AbstractParseStrategy;
-import com.wxw.onestepparse.SRLParserAddNULL_101HasPruning;
+import com.wxw.parse.AbstractParseStrategy;
+import com.wxw.parse.SRLParseNormal;
+import com.wxw.parse.SRLParseNormalHasPruning;
+import com.wxw.parse.SRLParserAddNULL_101;
+import com.wxw.parse.SRLParserAddNULL_101HasPruning;
 import com.wxw.tool.PreTreatTool;
 import com.wxw.tree.HeadTreeNode;
 import com.wxw.tree.PhraseGenerateTree;
@@ -38,7 +40,7 @@ public class SRLSampleStream extends FilterObjectStream<String[],SRLSample<HeadT
 			try{
 				TreeNode tree = pgt.generateTree(sentence[0]);
 				PreTreatTool.preTreat(tree);
-				System.out.println(sentence[1]);
+//				System.out.println(sentence[1]);
                 sample = ttst.parse(tree, sentence[1]);
 			}catch(Exception e){
 				if (logger.isLoggable(Level.WARNING)) {						

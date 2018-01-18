@@ -9,9 +9,9 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.wxw.onestep.SRLSample;
-import com.wxw.onestepparse.AbstractParseStrategy;
-import com.wxw.onestepparse.SRLParseNormal;
+import com.wxw.parse.AbstractParseStrategy;
+import com.wxw.parse.SRLParseNormal;
+import com.wxw.stream.SRLSample;
 import com.wxw.tool.PostTreatTool;
 import com.wxw.tool.PreTreatTool;
 import com.wxw.tree.HeadTreeNode;
@@ -321,7 +321,9 @@ public class PostTreatTest {
 		for (int i = 0; i < label.size() && i < prop.size(); i++) {
 			sequence.add(label.get(i), prop.get(i));
 		}
-		
+		for (int i = 0; i < sample.getArgumentTree().length; i++) {
+			System.out.println(PostTreatTool.getSonTreeCount(sample.getArgumentTree()[i].getTree()));
+		}
 		if(sample.getIsPruning() == true){
 			pre = PostTreatTool.postTreat(sample.getArgumentTree(), sequence,PostTreatTool.getSonTreeCount(sample.getPredicateTree()[0].getTree()));
 		}else{
