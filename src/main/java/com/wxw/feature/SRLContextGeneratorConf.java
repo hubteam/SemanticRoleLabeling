@@ -38,7 +38,7 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
 	private boolean pathAndpositionAndvoiceSet;
 	private boolean pathAndpositionAndvoiceAndpredicateSet;
 	private boolean headwordAndpredicateAndpathSet;
-	private boolean headwordAndPhraseSet;
+	private boolean headwordAndPhrasetypeSet;
 	private boolean predicateAndHeadwordSet;   
 	private boolean predicateAndPhrasetypeSet;
 				
@@ -91,7 +91,7 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
 		pathAndpositionAndvoiceSet = (config.getProperty("feature.pathAndpositionAndvoice", "true").equals("true"));
 		pathAndpositionAndvoiceAndpredicateSet = (config.getProperty("feature.pathAndpositionAndvoiceAndpredicate", "true").equals("true"));
 		headwordAndpredicateAndpathSet = (config.getProperty("feature.headwordAndpredicateAndpath", "true").equals("true"));
-		headwordAndPhraseSet = (config.getProperty("feature.headwordAndPhrase", "true").equals("true"));
+		headwordAndPhrasetypeSet = (config.getProperty("feature.headwordAndPhrasetype", "true").equals("true"));
 		predicateAndHeadwordSet = (config.getProperty("feature.predicateAndHeadword", "true").equals("true"));		
 		predicateAndPhrasetypeSet = (config.getProperty("feature.predicateAndPhrasetype", "true").equals("true"));		
 	}
@@ -113,7 +113,7 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
                 ", pathAndpositionAndvoiceSet=" + pathAndpositionAndvoiceSet + 
                 ", pathAndpositionAndvoiceAndpredicateSet=" + pathAndpositionAndvoiceAndpredicateSet + 
                 ", headwordAndpredicateAndpathSet=" + headwordAndpredicateAndpathSet + 
-                ", headwordAndPhraseSet=" + headwordAndPhraseSet + 
+                ", headwordAndPhraseSet=" + headwordAndPhrasetypeSet + 
                 ", predicateAndHeadwordSet=" + predicateAndHeadwordSet +  
                 ", predicateAndPhrasetypeSet=" + predicateAndPhrasetypeSet +
                 '}';
@@ -225,8 +225,8 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
 		if(headwordAndpredicateAndpathSet){
 			features.add("headwordAndpredicateAndpath="+argumenttree[i].getTree().getHeadWords()+"|"+predicate+"|"+path);
 		}
-		if(headwordAndPhraseSet){
-			features.add("headwordAndPhrase="+argumenttree[i].getTree().getHeadWords()+"|"+argumenttree[i].getTree().getNodeName());
+		if(headwordAndPhrasetypeSet){
+			features.add("headwordAndPhrasetype="+argumenttree[i].getTree().getHeadWords()+"|"+argumenttree[i].getTree().getNodeName());
 		}
 		if(predicateAndHeadwordSet){
 			features.add("predicateAndHeadword="+predicate+"|"+argumenttree[i].getTree().getHeadWords());

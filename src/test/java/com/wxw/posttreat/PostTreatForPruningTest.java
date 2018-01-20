@@ -10,7 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.wxw.parse.AbstractParseStrategy;
-import com.wxw.parse.SRLParseNormal;
 import com.wxw.parse.SRLParseNormalHasPruning;
 import com.wxw.stream.SRLSample;
 import com.wxw.tool.PostTreatTool;

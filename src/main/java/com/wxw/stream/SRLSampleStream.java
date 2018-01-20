@@ -8,8 +8,8 @@ import java.util.logging.Logger;
 import com.wxw.parse.AbstractParseStrategy;
 import com.wxw.parse.SRLParseNormal;
 import com.wxw.parse.SRLParseNormalHasPruning;
-import com.wxw.parse.SRLParserAddNULL_101;
-import com.wxw.parse.SRLParserAddNULL_101HasPruning;
+import com.wxw.parse.SRLParseAddNULL_101;
+import com.wxw.parse.SRLParseAddNULL_101HasPruning;
 import com.wxw.tool.PreTreatTool;
 import com.wxw.tree.HeadTreeNode;
 import com.wxw.tree.PhraseGenerateTree;
@@ -26,7 +26,6 @@ import opennlp.tools.util.ObjectStream;
 public class SRLSampleStream extends FilterObjectStream<String[],SRLSample<HeadTreeNode>>{
 
 	private Logger logger = Logger.getLogger(SRLSampleStream.class.getName());
-	
 	public SRLSampleStream(ObjectStream<String[]> samples) {
 		super(samples);
 	}
@@ -35,12 +34,11 @@ public class SRLSampleStream extends FilterObjectStream<String[],SRLSample<HeadT
 		String[] sentence = samples.read();	
 		SRLSample<HeadTreeNode> sample = null;
 		PhraseGenerateTree pgt = new PhraseGenerateTree();
-		AbstractParseStrategy<HeadTreeNode> ttst = new SRLParserAddNULL_101HasPruning();
+		AbstractParseStrategy<HeadTreeNode> ttst = new SRLParseAddNULL_101();
 		if(sentence[0]!= null && sentence[1] != null){
 			try{
 				TreeNode tree = pgt.generateTree(sentence[0]);
 				PreTreatTool.preTreat(tree);
-//				System.out.println(sentence[1]);
                 sample = ttst.parse(tree, sentence[1]);
 			}catch(Exception e){
 				if (logger.isLoggable(Level.WARNING)) {						

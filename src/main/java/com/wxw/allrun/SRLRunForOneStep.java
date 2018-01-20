@@ -2,14 +2,19 @@ package com.wxw.allrun;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import com.wxw.cross.SRLCrossValidation;
+import com.wxw.evaluate.SRLErrorPrinter;
+import com.wxw.evaluate.SRLMeasure;
 import com.wxw.feature.SRLContextGenerator;
 import com.wxw.feature.SRLContextGeneratorConf;
-import com.wxw.onestep.SRLME;
+import com.wxw.onestep.SRLCrossValidationForOneStep;
+import com.wxw.onestep.SRLEvaluatorForOneStep;
+import com.wxw.onestep.SRLMEForOneStep;
+import com.wxw.onestep.SRLModelForOneStep;
 import com.wxw.stream.FileInputStreamFactory;
 import com.wxw.stream.PlainTextByTreeStream;
 import com.wxw.stream.SRLSample;
@@ -24,7 +29,7 @@ import opennlp.tools.util.TrainingParameters;
  * @author 王馨苇
  *
  */
-public class SRLRun {
+public class SRLRunForOneStep {
 
 	private static String flag = "train";
 	//静态内部类
@@ -64,7 +69,7 @@ public class SRLRun {
 	 */
 	private static void crossValidation(String corpusName) throws IOException {
 		Properties config = new Properties();
-		InputStream configStream = SRLRun.class.getClassLoader().getResourceAsStream("com/wxw/run/corpus.properties");
+		InputStream configStream = SRLRunForOneStep.class.getClassLoader().getResourceAsStream("com/wxw/run/corpus.properties");
 		config.load(configStream);
 		Corpus[] corpora = getCorporaFromConf(config);
         //定位到某一语料
@@ -79,7 +84,7 @@ public class SRLRun {
         params.put(TrainingParameters.CUTOFF_PARAM, Integer.toString(1));
 
         //把刚才属性信息封装
-        SRLCrossValidation crossValidator = new SRLCrossValidation("zh", params);
+        SRLCrossValidationForOneStep crossValidator = new SRLCrossValidationForOneStep("zh", params);
 
         System.out.println(contextGen);
         crossValidator.evaluate(sampleStream, 10, contextGen);
@@ -111,7 +116,7 @@ public class SRLRun {
 	
 		//加载语料文件
         Properties config = new Properties();
-        InputStream configStream = SRLRun.class.getClassLoader().getResourceAsStream("com/wxw/run/corpus.properties");
+        InputStream configStream = SRLRunForOneStep.class.getClassLoader().getResourceAsStream("com/wxw/run/corpus.properties");
         config.load(configStream);
         Corpus[] corpora = getCorporaFromConf(config);//获取语料
 
@@ -140,7 +145,7 @@ public class SRLRun {
 			}
 		}else if(flag == "evaluate" || flag.equals("evaluate")){
 			for (int i = 0; i < corpora.length; i++) {
-//				evaluateOnCorpus(contextGen,corpora[i],params);
+				evaluateOnCorpus(contextGen,corpora[i],params);
 			}
 		}	
 	}
@@ -153,30 +158,30 @@ public class SRLRun {
 	 * @throws UnsupportedOperationException 
 	 * @throws IOException 
 	 */	
-//	private static void evaluateOnCorpus(SRLContextGenerator contextGen, Corpus corpus,
-//			TrainingParameters params) throws IOException {
-//		System.out.println("ContextGenerator: " + contextGen);
-//        
-//		SRLME tagger = new SRLME(model,contextGen);
-//       
-//        WordPosMeasure measure = new WordPosMeasure(dict);
-//        WordPosEvaluator evaluator = null;
-//        WordPosErrorPrinter printer = null;
-//        if(corpus.errorFile != null){
-//        	System.out.println("Print error to file " + corpus.errorFile);
-//        	printer = new WordPosErrorPrinter(new FileOutputStream(corpus.errorFile));    	
-//        	evaluator = new WordPosEvaluator(tagger,printer);
-//        }else{
-//        	evaluator = new WordPosEvaluator(tagger);
-//        }
-//        evaluator.setMeasure(measure);
-//        ObjectStream<String[]> linesStreamNoNull = new PlainTextByLineStream(new FileInputStreamFactory(new File(corpus.testFile)), corpus.encoding);
-//        ObjectStream<SRLSample> sampleStreamNoNull = new WordPosSampleStream(linesStreamNoNull);
-//        evaluator.evaluate(sampleStreamNoNull);
-//        WordPosMeasure measureRes = evaluator.getMeasure();
-//        System.out.println("--------结果--------");
-//        System.out.println(measureRes);
-//	}
+	private static void evaluateOnCorpus(SRLContextGenerator contextGen, Corpus corpus,
+			TrainingParameters params) throws IOException {
+		System.out.println("ContextGenerator: " + contextGen);
+		SRLModelForOneStep model = new SRLModelForOneStep(new File(corpus.modelFile));
+		SRLMEForOneStep tagger = new SRLMEForOneStep(model,contextGen);
+       
+		SRLMeasure measure = new SRLMeasure();
+		SRLEvaluatorForOneStep evaluator = null;
+		SRLErrorPrinter printer = null;
+        if(corpus.errorFile != null){
+        	System.out.println("Print error to file " + corpus.errorFile);
+        	printer = new SRLErrorPrinter(new FileOutputStream(corpus.errorFile));    	
+        	evaluator = new SRLEvaluatorForOneStep(tagger,printer);
+        }else{
+        	evaluator = new SRLEvaluatorForOneStep(tagger);
+        }
+        evaluator.setMeasure(measure);
+        ObjectStream<String[]> linesStream = new PlainTextByTreeStream(new FileInputStreamFactory(new File(corpus.testFile)), corpus.encoding);
+        ObjectStream<SRLSample<HeadTreeNode>> sampleStream = new SRLSampleStream(linesStream);
+        evaluator.evaluate(sampleStream);
+        SRLMeasure measureRes = evaluator.getMeasure();
+        System.out.println("--------结果--------");
+        System.out.println(measureRes);
+	}
 
 	/**
 	 * 训练模型，输出模型文件
@@ -192,7 +197,7 @@ public class SRLRun {
 		System.out.println("ContextGenerator: " + contextGen);
         System.out.println("Training on " + corpus.name + "...");
         //训练模型
-        SRLME.train(new File(corpus.trainFile), new File(corpus.modelFile), params, contextGen, corpus.encoding);
+        SRLMEForOneStep.train(new File(corpus.trainFile), new File(corpus.modelFile), params, contextGen, corpus.encoding);
 		
 	}
 
@@ -208,7 +213,7 @@ public class SRLRun {
 		System.out.println("ContextGenerator: " + contextGen);
         System.out.println("Training on " + corpus.name + "...");
         //训练模型
-        SRLME.train(new File(corpus.trainFile), params, contextGen, corpus.encoding);
+        SRLMEForOneStep.train(new File(corpus.trainFile), params, contextGen, corpus.encoding);
 		
 	}
 

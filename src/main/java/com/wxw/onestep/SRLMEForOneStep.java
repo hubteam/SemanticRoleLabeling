@@ -13,17 +13,15 @@ import com.wxw.feature.SRLContextGenerator;
 import com.wxw.stream.FileInputStreamFactory;
 import com.wxw.stream.PlainTextByTreeStream;
 import com.wxw.stream.SRLSample;
-import com.wxw.stream.SRLSampleEventStream;
 import com.wxw.stream.SRLSampleStream;
 import com.wxw.tool.TreeNodeWrapper;
 import com.wxw.tree.HeadTreeNode;
+import com.wxw.validate.DefaultSRLSequenceValidator;
 
 import opennlp.tools.ml.BeamSearch;
 import opennlp.tools.ml.EventTrainer;
 import opennlp.tools.ml.TrainerFactory;
 import opennlp.tools.ml.TrainerFactory.TrainerType;
-import opennlp.tools.ml.maxent.GIS;
-import opennlp.tools.ml.maxent.GISModel;
 import opennlp.tools.ml.model.Event;
 import opennlp.tools.ml.model.MaxentModel;
 import opennlp.tools.ml.model.SequenceClassificationModel;
@@ -37,13 +35,11 @@ import opennlp.tools.util.TrainingParameters;
  * @author 王馨苇
  *
  */
-public class SRLME {
+public class SRLMEForOneStep {
 	public static final int DEFAULT_BEAM_SIZE = 15;
 	private SRLContextGenerator contextGenerator;
 	private int size;
-	private Sequence bestSequence;
 	private SequenceClassificationModel<TreeNodeWrapper<HeadTreeNode>> model;
-	private SRLModel modelPackage;
 
     private SequenceValidator<TreeNodeWrapper<HeadTreeNode>> sequenceValidator;
 	
@@ -52,7 +48,7 @@ public class SRLME {
 	 * @param model 模型
 	 * @param contextGen 特征
 	 */
-	public SRLME(SRLModel model, SRLContextGenerator contextGen) {
+	public SRLMEForOneStep(SRLModelForOneStep model, SRLContextGenerator contextGen) {
 		init(model , contextGen);
 	}
     /**
@@ -60,22 +56,20 @@ public class SRLME {
      * @param model 模型
      * @param contextGen 特征
      */
-	private void init(SRLModel model, SRLContextGenerator contextGen) {
-		int beamSize = SRLME.DEFAULT_BEAM_SIZE;
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private void init(SRLModelForOneStep model, SRLContextGenerator contextGen) {
+		int beamSize = SRLMEForOneStep.DEFAULT_BEAM_SIZE;
 
         String beamSizeString = model.getManifestProperty(BeamSearch.BEAM_SIZE_PARAMETER);
 
         if (beamSizeString != null) {
             beamSize = Integer.parseInt(beamSizeString);
         }
-
-        modelPackage = model;
-
         contextGenerator = contextGen;
         size = beamSize;
         sequenceValidator = new DefaultSRLSequenceValidator();
         if (model.getSRLTreeSequenceModel() != null) {
-            this.model = model.getSRLTreeSequenceModel();
+            this.model = (SequenceClassificationModel<TreeNodeWrapper<HeadTreeNode>>) model.getSRLTreeSequenceModel();
         } else {
         	this.model = new BeamSearch(beamSize,
                     model.getSRLTreeModel(), 0);
@@ -93,13 +87,13 @@ public class SRLME {
 	 * @throws IOException 
 	 * @throws FileNotFoundException 
 	 */
-	public static SRLModel train(File file, TrainingParameters params, SRLContextGenerator contextGen,
+	public static SRLModelForOneStep train(File file, TrainingParameters params, SRLContextGenerator contextGen,
 			String encoding){
-		SRLModel model = null;
+		SRLModelForOneStep model = null;
 		try {
 			ObjectStream<String[]> lineStream = new PlainTextByTreeStream(new FileInputStreamFactory(file), encoding);
 			ObjectStream<SRLSample<HeadTreeNode>> sampleStream = new SRLSampleStream(lineStream);
-			model = SRLME.train("zh", sampleStream, params, contextGen);
+			model = SRLMEForOneStep.train("zh", sampleStream, params, contextGen);
 			return model;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -119,19 +113,19 @@ public class SRLME {
 	 * @throws IOException 
 	 * @throws FileNotFoundException 
 	 */
-	public static SRLModel train(String languageCode, ObjectStream<SRLSample<HeadTreeNode>> sampleStream, TrainingParameters params,
+	public static SRLModelForOneStep train(String languageCode, ObjectStream<SRLSample<HeadTreeNode>> sampleStream, TrainingParameters params,
 			SRLContextGenerator contextGen) throws IOException {
 		String beamSizeString = params.getSettings().get(BeamSearch.BEAM_SIZE_PARAMETER);
-		int beamSize = SRLME.DEFAULT_BEAM_SIZE;
+		int beamSize = SRLMEForOneStep.DEFAULT_BEAM_SIZE;
         if (beamSizeString != null) {
             beamSize = Integer.parseInt(beamSizeString);
         }
         MaxentModel SRLModel = null;
         Map<String, String> manifestInfoEntries = new HashMap<String, String>();
         TrainerType trainerType = TrainerFactory.getTrainerType(params.getSettings());
-        SequenceClassificationModel<String> seqPosModel = null;
+        SequenceClassificationModel<TreeNodeWrapper<HeadTreeNode>> seqSRLModel = null;
         if (TrainerType.EVENT_MODEL_TRAINER.equals(trainerType)) {
-            ObjectStream<Event> es = new SRLSampleEventStream(sampleStream, contextGen);
+            ObjectStream<Event> es = new SRLEventStreamForOneStep(sampleStream, contextGen);
             EventTrainer trainer = TrainerFactory.getEventTrainer(params.getSettings(),
                     manifestInfoEntries);
 //            SRLModel = GIS.trainModel(es, 100, 1, /2.0);
@@ -139,9 +133,9 @@ public class SRLME {
         }
 
         if (SRLModel != null) {
-            return new SRLModel(languageCode, SRLModel, beamSize, manifestInfoEntries);
+            return new SRLModelForOneStep(languageCode, SRLModel, beamSize, manifestInfoEntries);
         } else {
-            return new SRLModel(languageCode, seqPosModel, manifestInfoEntries);
+            return new SRLModelForOneStep(languageCode, seqSRLModel, manifestInfoEntries);
         }
 	}
 
@@ -155,14 +149,14 @@ public class SRLME {
 	 * @param encoding 编码方式
 	 * @return
 	 */
-	public static SRLModel train(File file, File modelFile, TrainingParameters params,
+	public static SRLModelForOneStep train(File file, File modelFile, TrainingParameters params,
 			SRLContextGenerator contextGen, String encoding) {
 		OutputStream modelOut = null;
-		SRLModel model = null;
+		SRLModelForOneStep model = null;
 		try {
 			ObjectStream<String[]> lineStream = new PlainTextByTreeStream(new FileInputStreamFactory(file), encoding);
 			ObjectStream<SRLSample<HeadTreeNode>> sampleStream = new SRLSampleStream(lineStream);
-			model = SRLME.train("zh", sampleStream, params, contextGen);
+			model = SRLMEForOneStep.train("zh", sampleStream, params, contextGen);
             modelOut = new BufferedOutputStream(new FileOutputStream(modelFile));           
             model.serialize(modelOut);
             return model;

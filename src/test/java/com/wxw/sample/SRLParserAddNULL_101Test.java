@@ -10,7 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.wxw.parse.AbstractParseStrategy;
-import com.wxw.parse.SRLParserAddNULL_101;
+import com.wxw.parse.SRLParseAddNULL_101;
 import com.wxw.stream.SRLSample;
 import com.wxw.tool.PreTreatTool;
 import com.wxw.tree.HeadTreeNode;
@@ -18,7 +18,7 @@ import com.wxw.tree.PhraseGenerateTree;
 import com.wxw.tree.TreeNode;
 
 /**
- * 转成样本类的测试，此时样本类标签增加NULL_1 NULL0 NULL1
+ * 转成样本类的测试，此时样本类标签增加NULL_1 NULL0 NULL1,没有剪枝
  * @author 王馨苇
  *
  */
@@ -48,7 +48,7 @@ public class SRLParserAddNULL_101Test {
 				+ "(NP(NNP Publishers)(NNP Information)(NNP Bureau))))))(. .)))");	
 
 		PreTreatTool.preTreat(tree);
-		parse = new SRLParserAddNULL_101();
+		parse = new SRLParseAddNULL_101();
 		sample = parse.parse(tree, roles);
 
 		srlinfo = new ArrayList<>();		

@@ -16,29 +16,16 @@ import com.wxw.tree.HeadTreeNode;
  */
 public class SRLContextGeneratorConfForClassification implements SRLContextGenerator{
 
-	private boolean predicateSet;
-	private boolean predicateposSet;
-	private boolean predicatesuffixSet;
-	private boolean pathlengthSet;
-	private boolean partialpathSet;
 	private boolean pathSet; 
 	private boolean phrasetypeSet; 
-	private boolean positionSet;  
-	private boolean voiceSet;
 	private boolean headwordSet;
 	private boolean headwordposSet;
-	private boolean governingcategoriesSet;
 	private boolean subcategorizationSet; 
 	private boolean firstargumentSet; 
 	private boolean firstargumentposSet;   
 	private boolean lastargumentSet;  
 	private boolean lastargumentposSet;  
 	private boolean positionAndvoiceSet;
-	private boolean predicateAndpathSet;
-	private boolean pathAndpositionAndvoiceSet;
-	private boolean pathAndpositionAndvoiceAndpredicateSet;
-	private boolean headwordAndpredicateAndpathSet;
-	private boolean headwordAndPhraseSet;
 	private boolean predicateAndHeadwordSet;   
 	private boolean predicateAndPhrasetypeSet;
 				
@@ -69,31 +56,18 @@ public class SRLContextGeneratorConfForClassification implements SRLContextGener
 		
 	private void init(Properties config) {
 			
-		predicateSet = (config.getProperty("feature.predicate", "true").equals("true"));
-		predicateposSet = (config.getProperty("feature.predicatepos", "true").equals("true"));
-		predicatesuffixSet = (config.getProperty("feature.predicatesuffix", "true").equals("true"));
-		pathlengthSet = (config.getProperty("feature.pathlength", "true").equals("true"));
-		partialpathSet = (config.getProperty("feature.partialpath", "true").equals("true"));
-		pathSet = (config.getProperty("feature.path", "true").equals("true"));
-		phrasetypeSet = (config.getProperty("feature.phrasetype", "true").equals("true"));
-		positionSet = (config.getProperty("feature.position", "true").equals("true"));
-		voiceSet = (config.getProperty("feature.voice", "true").equals("true"));
-		headwordSet = (config.getProperty("feature.headword", "true").equals("true"));
-		headwordposSet = (config.getProperty("feature.headwordpos", "true").equals("true"));
-		governingcategoriesSet = (config.getProperty("feature.governingcategories", "true").equals("true"));
-		subcategorizationSet = (config.getProperty("feature.subcategorization", "true").equals("true"));
-		firstargumentSet = (config.getProperty("feature.firstargument", "true").equals("true"));
-		firstargumentposSet = (config.getProperty("feature.firstargumentpos", "true").equals("true"));
-		lastargumentSet = (config.getProperty("feature.lastargument", "true").equals("true"));
-		lastargumentposSet = (config.getProperty("feature.lastargumentpos", "true").equals("true"));
-		positionAndvoiceSet = (config.getProperty("feature.positionAndvoice", "true").equals("true"));
-		predicateAndpathSet = (config.getProperty("feature.predicateAndpath", "true").equals("true"));
-		pathAndpositionAndvoiceSet = (config.getProperty("feature.pathAndpositionAndvoice", "true").equals("true"));
-		pathAndpositionAndvoiceAndpredicateSet = (config.getProperty("feature.pathAndpositionAndvoiceAndpredicate", "true").equals("true"));
-		headwordAndpredicateAndpathSet = (config.getProperty("feature.headwordAndpredicateAndpath", "true").equals("true"));
-		headwordAndPhraseSet = (config.getProperty("feature.headwordAndPhrase", "true").equals("true"));
-		predicateAndHeadwordSet = (config.getProperty("feature.predicateAndHeadword", "true").equals("true"));		
-		predicateAndPhrasetypeSet = (config.getProperty("feature.predicateAndPhrasetype", "true").equals("true"));		
+		pathSet = (config.getProperty("classify.path", "true").equals("true"));
+		phrasetypeSet = (config.getProperty("classify.phrasetype", "true").equals("true"));
+		headwordSet = (config.getProperty("classify.headword", "true").equals("true"));
+		headwordposSet = (config.getProperty("classify.headwordpos", "true").equals("true"));
+		subcategorizationSet = (config.getProperty("classify.subcategorization", "true").equals("true"));
+		firstargumentSet = (config.getProperty("classify.firstargument", "true").equals("true"));
+		firstargumentposSet = (config.getProperty("classify.firstargumentpos", "true").equals("true"));
+		lastargumentSet = (config.getProperty("classify.lastargument", "true").equals("true"));
+		lastargumentposSet = (config.getProperty("classify.lastargumentpos", "true").equals("true"));
+		positionAndvoiceSet = (config.getProperty("classify.positionAndvoice", "true").equals("true"));
+		predicateAndHeadwordSet = (config.getProperty("classify.predicateAndHeadword", "true").equals("true"));		
+		predicateAndPhrasetypeSet = (config.getProperty("classify.predicateAndPhrasetype", "true").equals("true"));		
 	}
 	
 	/**
@@ -101,19 +75,13 @@ public class SRLContextGeneratorConfForClassification implements SRLContextGener
 	 */
 	@Override
 	public String toString() {
-		return "SRLContextGeneratorConf{" + "predicateSet=" + predicateSet + "predicateposSet=" + predicateposSet + 
+		return "SRLContextGeneratorConfForClassification{" + 
                 ", pathSet=" + pathSet + ", phrasetypeSet=" + phrasetypeSet + 
-                ", positionSet=" + positionSet + ", voiceSet=" + voiceSet +  
                 ", headwordSet=" + headwordSet + ", headwordposSet=" + headwordposSet + 
-                ", governingcategoriesSet=" + governingcategoriesSet +
                 ", subcategorizationSet=" + subcategorizationSet + ", firstargumentSet=" + firstargumentSet + 
                 ", firstargumentposSet=" + firstargumentposSet + 
                 ", lastargumentSet=" + lastargumentSet + ", lastargumentposSet=" + lastargumentposSet + 
-                ", positionAndvoiceSet=" + positionAndvoiceSet + ", predicateAndpathSet=" + predicateAndpathSet + 
-                ", pathAndpositionAndvoiceSet=" + pathAndpositionAndvoiceSet + 
-                ", pathAndpositionAndvoiceAndpredicateSet=" + pathAndpositionAndvoiceAndpredicateSet + 
-                ", headwordAndpredicateAndpathSet=" + headwordAndpredicateAndpathSet + 
-                ", headwordAndPhraseSet=" + headwordAndPhraseSet + 
+                ", positionAndvoiceSet=" + positionAndvoiceSet + 
                 ", predicateAndHeadwordSet=" + predicateAndHeadwordSet +  
                 ", predicateAndPhrasetypeSet=" + predicateAndPhrasetypeSet +
                 '}';
@@ -149,51 +117,17 @@ public class SRLContextGeneratorConfForClassification implements SRLContextGener
 		}
 		String predicate = headtree.getNodeName();
 		String path = getPath(predicatetree[0].getTree(),argumenttree[i].getTree());
-		if(predicateSet){
-			features.add("predicate="+predicate);
-		}
-		if(predicateposSet){
-			features.add("predicatepos="+headtree.getParent().getNodeName());
-		}
-		if(predicatesuffixSet){
-			if(predicate.length() >= 3){
-				features.add("predicatesuffix="+predicate.substring(predicate.length()-3, predicate.length()));
-			}else{
-				features.add("predicatesuffix="+predicate);
-			}
-		}
 		if(pathSet){
 			features.add("path="+path);
 		}
-		if(pathlengthSet){
-			features.add("pathlength="+getPathLength(path));
-		}
-		if(partialpathSet){
-			features.add("partialpath="+getPartialPath(path));
-		}
 		if(phrasetypeSet){
 			features.add("phrasetype="+argumenttree[i].getTree().getNodeName());
-		}
-		if(positionSet){
-			features.add("position="+position);			
-		}
-		if(voiceSet){
-			features.add("voice="+voice);
 		}
 		if(headwordSet){
 			features.add("headword="+argumenttree[i].getTree().getHeadWords());
 		}
 		if(headwordposSet){
 			features.add("headwordpos="+argumenttree[i].getTree().getHeadWordsPos());
-		}
-		if(governingcategoriesSet){
-			if(argumenttree[i].getTree().getNodeName().equals("NP")){
-				if(argumenttree[i].getTree().getParent().getNodeName().equals("S")){
-					features.add("governingcategories="+"S");
-				}else if(argumenttree[i].getTree().getParent().getNodeName().equals("VP")){
-					features.add("governingcategories="+"VP");
-				}
-			}
 		}
 		if(subcategorizationSet){
 			features.add("subcategorization="+getSubcategorization(predicatetree[0].getTree()));
@@ -212,21 +146,6 @@ public class SRLContextGeneratorConfForClassification implements SRLContextGener
 		}
 		if(positionAndvoiceSet){
 			features.add("positionAndvoice="+position+"|"+voice);
-		}
-		if(predicateAndpathSet){
-			features.add("predicateAndpath="+predicate+"|"+path);
-		}
-		if(pathAndpositionAndvoiceSet){
-			features.add("pathAndpositionAndvoice="+path+"|"+position+"|"+voice);
-		}
-		if(pathAndpositionAndvoiceAndpredicateSet){
-			features.add("pathAndpositionAndvoiceAndpredicate="+path+"|"+position+"|"+voice+"|"+predicate);
-		}
-		if(headwordAndpredicateAndpathSet){
-			features.add("headwordAndpredicateAndpath="+argumenttree[i].getTree().getHeadWords()+"|"+predicate+"|"+path);
-		}
-		if(headwordAndPhraseSet){
-			features.add("headwordAndPhrase="+argumenttree[i].getTree().getHeadWords()+"|"+argumenttree[i].getTree().getNodeName());
 		}
 		if(predicateAndHeadwordSet){
 			features.add("predicateAndHeadword="+predicate+"|"+argumenttree[i].getTree().getHeadWords());

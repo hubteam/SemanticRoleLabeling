@@ -1,8 +1,9 @@
-package com.wxw.evaluate;
+package com.wxw.onestep;
 
 import java.util.Arrays;
 
-import com.wxw.onestep.SRLME;
+import com.wxw.evaluate.SRLEvaluateMonitor;
+import com.wxw.evaluate.SRLMeasure;
 import com.wxw.stream.SRLSample;
 import com.wxw.tool.PostTreatTool;
 import com.wxw.tool.TreeNodeWrapper;
@@ -11,16 +12,21 @@ import com.wxw.tree.HeadTreeNode;
 import opennlp.tools.util.Sequence;
 import opennlp.tools.util.eval.Evaluator;
 
-public class SRLEvaluator extends Evaluator<SRLSample<HeadTreeNode>>{
+/**
+ * 基于一步训练模型的评估类
+ * @author 王馨苇
+ *
+ */
+public class SRLEvaluatorForOneStep extends Evaluator<SRLSample<HeadTreeNode>>{
 
-	private SRLME tagger;
+	private SRLMEForOneStep tagger;
 	private SRLMeasure measure;
 	
-	public SRLEvaluator(SRLME tagger) {
+	public SRLEvaluatorForOneStep(SRLMEForOneStep tagger) {
 		this.tagger = tagger;
 	}
 	
-	public SRLEvaluator(SRLME tagger,SRLEvaluateMonitor... evaluateMonitors) {
+	public SRLEvaluatorForOneStep(SRLMEForOneStep tagger,SRLEvaluateMonitor... evaluateMonitors) {
 		super(evaluateMonitors);
 		this.tagger = tagger;
 	}

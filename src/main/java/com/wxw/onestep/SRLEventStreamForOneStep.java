@@ -1,4 +1,4 @@
-package com.wxw.stream;
+package com.wxw.onestep;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.wxw.feature.SRLContextGenerator;
+import com.wxw.stream.SRLSample;
 import com.wxw.tool.TreeNodeWrapper;
 import com.wxw.tree.HeadTreeNode;
 
@@ -14,11 +15,11 @@ import opennlp.tools.util.AbstractEventStream;
 import opennlp.tools.util.ObjectStream;
 
 /**
- * 生成事件
+ * 为一步生成的模型生成事件
  * @author 王馨苇
  *
  */
-public class SRLSampleEventStream extends AbstractEventStream<SRLSample<HeadTreeNode>>{
+public class SRLEventStreamForOneStep extends AbstractEventStream<SRLSample<HeadTreeNode>>{
 	private HashSet<String> hs = new HashSet<>();
 
 	private SRLContextGenerator generator;
@@ -28,7 +29,7 @@ public class SRLSampleEventStream extends AbstractEventStream<SRLSample<HeadTree
 	 * @param samples 样本流
 	 * @param generator 上下文产生器
 	 */
-	public SRLSampleEventStream(ObjectStream<SRLSample<HeadTreeNode>> samples,SRLContextGenerator generator) {
+	public SRLEventStreamForOneStep(ObjectStream<SRLSample<HeadTreeNode>> samples,SRLContextGenerator generator) {
 		super(samples);
 		this.generator = generator;
 	}

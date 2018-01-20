@@ -1,13 +1,10 @@
-package com.wxw.cross;
+package com.wxw.onestep;
 
 import java.io.IOException;
 
 import com.wxw.evaluate.SRLEvaluateMonitor;
-import com.wxw.evaluate.SRLEvaluator;
 import com.wxw.evaluate.SRLMeasure;
 import com.wxw.feature.SRLContextGenerator;
-import com.wxw.onestep.SRLME;
-import com.wxw.onestep.SRLModel;
 import com.wxw.stream.SRLSample;
 import com.wxw.tree.HeadTreeNode;
 
@@ -16,11 +13,11 @@ import opennlp.tools.util.TrainingParameters;
 import opennlp.tools.util.eval.CrossValidationPartitioner;
 
 /**
- * 交叉验证
+ * 基于一步训练模型交叉验证
  * @author 王馨苇
  *
  */
-public class SRLCrossValidation {
+public class SRLCrossValidationForOneStep {
 	private final String languageCode;
 	private final TrainingParameters params;
 	private SRLEvaluateMonitor[] monitor;
@@ -31,7 +28,7 @@ public class SRLCrossValidation {
 	 * @param params 训练的参数
 	 * @param listeners 监听器
 	 */
-	public SRLCrossValidation(String languageCode,TrainingParameters params,SRLEvaluateMonitor... monitor){
+	public SRLCrossValidationForOneStep(String languageCode,TrainingParameters params,SRLEvaluateMonitor... monitor){
 		this.languageCode = languageCode;
 		this.params = params;
 		this.monitor = monitor;
@@ -39,7 +36,6 @@ public class SRLCrossValidation {
 	
 	/**
 	 * 交叉验证十折评估
-	 * @param file 词性标注的模型文件
 	 * @param sample 样本流
 	 * @param nFolds 折数
 	 * @param contextGenerator 上下文
@@ -54,9 +50,9 @@ public class SRLCrossValidation {
 			long start = System.currentTimeMillis();
 			System.out.println("Run"+run+"...");
 			CrossValidationPartitioner.TrainingSampleStream<SRLSample<HeadTreeNode>> trainingSampleStream = partitioner.next();			
-			SRLModel model = SRLME.train(languageCode, trainingSampleStream, params, contextGenerator);
+			SRLModelForOneStep model = SRLMEForOneStep.train(languageCode, trainingSampleStream, params, contextGenerator);
 			System.out.println("训练时间："+(System.currentTimeMillis()-start));
-			SRLEvaluator evaluator = new SRLEvaluator(new SRLME(model,contextGenerator), monitor);
+			SRLEvaluatorForOneStep evaluator = new SRLEvaluatorForOneStep(new SRLMEForOneStep(model,contextGenerator), monitor);
 			SRLMeasure measure = new SRLMeasure();
 			
 			evaluator.setMeasure(measure);

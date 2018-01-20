@@ -16,29 +16,10 @@ import com.wxw.tree.HeadTreeNode;
  */
 public class SRLContextGeneratorConfForIdentification implements SRLContextGenerator{
 
-	private boolean predicateSet;
-	private boolean predicateposSet;
-	private boolean predicatesuffixSet;
-	private boolean pathlengthSet;
-	private boolean partialpathSet;
 	private boolean pathSet; 
-	private boolean phrasetypeSet; 
-	private boolean positionSet;  
-	private boolean voiceSet;
+	private boolean pathlengthSet;
 	private boolean headwordSet;
 	private boolean headwordposSet;
-	private boolean governingcategoriesSet;
-	private boolean subcategorizationSet; 
-	private boolean firstargumentSet; 
-	private boolean firstargumentposSet;   
-	private boolean lastargumentSet;  
-	private boolean lastargumentposSet;  
-	private boolean positionAndvoiceSet;
-	private boolean predicateAndpathSet;
-	private boolean pathAndpositionAndvoiceSet;
-	private boolean pathAndpositionAndvoiceAndpredicateSet;
-	private boolean headwordAndpredicateAndpathSet;
-	private boolean headwordAndPhraseSet;
 	private boolean predicateAndHeadwordSet;   
 	private boolean predicateAndPhrasetypeSet;
 				
@@ -69,31 +50,12 @@ public class SRLContextGeneratorConfForIdentification implements SRLContextGener
 		
 	private void init(Properties config) {
 			
-		predicateSet = (config.getProperty("tree.predicate", "true").equals("true"));
-		predicateposSet = (config.getProperty("tree.predicatepos", "true").equals("true"));
-		predicatesuffixSet = (config.getProperty("tree.predicatesuffix", "true").equals("true"));
-		pathlengthSet = (config.getProperty("tree.pathlength", "true").equals("true"));
-		partialpathSet = (config.getProperty("tree.partialpath", "true").equals("true"));
-		pathSet = (config.getProperty("tree.path", "true").equals("true"));
-		phrasetypeSet = (config.getProperty("tree.phrasetype", "true").equals("true"));
-		positionSet = (config.getProperty("tree.position", "true").equals("true"));
-		voiceSet = (config.getProperty("tree.voice", "true").equals("true"));
-		headwordSet = (config.getProperty("tree.headword", "true").equals("true"));
-		headwordposSet = (config.getProperty("tree.headwordpos", "true").equals("true"));
-		governingcategoriesSet = (config.getProperty("tree.governingcategories", "true").equals("true"));
-		subcategorizationSet = (config.getProperty("tree.subcategorization", "true").equals("true"));
-		firstargumentSet = (config.getProperty("tree.firstargument", "true").equals("true"));
-		firstargumentposSet = (config.getProperty("tree.firstargumentpos", "true").equals("true"));
-		lastargumentSet = (config.getProperty("tree.lastargument", "true").equals("true"));
-		lastargumentposSet = (config.getProperty("tree.lastargumentpos", "true").equals("true"));
-		positionAndvoiceSet = (config.getProperty("tree.positionAndvoice", "true").equals("true"));
-		predicateAndpathSet = (config.getProperty("tree.predicateAndpath", "true").equals("true"));
-		pathAndpositionAndvoiceSet = (config.getProperty("tree.pathAndpositionAndvoice", "true").equals("true"));
-		pathAndpositionAndvoiceAndpredicateSet = (config.getProperty("tree.pathAndpositionAndvoiceAndpredicate", "true").equals("true"));
-		headwordAndpredicateAndpathSet = (config.getProperty("tree.headwordAndpredicateAndpath", "true").equals("true"));
-		headwordAndPhraseSet = (config.getProperty("tree.headwordAndPhrase", "true").equals("true"));
-		predicateAndHeadwordSet = (config.getProperty("tree.predicateAndHeadword", "true").equals("true"));		
-		predicateAndPhrasetypeSet = (config.getProperty("tree.predicateAndPhrasetype", "true").equals("true"));		
+		pathlengthSet = (config.getProperty("identify.pathlength", "true").equals("true"));
+		pathSet = (config.getProperty("identify.path", "true").equals("true"));
+		headwordSet = (config.getProperty("identify.headword", "true").equals("true"));
+		headwordposSet = (config.getProperty("identify.headwordpos", "true").equals("true"));
+		predicateAndHeadwordSet = (config.getProperty("identify.predicateAndHeadword", "true").equals("true"));		
+		predicateAndPhrasetypeSet = (config.getProperty("identify.predicateAndPhrasetype", "true").equals("true"));		
 	}
 	
 	/**
@@ -101,19 +63,9 @@ public class SRLContextGeneratorConfForIdentification implements SRLContextGener
 	 */
 	@Override
 	public String toString() {
-		return "SRLContextGeneratorConf{" + "predicateSet=" + predicateSet + "predicateposSet=" + predicateposSet + 
-                ", pathSet=" + pathSet + ", phrasetypeSet=" + phrasetypeSet + 
-                ", positionSet=" + positionSet + ", voiceSet=" + voiceSet +  
+		return "SRLContextGeneratorConfForIdentification{" +
+                ", pathSet=" + pathSet + ", pathlengthSet=" + pathlengthSet + 
                 ", headwordSet=" + headwordSet + ", headwordposSet=" + headwordposSet + 
-                ", governingcategoriesSet=" + governingcategoriesSet +
-                ", subcategorizationSet=" + subcategorizationSet + ", firstargumentSet=" + firstargumentSet + 
-                ", firstargumentposSet=" + firstargumentposSet + 
-                ", lastargumentSet=" + lastargumentSet + ", lastargumentposSet=" + lastargumentposSet + 
-                ", positionAndvoiceSet=" + positionAndvoiceSet + ", predicateAndpathSet=" + predicateAndpathSet + 
-                ", pathAndpositionAndvoiceSet=" + pathAndpositionAndvoiceSet + 
-                ", pathAndpositionAndvoiceAndpredicateSet=" + pathAndpositionAndvoiceAndpredicateSet + 
-                ", headwordAndpredicateAndpathSet=" + headwordAndpredicateAndpathSet + 
-                ", headwordAndPhraseSet=" + headwordAndPhraseSet + 
                 ", predicateAndHeadwordSet=" + predicateAndHeadwordSet +  
                 ", predicateAndPhrasetypeSet=" + predicateAndPhrasetypeSet +
                 '}';
@@ -129,104 +81,23 @@ public class SRLContextGeneratorConfForIdentification implements SRLContextGener
 	 */
 	public String[] getContext(int i, TreeNodeWrapper<HeadTreeNode>[] argumenttree , String[] labelinfo, TreeNodeWrapper<HeadTreeNode>[] predicatetree) {
 		List<String> features = new ArrayList<String>();
-		int predicateposition = predicatetree[0].getLeftLeafIndex();
-		int argumentposition = argumenttree[i].getLeftLeafIndex();
 		HeadTreeNode headtree = predicatetree[0].getTree();
 		while(headtree.getChildren().size() != 0){
 			headtree = headtree.getChildren().get(0);
 		}
-		String voice;
-		if(headtree.getParent().getNodeName().equals("VBN")){
-			voice = "p";
-		}else{
-			voice = "a";
-		}
-		String position;
-		if(argumentposition < predicateposition){
-			position = "before";
-		}else{
-			position = "after";
-		}
 		String predicate = headtree.getNodeName();
 		String path = getPath(predicatetree[0].getTree(),argumenttree[i].getTree());
-		if(predicateSet){
-			features.add("predicate="+predicate);
-		}
-		if(predicateposSet){
-			features.add("predicatepos="+headtree.getParent().getNodeName());
-		}
-		if(predicatesuffixSet){
-			if(predicate.length() >= 3){
-				features.add("predicatesuffix="+predicate.substring(predicate.length()-3, predicate.length()));
-			}else{
-				features.add("predicatesuffix="+predicate);
-			}
-		}
 		if(pathSet){
 			features.add("path="+path);
 		}
 		if(pathlengthSet){
 			features.add("pathlength="+getPathLength(path));
 		}
-		if(partialpathSet){
-			features.add("partialpath="+getPartialPath(path));
-		}
-		if(phrasetypeSet){
-			features.add("phrasetype="+argumenttree[i].getTree().getNodeName());
-		}
-		if(positionSet){
-			features.add("position="+position);			
-		}
-		if(voiceSet){
-			features.add("voice="+voice);
-		}
 		if(headwordSet){
 			features.add("headword="+argumenttree[i].getTree().getHeadWords());
 		}
 		if(headwordposSet){
 			features.add("headwordpos="+argumenttree[i].getTree().getHeadWordsPos());
-		}
-		if(governingcategoriesSet){
-			if(argumenttree[i].getTree().getNodeName().equals("NP")){
-				if(argumenttree[i].getTree().getParent().getNodeName().equals("S")){
-					features.add("governingcategories="+"S");
-				}else if(argumenttree[i].getTree().getParent().getNodeName().equals("VP")){
-					features.add("governingcategories="+"VP");
-				}
-			}
-		}
-		if(subcategorizationSet){
-			features.add("subcategorization="+getSubcategorization(predicatetree[0].getTree()));
-		}
-		if(firstargumentSet){
-			features.add("firstargument="+getFirstArgument(argumenttree[i].getTree()).split("_")[0]);
-		}
-		if(firstargumentposSet){
-			features.add("firstargumentpos="+getFirstArgument(argumenttree[i].getTree()).split("_")[1]);
-		}
-		if(lastargumentSet){
-			features.add("lastargument="+getLastArgument(argumenttree[i].getTree()).split("_")[0]);
-		}
-		if(lastargumentposSet){
-			features.add("lastargumentpos="+getLastArgument(argumenttree[i].getTree()).split("_")[1]);
-		}
-		if(positionAndvoiceSet){
-			features.add("positionAndvoice="+position+"|"+voice);
-		}
-		if(predicateAndpathSet){
-			features.add("predicateAndpath="+predicate+"|"+path);
-		}
-		if(pathAndpositionAndvoiceSet){
-			features.add("pathAndpositionAndvoice="+path+"|"+position+"|"+voice);
-		}
-		if(pathAndpositionAndvoiceAndpredicateSet){
-			features.add("pathAndpositionAndvoiceAndpredicate="+path+"|"+position+"|"+voice+"|"+predicate);
-		}
-		if(headwordAndpredicateAndpathSet){
-			features.add("headwordAndpredicateAndpath="+argumenttree[i].getTree().getHeadWords()+"|"+predicate+"|"+path);
-		}
-		if(headwordAndPhraseSet){
-			features.add("headwordAndPhrase="+argumenttree[i].getTree().getHeadWords()+"|"+argumenttree[i].getTree().getNodeName());
 		}
 		if(predicateAndHeadwordSet){
 			features.add("predicateAndHeadword="+predicate+"|"+argumenttree[i].getTree().getHeadWords());
@@ -236,47 +107,6 @@ public class SRLContextGeneratorConfForIdentification implements SRLContextGener
 		}	
 		String[] contexts = features.toArray(new String[features.size()]);
         return contexts;
-	}
-	
-	private String getSubcategorization(HeadTreeNode headTree){
-		int index = headTree.getIndex();
-		String str = "";
-		if(headTree.getParent() != null){
-			headTree = headTree.getParent();
-			str += headTree.getNodeName()+"→";
-			for (int i = index; i < headTree.getChildren().size(); i++) {
-				if(i == headTree.getChildren().size()-1){
-					str += headTree.getChildren().get(i).getNodeName();
-				}else{
-					str += headTree.getChildren().get(i).getNodeName()+" ";
-				}				
-			}
-		}
-		return str;
-	}
-	
-	/**
-	 * 获取论元的第一个词
-	 * @param headTree 以当前论元为根节点的树
-	 * @return
-	 */
-	private String getFirstArgument(HeadTreeNode headTree){
-		while(headTree.getChildren().size() != 0){
-			headTree = headTree.getChildren().get(0);
-		}
-		return headTree.getNodeName()+"_"+headTree.getParent().getNodeName();
-	}
-	
-	/**
-	 * 获取论元的最后一个词
-	 * @param headTree 以当前论元为根节点的树
-	 * @return
-	 */
-	private String getLastArgument(HeadTreeNode headTree){
-		while(headTree.getChildren().size() != 0){
-			headTree = headTree.getChildren().get(headTree.getChildren().size()-1);
-		}
-		return headTree.getNodeName()+"_"+headTree.getParent().getNodeName();
 	}
 	
 	/**

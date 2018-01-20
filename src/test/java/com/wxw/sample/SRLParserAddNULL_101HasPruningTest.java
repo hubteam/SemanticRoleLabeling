@@ -10,7 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.wxw.parse.AbstractParseStrategy;
-import com.wxw.parse.SRLParserAddNULL_101HasPruning;
+import com.wxw.parse.SRLParseAddNULL_101HasPruning;
 import com.wxw.stream.SRLSample;
 import com.wxw.tool.PreTreatTool;
 import com.wxw.tree.HeadTreeNode;
@@ -18,7 +18,7 @@ import com.wxw.tree.PhraseGenerateTree;
 import com.wxw.tree.TreeNode;
 
 /**
- * 有剪枝的样本类解析
+ * 有剪枝的样本类解析,此时样本类标签增加NULL_1 NULL0 NULL1
  * @author 王馨苇
  *
  */
@@ -56,7 +56,7 @@ public class SRLParserAddNULL_101HasPruningTest {
 				+ "(NP(NNP Publishers)(NNP Information)(NNP Bureau))))))(. .)))");	
 
 		PreTreatTool.preTreat(tree);
-		parse = new SRLParserAddNULL_101HasPruning();
+		parse = new SRLParseAddNULL_101HasPruning();
 		sample = parse.parse(tree, roles);
 
 		srlinfo = new ArrayList<>();		
@@ -130,7 +130,7 @@ public class SRLParserAddNULL_101HasPruningTest {
 		tree1 = pgt.generateTree("((S(S(NP-SBJ(PRP We))(VP(VBD got)(NP(PRP$ our)(CD two)(NNS six-packs))))(: --) (CC and)(S(NP-SBJ(PRP they))(VP(VBP 're)(VP(VBN gone))))(. .)('' '')))");	
 
 		PreTreatTool.preTreat(tree1);
-		parse1 = new SRLParserAddNULL_101HasPruning();
+		parse1 = new SRLParseAddNULL_101HasPruning();
 		sample1 = parse1.parse(tree1, roles1);
 		
 		srlinfo1 = new ArrayList<>();		

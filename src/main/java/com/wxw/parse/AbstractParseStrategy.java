@@ -29,6 +29,10 @@ public abstract class AbstractParseStrategy<T extends TreeNode> {
 	 */
 	public abstract boolean hasPrePruning();
 	
+	/**
+	 * 是否有头结点
+	 * @return
+	 */
 	public abstract boolean hasHeadWord();
 	
 	/**
@@ -110,6 +114,13 @@ public abstract class AbstractParseStrategy<T extends TreeNode> {
 		return tree;
 	}
 	
+	/**
+	 * 将谓词的子节点设置为false
+	 * @param tree 树
+	 * @param map 语义角色的map
+	 * @param verbindex 动词的标记
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	private T removePredicateSon(T tree,HashMap<Integer,RoleTool> map,int verbindex){
 		if(tree.getChildren().size() == 0){

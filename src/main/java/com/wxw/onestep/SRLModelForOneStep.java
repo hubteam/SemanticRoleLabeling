@@ -7,6 +7,7 @@ import java.util.Properties;
 
 import com.wxw.tool.TreeNodeWrapper;
 import com.wxw.tree.HeadTreeNode;
+import com.wxw.tree.TreeNode;
 
 import opennlp.tools.ml.BeamSearch;
 import opennlp.tools.ml.model.MaxentModel;
@@ -18,9 +19,9 @@ import opennlp.tools.util.model.BaseModel;
  * @author 王馨苇
  *
  */
-public class SRLModel extends BaseModel{
+public class SRLModelForOneStep extends BaseModel{
 
-	private static final String COMPONENT_NAME = "SRLME";
+	private static final String COMPONENT_NAME = "SRLMEForOneStep";
 	private static final String SRL_MODEL_ENTRY_NAME = "srl.model";
 	
 	/**
@@ -28,7 +29,7 @@ public class SRLModel extends BaseModel{
 	 * @param modelFile 模型文件
 	 * @throws IOException IO异常
 	 */
-	public SRLModel(File modelFile) throws IOException {
+	public SRLModelForOneStep(File modelFile) throws IOException {
 		super(COMPONENT_NAME, modelFile);
 	}
 
@@ -39,7 +40,7 @@ public class SRLModel extends BaseModel{
 	 * @param beamSize 大小
 	 * @param manifestInfoEntries 配置的信息
 	 */
-	public SRLModel(String languageCode, MaxentModel model, int beamSize,
+	public SRLModelForOneStep(String languageCode, MaxentModel model, int beamSize,
 			Map<String, String> manifestInfoEntries) {
 		super(COMPONENT_NAME, languageCode, manifestInfoEntries, null);
 		if (model == null) {
@@ -55,7 +56,7 @@ public class SRLModel extends BaseModel{
 	}
 	
 
-	public SRLModel(String languageCode, SequenceClassificationModel<String> seqModel,
+	public SRLModelForOneStep(String languageCode, SequenceClassificationModel<?> seqModel,
 			Map<String, String> manifestInfoEntries) {
 		super(COMPONENT_NAME, languageCode, manifestInfoEntries, null);
 		if (seqModel == null) {
@@ -78,21 +79,21 @@ public class SRLModel extends BaseModel{
         }
 	}
 	
-	public SequenceClassificationModel<TreeNodeWrapper<HeadTreeNode>> getSRLTreeSequenceModel() {
+	public SequenceClassificationModel<?> getSRLTreeSequenceModel() {
 
         Properties manifest = (Properties) artifactMap.get(MANIFEST_ENTRY);
 
         if (artifactMap.get(SRL_MODEL_ENTRY_NAME) instanceof MaxentModel) {
             String beamSizeString = manifest.getProperty(BeamSearch.BEAM_SIZE_PARAMETER);
 
-            int beamSize = SRLME.DEFAULT_BEAM_SIZE;
+            int beamSize = SRLMEForOneStep.DEFAULT_BEAM_SIZE;
             if (beamSizeString != null) {
                 beamSize = Integer.parseInt(beamSizeString);
             }
 
             return new BeamSearch(beamSize, (MaxentModel) artifactMap.get(SRL_MODEL_ENTRY_NAME));
         } else if (artifactMap.get(SRL_MODEL_ENTRY_NAME) instanceof SequenceClassificationModel) {
-            return (SequenceClassificationModel<TreeNodeWrapper<HeadTreeNode>>) artifactMap.get(SRL_MODEL_ENTRY_NAME);
+            return (SequenceClassificationModel) artifactMap.get(SRL_MODEL_ENTRY_NAME);
         } else {
             return null;
         }

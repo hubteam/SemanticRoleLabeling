@@ -15,7 +15,7 @@ import com.wxw.tree.TreeNode;
  * @author 王馨苇
  *
  */
-public class SRLParserAddNULL_101HasPruning extends AbstractParseStrategy<HeadTreeNode>{
+public class SRLParseAddNULL_101HasPruning extends AbstractParseStrategy<HeadTreeNode>{
 	
 	private List<String> labelinfo = new ArrayList<>();
 	private List<TreeNodeWrapper<HeadTreeNode>> argumenttree = new ArrayList<>();

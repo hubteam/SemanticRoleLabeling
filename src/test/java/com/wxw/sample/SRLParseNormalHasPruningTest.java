@@ -18,7 +18,7 @@ import com.wxw.tree.PhraseGenerateTree;
 import com.wxw.tree.TreeNode;
 
 /**
- * 有剪枝的解析样本类测试
+ * 样本类测试(NULL标记，有剪枝)
  * @author 王馨苇
  *
  */
