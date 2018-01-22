@@ -58,7 +58,7 @@ public class SRLCrossValidationForByStepContainsNullLabel {
 			
 			System.out.println("训练时间："+(System.currentTimeMillis()-start));
 			SRLEvaluatorForByStepContainsNullLabel evaluator = new SRLEvaluatorForByStepContainsNullLabel(new SRLMEForIdentification(modelIden,contextIden),
-					new SRLMEForClassificationContainsNullLabel(modelClas,contextClas),monitor);
+					new SRLMEForClassificationContainsNullLabel(modelIden,modelClas,contextIden,contextClas),monitor);
 			SRLMeasure measure = new SRLMeasure();
 			
 			evaluator.setMeasure(measure);

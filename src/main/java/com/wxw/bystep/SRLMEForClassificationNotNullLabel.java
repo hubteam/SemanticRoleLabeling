@@ -6,17 +6,28 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.wxw.feature.SRLContextGenerator;
+import com.wxw.parse.AbstractParseStrategy;
+import com.wxw.parse.SRLParseAddNULL_101HasPruning;
+import com.wxw.srl.SRLTree;
+import com.wxw.srl.SemanticRoleLabeling;
 import com.wxw.stream.FileInputStreamFactory;
 import com.wxw.stream.PlainTextByTreeStream;
 import com.wxw.stream.SRLSample;
 import com.wxw.stream.SRLSampleStream;
+import com.wxw.tool.PostTreatTool;
+import com.wxw.tool.PreTreatTool;
 import com.wxw.tool.TreeNodeWrapper;
+import com.wxw.tool.TreeToSRLTreeTool;
 import com.wxw.tree.HeadTreeNode;
+import com.wxw.tree.PhraseGenerateTree;
+import com.wxw.tree.SRLTreeNode;
+import com.wxw.tree.TreeNode;
 import com.wxw.validate.DefaultSRLSequenceValidator;
 
 import opennlp.tools.ml.BeamSearch;
@@ -36,22 +47,27 @@ import opennlp.tools.util.TrainingParameters;
  * @author 王馨苇
  *
  */
-public class SRLMEForClassificationNotNullLabel {
+public class SRLMEForClassificationNotNullLabel implements SemanticRoleLabeling{
 
 	public static final int DEFAULT_BEAM_SIZE = 15;
-	private SRLContextGenerator contextGenerator;
-	private int size;
-	private SequenceClassificationModel<TreeNodeWrapper<HeadTreeNode>> model;
+	private SRLContextGenerator contextGeneratorClas;
+	private int sizeClas;
+	private SequenceClassificationModel<TreeNodeWrapper<HeadTreeNode>> modelClas;
+	
+	private SRLContextGenerator contextGeneratorIden;
+	private int sizeIden;
+	private SequenceClassificationModel<TreeNodeWrapper<HeadTreeNode>> modelIden;
 
     private SequenceValidator<TreeNodeWrapper<HeadTreeNode>> sequenceValidator;
+    private PhraseGenerateTree pgt = new PhraseGenerateTree();
 	
 	/**
 	 * 构造函数，初始化工作
 	 * @param model 模型
 	 * @param contextGen 特征
 	 */
-	public SRLMEForClassificationNotNullLabel(SRLModelForClassification model, SRLContextGenerator contextGen) {
-		init(model , contextGen);
+	public SRLMEForClassificationNotNullLabel(SRLModelForIdentification modelIden,SRLModelForClassification modelClas, SRLContextGenerator contextGenIden, SRLContextGenerator contextGenClas) {
+		init(modelIden, modelClas, contextGenIden, contextGenClas);
 	}
     /**
      * 初始化工作
@@ -59,24 +75,40 @@ public class SRLMEForClassificationNotNullLabel {
      * @param contextGen 特征
      */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void init(SRLModelForClassification model, SRLContextGenerator contextGen) {
-		int beamSize = SRLMEForClassificationNotNullLabel.DEFAULT_BEAM_SIZE;
+	private void init(SRLModelForIdentification modelIden,SRLModelForClassification modelClas, SRLContextGenerator contextGenIden, SRLContextGenerator contextGenClas) {
+		int beamSizeClas = SRLMEForClassificationContainsNullLabel.DEFAULT_BEAM_SIZE;
 
-        String beamSizeString = model.getManifestProperty(BeamSearch.BEAM_SIZE_PARAMETER);
+        String beamSizeStringClas = modelClas.getManifestProperty(BeamSearch.BEAM_SIZE_PARAMETER);
 
-        if (beamSizeString != null) {
-            beamSize = Integer.parseInt(beamSizeString);
+        if (beamSizeStringClas != null) {
+            beamSizeClas = Integer.parseInt(beamSizeStringClas);
         }
-        contextGenerator = contextGen;
-        size = beamSize;
+        contextGeneratorClas = contextGenClas;
+        sizeClas = beamSizeClas;
         sequenceValidator = new DefaultSRLSequenceValidator();
-        if (model.getSRLClassificationSequenceModel() != null) {
-            this.model = (SequenceClassificationModel<TreeNodeWrapper<HeadTreeNode>>) model.getSRLClassificationSequenceModel();
+        if (modelClas.getSRLClassificationSequenceModel() != null) {
+            this.modelClas = (SequenceClassificationModel<TreeNodeWrapper<HeadTreeNode>>) modelClas.getSRLClassificationSequenceModel();
         } else {
-        	this.model = new BeamSearch(beamSize,
-                    model.getSRLClassificationModel(), 0);
+        	this.modelClas = new BeamSearch(beamSizeClas,
+        			modelClas.getSRLClassificationModel(), 0);
         }
-		
+        
+        int beamSizeIden = SRLMEForIdentification.DEFAULT_BEAM_SIZE;
+
+        String beamSizeStringIden = modelIden.getManifestProperty(BeamSearch.BEAM_SIZE_PARAMETER);
+
+        if (beamSizeStringIden != null) {
+            beamSizeIden = Integer.parseInt(beamSizeStringIden);
+        }
+        contextGeneratorIden = contextGenIden;
+        sizeIden = beamSizeIden;
+        sequenceValidator = new DefaultSRLSequenceValidator();
+        if (modelIden.getSRLIdentificationModel() != null) {
+            this.modelIden = (SequenceClassificationModel<TreeNodeWrapper<HeadTreeNode>>) modelClas.getSRLClassificationSequenceModel();
+        } else {
+        	this.modelIden = new BeamSearch(beamSizeIden,
+        			modelIden.getSRLIdentificationModel(), 0);
+        }
 	}
 	
 	/**
@@ -184,7 +216,7 @@ public class SRLMEForClassificationNotNullLabel {
 	 * @return
 	 */
 	public Sequence topSequences(TreeNodeWrapper<HeadTreeNode>[] argumentree, Object[] predicatetree) {
-        return model.bestSequences(1, argumentree, predicatetree, contextGenerator, sequenceValidator)[0];
+        return modelClas.bestSequences(1, argumentree, predicatetree, contextGeneratorClas, sequenceValidator)[0];
     }
 	
 	/**
@@ -194,7 +226,7 @@ public class SRLMEForClassificationNotNullLabel {
 	 * @return
 	 */
 	public String[] tag(TreeNodeWrapper<HeadTreeNode>[] argumentree, Object[] predicatetree){
-		Sequence sequence = model.bestSequence(argumentree, predicatetree, contextGenerator, sequenceValidator);
+		Sequence sequence = modelClas.bestSequence(argumentree, predicatetree, contextGeneratorClas, sequenceValidator);
 		List<String> outcome = sequence.getOutcomes();
 		return outcome.toArray(new String[outcome.size()]);
 	}
@@ -206,6 +238,114 @@ public class SRLMEForClassificationNotNullLabel {
 	 * @return
 	 */
 	public Sequence[] topKSequences(TreeNodeWrapper<HeadTreeNode>[] argumentree, Object[] predicatetree) {
-        return model.bestSequences(size, argumentree, predicatetree, contextGenerator, sequenceValidator);
+        return modelClas.bestSequences(sizeClas, argumentree, predicatetree, contextGeneratorClas, sequenceValidator);
     }
+	
+	/**
+	 * 得到一棵树的语义角色标注
+	 * @param tree 句法分析得到的树
+	 * @return
+	 */
+	@Override
+	public SRLTree srltree(TreeNode tree) {
+		return kSrltree(tree)[0];
+	}
+	
+	/**
+	 * 得到一棵树的语义角色标注
+	 * @param tree 句法分析得到的树的括号表达式形式
+	 * @return
+	 */
+	@Override
+	public SRLTree srltree(String treeStr) {
+		TreeNode node = pgt.generateTree("("+treeStr+")");
+		return srltree(node);
+	}
+	
+	/**
+	 * 得到一棵树最好的K个角色标注
+	 * @param tree 句法分析得到的树
+	 * @return
+	 */
+	@Override
+	public SRLTree[] kSrltree(TreeNode tree) {
+		AbstractParseStrategy<HeadTreeNode> ttst = new SRLParseAddNULL_101HasPruning();
+		SRLSample<HeadTreeNode> sample = null;
+		PreTreatTool.preTreat(tree);
+        sample = ttst.parse(tree, "");
+        List<SRLTree> srllist = new ArrayList<>();
+        Sequence[] sequence = topKSequences(sample.getArgumentTree(),sample.getPredicateTree());
+        for (int i = 0; i < sequence.length; i++) {
+        	String[] newlabelinfo = sequence[i].getOutcomes().toArray(new String[sequence[i].getOutcomes().size()]);
+    		if(sample.getIsPruning() == true){
+    			newlabelinfo = PostTreatTool.postTreat(sample.getArgumentTree(),sequence[i],PostTreatTool.getSonTreeCount(sample.getArgumentTree()[0].getTree().getParent()));
+        	}else{
+        		newlabelinfo = PostTreatTool.postTreat(sample.getArgumentTree(),sequence[i],sample.getArgumentTree().length);
+        	}
+    		SRLTreeNode srltreenode = TreeToSRLTreeTool.treeToSRLTree(tree, sample.getArgumentTree(), newlabelinfo);
+    		SRLTree srltree = new SRLTree();
+    		srltree.setSRLTree(srltreenode);
+    		srllist.add(srltree);
+        }
+		return srllist.toArray(new SRLTree[srllist.size()]);
+	}
+	
+	/**
+	 * 得到一棵树最好的K个角色标注
+	 * @param tree 句法分析得到的树的括号表示
+	 * @return
+	 */
+	@Override
+	public SRLTree[] kSrltree(String treeStr) {
+		TreeNode node = pgt.generateTree("("+treeStr+")");
+		return kSrltree(node);
+	}
+	
+	/**
+	 * 得到一棵树的语义角色标注的中括号表达式形式
+	 * @param tree 句法分析得到的树
+	 * @return
+	 */
+	@Override
+	public String srlstr(TreeNode tree) {
+		return kSrlstr(tree)[0];
+	}
+	
+	/**
+	 * 得到一棵树的语义角色标注的中括号表达式形式
+	 * @param tree 句法分析得到的树的括号表达式形式
+	 * @return
+	 */
+	@Override
+	public String srlstr(String treeStr) {
+		TreeNode node = pgt.generateTree("("+treeStr+")");
+		return srlstr(node);
+	}
+	
+	/**
+	 * 得到一棵树最好的K个角色标注的中括号表达式形式
+	 * @param tree 句法分析得到的树
+	 * @return
+	 */
+	@Override
+	public String[] kSrlstr(TreeNode tree) {
+		SRLTree[] srltree = kSrltree(tree);
+		String[] output = new String[srltree.length];
+ 		for (int i = 0; i < srltree.length; i++) {
+			String str = SRLTreeNode.printSRLBracket(srltree[i].getSRLTreeRoot());
+			output[i] = str;
+		}
+		return output;
+	}
+	
+	/**
+	 * 得到一棵树最好的K个角色标注的中括号表达式形式
+	 * @param tree 句法分析得到的树的括号表示
+	 * @return
+	 */
+	@Override
+	public String[] kSrlstr(String treeStr) {
+		TreeNode node = pgt.generateTree("("+treeStr+")");
+		return kSrlstr(node);
+	}
 }

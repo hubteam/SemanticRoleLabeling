@@ -321,13 +321,14 @@ public class PostTreatTest {
 		for (int i = 0; i < label.size() && i < prop.size(); i++) {
 			sequence.add(label.get(i), prop.get(i));
 		}
-		for (int i = 0; i < sample.getArgumentTree().length; i++) {
-			System.out.println(PostTreatTool.getSonTreeCount(sample.getArgumentTree()[i].getTree()));
-		}
+//		for (int i = 0; i < sample.getArgumentTree().length; i++) {
+//			System.out.println(PostTreatTool.getSonTreeCount(sample.getArgumentTree()[i].getTree()));
+//		}
 		if(sample.getIsPruning() == true){
 			pre = PostTreatTool.postTreat(sample.getArgumentTree(), sequence,PostTreatTool.getSonTreeCount(sample.getPredicateTree()[0].getTree()));
 		}else{
-			pre = PostTreatTool.postTreat(sample.getArgumentTree(), sequence,sample.getArgumentTree().length);
+			pre = PostTreatTool.postTreat(sample.getArgumentTree(), sequence,PostTreatTool.getSonTreeCount(sample.getArgumentTree()[0].getTree().getParent())-1);
+
 		}
 	}
 	

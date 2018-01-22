@@ -16,6 +16,9 @@ import com.wxw.tree.HeadTreeNode;
  */
 public class SRLContextGeneratorConf implements SRLContextGenerator{
 	
+	private List<String> content = new ArrayList<>();
+	private List<String> contentpos = new ArrayList<>();
+	
 	private boolean predicateSet;
 	private boolean predicateposSet;
 	private boolean predicatesuffixSet;
@@ -41,6 +44,19 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
 	private boolean headwordAndPhrasetypeSet;
 	private boolean predicateAndHeadwordSet;   
 	private boolean predicateAndPhrasetypeSet;
+	private boolean pathAndSubcategorizationSet;
+	private boolean predicatephraseSet;
+	private boolean voiceAndGoverningcategoriesSet;
+	private boolean contentSet;
+	private boolean contentposSet;
+	private boolean left_1wordSet;
+	private boolean left_2wordSet;
+	private boolean left_1posSet;
+	private boolean left_2posSet;
+	private boolean right1wordSet;
+	private boolean right2wordSet;
+	private boolean right1posSet;
+	private boolean right2posSet;
 				
 	/**
 	 * 无参构造
@@ -93,7 +109,21 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
 		headwordAndpredicateAndpathSet = (config.getProperty("feature.headwordAndpredicateAndpath", "true").equals("true"));
 		headwordAndPhrasetypeSet = (config.getProperty("feature.headwordAndPhrasetype", "true").equals("true"));
 		predicateAndHeadwordSet = (config.getProperty("feature.predicateAndHeadword", "true").equals("true"));		
-		predicateAndPhrasetypeSet = (config.getProperty("feature.predicateAndPhrasetype", "true").equals("true"));		
+		predicateAndPhrasetypeSet = (config.getProperty("feature.predicateAndPhrasetype", "true").equals("true"));
+		predicatephraseSet = (config.getProperty("feature.predicatephrase", "true").equals("true"));
+		voiceAndGoverningcategoriesSet = (config.getProperty("feature.predicatephrase", "true").equals("true"));
+		pathAndSubcategorizationSet = (config.getProperty("feature.pathAndSubcategorization", "true").equals("true"));
+		contentSet = (config.getProperty("feature.content", "true").equals("true"));
+		contentposSet = (config.getProperty("feature.contentpos", "true").equals("true"));	
+		
+		left_1wordSet = (config.getProperty("feature.left_1word", "true").equals("true"));
+		left_2wordSet = (config.getProperty("feature.left_2word", "true").equals("true"));		
+		left_1posSet = (config.getProperty("feature.left_1pos", "true").equals("true"));
+		left_2posSet = (config.getProperty("feature.left_2pos", "true").equals("true"));
+		right1wordSet = (config.getProperty("feature.right1word", "true").equals("true"));
+		right2wordSet = (config.getProperty("feature.right2word", "true").equals("true"));
+		right1posSet = (config.getProperty("feature.right1pos", "true").equals("true"));
+		right2posSet = (config.getProperty("feature.right2pos", "true").equals("true"));	
 	}
 	
 	/**
@@ -116,6 +146,19 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
                 ", headwordAndPhraseSet=" + headwordAndPhrasetypeSet + 
                 ", predicateAndHeadwordSet=" + predicateAndHeadwordSet +  
                 ", predicateAndPhrasetypeSet=" + predicateAndPhrasetypeSet +
+                ", predicatephraseSet=" + predicatephraseSet +
+                ", voiceAndGoverningcategoriesSet=" + voiceAndGoverningcategoriesSet +
+                ", pathAndSubcategorizationSet=" + pathAndSubcategorizationSet +
+                ", contentSet=" + contentSet +
+                ", contentposSet=" + contentposSet +
+                ", left_1wordSet=" + left_1wordSet + 
+                ", left_2wordSet=" + left_2wordSet +  
+                ", left_1posSet=" + left_1posSet +
+                ", left_2posSet=" + left_2posSet +
+                ", right1wordSet=" + right1wordSet +
+                ", right2wordSet=" + right2wordSet +
+                ", right1posSet=" + right1posSet +
+                ", right2posSet=" + right2posSet +
                 '}';
 	}	
 	
@@ -149,6 +192,15 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
 		}
 		String predicate = headtree.getNodeName();
 		String path = getPath(predicatetree[0].getTree(),argumenttree[i].getTree());
+		String governingcategories = "";
+		if(argumenttree[i].getTree().getNodeName().equals("NP")){
+			if(argumenttree[i].getTree().getParent().getNodeName().equals("S")){
+				governingcategories = "S";
+			}else if(argumenttree[i].getTree().getParent().getNodeName().equals("VP")){
+				governingcategories = "VP";
+			}
+		}
+		String subcategorization = getSubcategorization(predicatetree[0].getTree());
 		if(predicateSet){
 			features.add("predicate="+predicate);
 		}
@@ -187,16 +239,12 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
 			features.add("headwordpos="+argumenttree[i].getTree().getHeadWordsPos());
 		}
 		if(governingcategoriesSet){
-			if(argumenttree[i].getTree().getNodeName().equals("NP")){
-				if(argumenttree[i].getTree().getParent().getNodeName().equals("S")){
-					features.add("governingcategories="+"S");
-				}else if(argumenttree[i].getTree().getParent().getNodeName().equals("VP")){
-					features.add("governingcategories="+"VP");
-				}
+			if(!governingcategories.equals("")){
+				features.add("governingcategories="+governingcategories);
 			}
 		}
 		if(subcategorizationSet){
-			features.add("subcategorization="+getSubcategorization(predicatetree[0].getTree()));
+			features.add("subcategorization="+subcategorization);
 		}
 		if(firstargumentSet){
 			features.add("firstargument="+getFirstArgument(argumenttree[i].getTree()).split("_")[0]);
@@ -234,8 +282,84 @@ public class SRLContextGeneratorConf implements SRLContextGenerator{
 		if(predicateAndPhrasetypeSet){
 			features.add("predicateAndPhrasetype="+predicate+"|"+argumenttree[i].getTree().getNodeName());
 		}	
+		if(voiceAndGoverningcategoriesSet){
+			features.add("voiceAndGoverningcategories="+predicatetree[0].getTree().getParent().getNodeName());
+		}
+		if(voiceAndGoverningcategoriesSet){
+			if(!governingcategories.equals("")){
+				features.add("voiceAndGoverningcategories="+voice+"|"+governingcategories);
+			}
+		}
+		if(pathAndSubcategorizationSet){
+			features.add("pathAndSubcategorization="+path+"|"+subcategorization);
+		}
+		content.clear();
+		contentpos.clear();
+		getContentAndContentPos(argumenttree[i].getTree());
+		if(contentSet){
+			features.add("content="+content.toString());
+		}
+		if(contentposSet){
+			features.add("contentpos="+contentpos.toString());
+		}
+		
+		if(left_1wordSet){
+			if(content.size() > 0){
+				features.add("left_1word"+content.get(0));
+			}
+		}
+		if(left_1posSet){
+			if(contentpos.size() > 0){
+				features.add("left_1pos"+contentpos.get(0));
+			}
+		}
+		if(left_2wordSet){
+			if(content.size() > 1){
+				features.add("left_2word"+content.get(1));
+			}
+		}
+		if(left_2posSet){
+			if(contentpos.size() > 1){
+				features.add("left_2pos"+contentpos.get(1));
+			}
+		}
+		if(right1wordSet){
+			if(content.size() > 0){
+				features.add("right1word"+content.get(content.size()-1));
+			}
+		}
+		if(right1posSet){
+			if(contentpos.size() > 0){
+				features.add("right1pos"+contentpos.get(contentpos.size()-1));
+			}
+		}
+		if(right2wordSet){
+			if(content.size() > 1){
+				features.add("right2word"+content.get(content.size()-2));
+			}
+		}
+		if(right2posSet){
+			if(contentpos.size() > 1){
+				features.add("right2pos"+contentpos.get(contentpos.size()-2));
+			}
+		}
 		String[] contexts = features.toArray(new String[features.size()]);
         return contexts;
+	}
+	
+	/**
+	 * 获得词语内容和词性标记
+	 * @param headtree 
+	 */
+	private void getContentAndContentPos(HeadTreeNode headtree){
+		if(headtree.getChildren().size() == 1 && headtree.getChildren().get(0).getChildren().size() == 0){
+			content.add(headtree.getChildren().get(0).getNodeName());
+			contentpos.add(headtree.getNodeName());
+		}else{
+			for (HeadTreeNode node : headtree.getChildren()) {
+				getContentAndContentPos(node);
+			}
+		}
 	}
 	
 	private String getSubcategorization(HeadTreeNode headTree){

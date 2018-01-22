@@ -82,4 +82,40 @@ public class SRLTreeNode extends TreeNode{
 			return treestr;
 		}
 	}
+	
+	/**
+	 * 括号表达式
+	 * @return
+	 */
+	public String toBracket(){
+		if(this.children.size() == 0){
+			return " "+this.nodename+"["+getWordIndex()+"]";
+		}else{
+			String treestr = "";
+			treestr = "("+this.nodename;
+			for (TreeNode node:this.children) {
+				treestr += node.toBracket();
+			}
+			treestr += ")";
+			return treestr;
+		}
+	}
+	
+	/**
+	 * 打印中括号的形式
+	 * @param node
+	 * @return
+	 */
+	public static String printSRLBracket(SRLTreeNode node){
+		return null;
+	}
+	
+	private static void printSRLInfo(SRLTreeNode node){
+		if(node.getSemanticRole() != null){
+			
+		}
+		for (TreeNode tree : node.getChildren()) {
+			printSRLInfo((SRLTreeNode) tree);
+		}
+	}
 }

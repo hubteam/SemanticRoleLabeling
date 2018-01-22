@@ -3,6 +3,7 @@ package com.wxw.tool;
 import java.util.List;
 import java.util.Stack;
 
+import com.wxw.tree.HeadTreeNode;
 import com.wxw.tree.PhraseGenerateTree;
 import com.wxw.tree.SRLTreeNode;
 import com.wxw.tree.TreeNode;
@@ -63,55 +64,27 @@ public class TreeToSRLTreeTool {
 	/**
 	 * 为带词下标的语义角色标注树加上语义信息
 	 * @param tree 不含语义角色信息的树
-	 * @param semanticRole 语义角色标注信息
+	 * @param argumenttree 论元树
+	 * @param labelinfo 论元标记
 	 * @return
 	 */
-	public static SRLTreeNode treeAddSemanticRole(SRLTreeNode tree, String semanticRole){
-		String[] roles = semanticRole.split(" ");
-		for (int i = 6; i < roles.length; i++) {
-			//拆开为argument下标和语义标记部分
-			String[] digitandrole = roles[i].split("-");
-			//处理语义角色部分
-			String role = digitandrole[1];		
-			for (int j = 2; j < digitandrole.length; j++) {
-				if(IsFunctionLabelTool.isFunction(digitandrole[j])){
-					role += "-"+digitandrole[j];
-				}				
-			}
-			//处理argument部分
-			//7:3*28:0-ARG1
-			//0:1,1:1*5:1*6:0-ARG1
-			String[] digits = digitandrole[0].split("\\*");
-			//处理,隔开的部分
-			String[] comma = digits[0].split(",");
-			for (int j = 0; j < comma.length; j++) {
-				String[] digit = comma[j].split(":");
-				int begin = Integer.parseInt(digit[0]);
-				int up = Integer.parseInt(digit[1]);
-				treeAddSingleSemanticRole(tree,begin,up,role);
-			}
-			for (int j = 1; j < digits.length; j++) {
-				String[] digit = digits[j].split(":");
-				int begin = Integer.parseInt(digit[0]);
-				int up = Integer.parseInt(digit[1]);
-				treeAddSingleSemanticRole(tree,begin,up,role);
+	public static SRLTreeNode treeAddSemanticRole(SRLTreeNode tree, TreeNodeWrapper<HeadTreeNode>[] argumenttree,String[] labelinfo){
+		for (int i = 0; i < labelinfo.length; i++) {
+			if(labelinfo[i].contains("NULL")){
+				
+			}else{
+				treeAddSingleSemanticRole(tree,argumenttree[i].getTree(),labelinfo[i]);
 			}
 		}
 		return tree;
 	}
 	
-	private static void treeAddSingleSemanticRole(SRLTreeNode tree,int begin,int up,String role){
-		if(tree.getChildren().size() == 0 && tree.getWordIndex() == begin){
-			SRLTreeNode temp = tree;
-			tree = (SRLTreeNode) tree.getParent();;
-			for (int i = 0; i < up; i++) {
-				tree = (SRLTreeNode) tree.getParent();
-			}
+	private static void treeAddSingleSemanticRole(SRLTreeNode tree,HeadTreeNode headtree,String role){
+		if(tree.toString().equals(headtree.toBracket())){
 			tree.setSemanticRole(role);
-			tree = temp;
 		}else{
 			for (TreeNode treenode : tree.getChildren()) {
-				treeAddSingleSemanticRole((SRLTreeNode)treenode,begin,up,role);
+				treeAddSingleSemanticRole((SRLTreeNode)treenode,headtree,role);
 			}
 		}
 	}
@@ -123,7 +96,7 @@ public class TreeToSRLTreeTool {
 	 * @param semanticRole 语义角色信息
 	 * @return
 	 */
-	public static SRLTreeNode treeToSRLTree(TreeNode tree, String semanticRole){		
-		return treeAddSemanticRole(transferToSRLTreeNodeStructure(tree),semanticRole);
+	public static SRLTreeNode treeToSRLTree(TreeNode tree, TreeNodeWrapper<HeadTreeNode>[] argumenttree,String[] labelinfo){		
+		return treeAddSemanticRole(transferToSRLTreeNodeStructure(tree),argumenttree,labelinfo);
 	}
 }

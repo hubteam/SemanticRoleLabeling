@@ -169,7 +169,7 @@ public class SRLRunForByStepContainsNULL {
 		SRLModelForIdentification modelIden = new SRLModelForIdentification(new File(corpus.identificationmodelFile));
 		SRLMEForIdentification taggerIden = new SRLMEForIdentification(modelIden,contextIden);
 		SRLModelForClassification modelClas = new SRLModelForClassification(new File(corpus.classificationmodelFile));
-		SRLMEForClassificationContainsNullLabel taggerClas = new SRLMEForClassificationContainsNullLabel(modelClas,contextClas);
+		SRLMEForClassificationContainsNullLabel taggerClas = new SRLMEForClassificationContainsNullLabel(modelIden,modelClas,contextIden,contextClas);
        
 		SRLMeasure measure = new SRLMeasure();
 		SRLEvaluatorForByStepContainsNullLabel evaluator = null;

@@ -51,12 +51,22 @@ public class SRLMeasure {
 	public void updateForIden(String[] references,String[] predictions){
 		for (int i = 0; i < predictions.length; i++) {
 			if(references[i].equals(predictions[i])){
-				truePositiveIden++;
+				if(!references[i].equals("NULL") && !predictions[i].equals("NULL")){
+					truePositiveIden++;
+				}
 			}
 		}
-		selectedIden += predictions.length;
+		for (int i = 0; i < predictions.length; i++) {
+			if(!predictions[i].equals("NULL")){
+				selectedIden++;
+			}
+		}
 		
-		targetIden += references.length;
+		for (int i = 0; i < references.length; i++) {
+			if(!references[i].equals("NULL")){
+				targetIden++;
+			}
+		}
 	}
 	
 	/**
@@ -131,6 +141,8 @@ public class SRLMeasure {
     
     @Override
     public String toString() {
+    	System.out.println(truePositive);
+    	System.out.println(truePositiveClas);
         return ""+ "------------最终的结果------------" + "\n"
         		+ "Precision: " + Double.toString(getPrecisionScore()) + "\n"
                 + "Recall: " + Double.toString(getRecallScore()) + "\n" 

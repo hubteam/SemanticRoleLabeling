@@ -6,16 +6,28 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.wxw.feature.SRLContextGenerator;
+import com.wxw.parse.AbstractParseStrategy;
+import com.wxw.parse.SRLParseAddNULL_101HasPruning;
+import com.wxw.srl.SRLTree;
+import com.wxw.srl.SemanticRoleLabeling;
 import com.wxw.stream.FileInputStreamFactory;
 import com.wxw.stream.PlainTextByTreeStream;
 import com.wxw.stream.SRLSample;
 import com.wxw.stream.SRLSampleStream;
+import com.wxw.tool.PostTreatTool;
+import com.wxw.tool.PreTreatTool;
 import com.wxw.tool.TreeNodeWrapper;
+import com.wxw.tool.TreeToSRLTreeTool;
 import com.wxw.tree.HeadTreeNode;
+import com.wxw.tree.PhraseGenerateTree;
+import com.wxw.tree.SRLTreeNode;
+import com.wxw.tree.TreeNode;
 import com.wxw.validate.DefaultSRLSequenceValidator;
 
 import opennlp.tools.ml.BeamSearch;
@@ -35,13 +47,15 @@ import opennlp.tools.util.TrainingParameters;
  * @author 王馨苇
  *
  */
-public class SRLMEForOneStep {
+public class SRLMEForOneStep implements SemanticRoleLabeling{
 	public static final int DEFAULT_BEAM_SIZE = 15;
 	private SRLContextGenerator contextGenerator;
 	private int size;
 	private SequenceClassificationModel<TreeNodeWrapper<HeadTreeNode>> model;
 
     private SequenceValidator<TreeNodeWrapper<HeadTreeNode>> sequenceValidator;
+    
+    private PhraseGenerateTree pgt = new PhraseGenerateTree();
 	
 	/**
 	 * 构造函数，初始化工作
@@ -195,6 +209,114 @@ public class SRLMEForOneStep {
 	public Sequence[] topKSequences(TreeNodeWrapper<HeadTreeNode>[] argumentree, Object[] predicatetree) {
         return model.bestSequences(size, argumentree, predicatetree, contextGenerator, sequenceValidator);
     }
+	
+	/**
+	 * 得到一棵树的语义角色标注
+	 * @param tree 句法分析得到的树
+	 * @return
+	 */
+	@Override
+	public SRLTree srltree(TreeNode tree) {
+		return kSrltree(tree)[0];
+	}
+	
+	/**
+	 * 得到一棵树的语义角色标注
+	 * @param tree 句法分析得到的树的括号表达式形式
+	 * @return
+	 */
+	@Override
+	public SRLTree srltree(String treeStr) {
+		TreeNode node = pgt.generateTree("("+treeStr+")");
+		return srltree(node);
+	}
+	
+	/**
+	 * 得到一棵树最好的K个角色标注
+	 * @param tree 句法分析得到的树
+	 * @return
+	 */
+	@Override
+	public SRLTree[] kSrltree(TreeNode tree) {
+		AbstractParseStrategy<HeadTreeNode> ttst = new SRLParseAddNULL_101HasPruning();
+		SRLSample<HeadTreeNode> sample = null;
+		PreTreatTool.preTreat(tree);
+        sample = ttst.parse(tree, "");
+        List<SRLTree> srllist = new ArrayList<>();
+        Sequence[] sequence = topKSequences(sample.getArgumentTree(),sample.getPredicateTree());
+        for (int i = 0; i < sequence.length; i++) {
+        	String[] newlabelinfo = sequence[i].getOutcomes().toArray(new String[sequence[i].getOutcomes().size()]);
+    		if(sample.getIsPruning() == true){
+    			newlabelinfo = PostTreatTool.postTreat(sample.getArgumentTree(),sequence[i],PostTreatTool.getSonTreeCount(sample.getArgumentTree()[0].getTree().getParent()));
+        	}else{
+        		newlabelinfo = PostTreatTool.postTreat(sample.getArgumentTree(),sequence[i],sample.getArgumentTree().length);
+        	}
+    		SRLTreeNode srltreenode = TreeToSRLTreeTool.treeToSRLTree(tree, sample.getArgumentTree(), newlabelinfo);
+    		SRLTree srltree = new SRLTree();
+    		srltree.setSRLTree(srltreenode);
+    		srllist.add(srltree);
+        }
+		return srllist.toArray(new SRLTree[srllist.size()]);
+	}
+	
+	/**
+	 * 得到一棵树最好的K个角色标注
+	 * @param tree 句法分析得到的树的括号表示
+	 * @return
+	 */
+	@Override
+	public SRLTree[] kSrltree(String treeStr) {
+		TreeNode node = pgt.generateTree("("+treeStr+")");
+		return kSrltree(node);
+	}
+	
+	/**
+	 * 得到一棵树的语义角色标注的中括号表达式形式
+	 * @param tree 句法分析得到的树
+	 * @return
+	 */
+	@Override
+	public String srlstr(TreeNode tree) {
+		return kSrlstr(tree)[0];
+	}
+	
+	/**
+	 * 得到一棵树的语义角色标注的中括号表达式形式
+	 * @param tree 句法分析得到的树的括号表达式形式
+	 * @return
+	 */
+	@Override
+	public String srlstr(String treeStr) {
+		TreeNode node = pgt.generateTree("("+treeStr+")");
+		return srlstr(node);
+	}
+	
+	/**
+	 * 得到一棵树最好的K个角色标注的中括号表达式形式
+	 * @param tree 句法分析得到的树
+	 * @return
+	 */
+	@Override
+	public String[] kSrlstr(TreeNode tree) {
+		SRLTree[] srltree = kSrltree(tree);
+		String[] output = new String[srltree.length];
+ 		for (int i = 0; i < srltree.length; i++) {
+			String str = SRLTreeNode.printSRLBracket(srltree[i].getSRLTreeRoot());
+			output[i] = str;
+		}
+		return output;
+	}
+	
+	/**
+	 * 得到一棵树最好的K个角色标注的中括号表达式形式
+	 * @param tree 句法分析得到的树的括号表示
+	 * @return
+	 */
+	@Override
+	public String[] kSrlstr(String treeStr) {
+		TreeNode node = pgt.generateTree("("+treeStr+")");
+		return kSrlstr(node);
+	}
 }
 
 

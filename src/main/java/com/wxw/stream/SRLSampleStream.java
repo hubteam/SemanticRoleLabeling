@@ -34,7 +34,7 @@ public class SRLSampleStream extends FilterObjectStream<String[],SRLSample<HeadT
 		String[] sentence = samples.read();	
 		SRLSample<HeadTreeNode> sample = null;
 		PhraseGenerateTree pgt = new PhraseGenerateTree();
-		AbstractParseStrategy<HeadTreeNode> ttst = new SRLParseAddNULL_101();
+		AbstractParseStrategy<HeadTreeNode> ttst = new SRLParseAddNULL_101HasPruning();
 		if(sentence[0]!= null && sentence[1] != null){
 			try{
 				TreeNode tree = pgt.generateTree(sentence[0]);

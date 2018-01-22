@@ -162,9 +162,12 @@ public class PostTreatForPruningTest {
 		}
 		if(sample.getIsPruning() == true){
 			System.out.println(PostTreatTool.getSonTreeCount(sample.getPredicateTree()[0].getTree().getParent()));
+			System.out.println(PostTreatTool.getSonTreeCount(sample.getArgumentTree()[0].getTree().getParent()));
 			pre = PostTreatTool.postTreat(sample.getArgumentTree(), sequence,PostTreatTool.getSonTreeCount(sample.getPredicateTree()[0].getTree().getParent()));
 		}else{
 			pre = PostTreatTool.postTreat(sample.getArgumentTree(), sequence,sample.getArgumentTree().length);
+			System.out.println(sample.getArgumentTree().length);
+			System.out.println(PostTreatTool.getSonTreeCount(sample.getArgumentTree()[0].getTree().getParent()));
 		}
 	}
 	
