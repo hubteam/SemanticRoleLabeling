@@ -12,56 +12,68 @@ public interface SemanticRoleLabeling {
 	/**
 	 * 得到一棵树的语义角色标注
 	 * @param tree 句法分析得到的树
+	 * @param predicateinfo 谓词信息
 	 * @return
 	 */
-	public SRLTree srltree(TreeNode tree);
+	public SRLTree srltree(TreeNode tree, String predicateinfo);
 	
 	/**
 	 * 得到一棵树的语义角色标注
 	 * @param tree 句法分析得到的树的括号表达式形式
+	 * @param predicateinfo 谓词信息
 	 * @return
 	 */
-	public SRLTree srltree(String treeStr);
+	public SRLTree srltree(String treeStr, String predicateinfo);
 	
 	/**
 	 * 得到一棵树最好的K个角色标注
+	 * @param k
 	 * @param tree 句法分析得到的树
+	 * @param predicateinfo 谓词信息
 	 * @return
 	 */
-	public SRLTree[] kSrltree(TreeNode tree);
+	public SRLTree[] kSrltree(int k,TreeNode tree, String predicateinfo);
 	
 	/**
 	 * 得到一棵树最好的K个角色标注
+	 * @param k
 	 * @param tree 句法分析得到的树的括号表示
+	 * @param predicateinfo 谓词信息
 	 * @return
 	 */
-	public SRLTree[] kSrltree(String treeStr);
+	public SRLTree[] kSrltree(int k, String treeStr, String predicateinfo);
 	
 	/**
 	 * 得到一棵树的语义角色标注的中括号表达式形式
 	 * @param tree 句法分析得到的树
+	 * @param predicateinfo 谓词信息
 	 * @return
 	 */
-	public String srlstr(TreeNode tree);
+	public String srlstr(TreeNode tree, String predicateinfo);
 	
 	/**
 	 * 得到一棵树的语义角色标注的中括号表达式形式
 	 * @param tree 句法分析得到的树的括号表达式形式
+	 * @param predicateinfo 谓词信息
 	 * @return
 	 */
-	public String srlstr(String treeStr);
+	public String srlstr(String treeStr, String predicateinfo);
 	
 	/**
 	 * 得到一棵树最好的K个角色标注的中括号表达式形式
+	 * @param k
 	 * @param tree 句法分析得到的树
+	 * @param predicateinfo 谓词信息
 	 * @return
 	 */
-	public String[] kSrlstr(TreeNode tree);
+	public String[] kSrlstr(int k,TreeNode tree, String predicateinfo);
 	
 	/**
 	 * 得到一棵树最好的K个角色标注的中括号表达式形式
+	 * @param k
 	 * @param tree 句法分析得到的树的括号表示
+	 * @param predicateinfo 谓词信息
 	 * @return
 	 */
-	public String[] kSrlstr(String treeStr);
+	public String[] kSrlstr(int k,String treeStr, String predicateinfo);
 }

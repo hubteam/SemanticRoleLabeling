@@ -50,7 +50,6 @@ import opennlp.tools.util.TrainingParameters;
 public class SRLMEForOneStep implements SemanticRoleLabeling{
 	public static final int DEFAULT_BEAM_SIZE = 15;
 	private SRLContextGenerator contextGenerator;
-	private int size;
 	private SequenceClassificationModel<TreeNodeWrapper<HeadTreeNode>> model;
 
     private SequenceValidator<TreeNodeWrapper<HeadTreeNode>> sequenceValidator;
@@ -80,7 +79,6 @@ public class SRLMEForOneStep implements SemanticRoleLabeling{
             beamSize = Integer.parseInt(beamSizeString);
         }
         contextGenerator = contextGen;
-        size = beamSize;
         sequenceValidator = new DefaultSRLSequenceValidator();
         if (model.getSRLTreeSequenceModel() != null) {
             this.model = (SequenceClassificationModel<TreeNodeWrapper<HeadTreeNode>>) model.getSRLTreeSequenceModel();
@@ -202,48 +200,52 @@ public class SRLMEForOneStep implements SemanticRoleLabeling{
 	
 	/**
 	 * 得到最好的结果序列
+	 * @param k
 	 * @param headtree 子树序列
 	 * @param semanticinfo 语义信息
 	 * @return
 	 */
-	public Sequence[] topKSequences(TreeNodeWrapper<HeadTreeNode>[] argumentree, Object[] predicatetree) {
-        return model.bestSequences(size, argumentree, predicatetree, contextGenerator, sequenceValidator);
+	public Sequence[] topKSequences(int k,TreeNodeWrapper<HeadTreeNode>[] argumentree, Object[] predicatetree) {
+        return model.bestSequences(k, argumentree, predicatetree, contextGenerator, sequenceValidator);
     }
 	
 	/**
 	 * 得到一棵树的语义角色标注
 	 * @param tree 句法分析得到的树
+	 * @param predicateinfo 谓词信息
 	 * @return
 	 */
 	@Override
-	public SRLTree srltree(TreeNode tree) {
-		return kSrltree(tree)[0];
+	public SRLTree srltree(TreeNode tree, String predicateinfo) {
+		return kSrltree(1,tree,predicateinfo)[0];
 	}
 	
 	/**
 	 * 得到一棵树的语义角色标注
 	 * @param tree 句法分析得到的树的括号表达式形式
+	 * @param predicateinfo 谓词信息
 	 * @return
 	 */
 	@Override
-	public SRLTree srltree(String treeStr) {
+	public SRLTree srltree(String treeStr, String predicateinfo) {
 		TreeNode node = pgt.generateTree("("+treeStr+")");
-		return srltree(node);
+		return srltree(node,predicateinfo);
 	}
 	
 	/**
 	 * 得到一棵树最好的K个角色标注
 	 * @param tree 句法分析得到的树
+	 * @param predicateinfo 谓词信息
 	 * @return
 	 */
 	@Override
-	public SRLTree[] kSrltree(TreeNode tree) {
+	public SRLTree[] kSrltree(int k,TreeNode tree, String predicateinfo) {
 		AbstractParseStrategy<HeadTreeNode> ttst = new SRLParseAddNULL_101HasPruning();
 		SRLSample<HeadTreeNode> sample = null;
 		PreTreatTool.preTreat(tree);
-        sample = ttst.parse(tree, "");
+        sample = ttst.parse(tree, predicateinfo);
         List<SRLTree> srllist = new ArrayList<>();
-        Sequence[] sequence = topKSequences(sample.getArgumentTree(),sample.getPredicateTree());
+        Sequence[] sequence = topKSequences(k,sample.getArgumentTree(),sample.getPredicateTree());
         for (int i = 0; i < sequence.length; i++) {
         	String[] newlabelinfo = sequence[i].getOutcomes().toArray(new String[sequence[i].getOutcomes().size()]);
     		if(sample.getIsPruning() == true){
@@ -261,44 +263,50 @@ public class SRLMEForOneStep implements SemanticRoleLabeling{
 	
 	/**
 	 * 得到一棵树最好的K个角色标注
+	 * @param k
 	 * @param tree 句法分析得到的树的括号表示
+	 * @param predicateinfo 谓词信息
 	 * @return
 	 */
 	@Override
-	public SRLTree[] kSrltree(String treeStr) {
+	public SRLTree[] kSrltree(int k,String treeStr, String predicateinfo) {
 		TreeNode node = pgt.generateTree("("+treeStr+")");
-		return kSrltree(node);
+		return kSrltree(k,node,predicateinfo);
 	}
 	
 	/**
 	 * 得到一棵树的语义角色标注的中括号表达式形式
 	 * @param tree 句法分析得到的树
+	 * @param predicateinfo 谓词信息
 	 * @return
 	 */
 	@Override
-	public String srlstr(TreeNode tree) {
-		return kSrlstr(tree)[0];
+	public String srlstr(TreeNode tree, String predicateinfo) {
+		return kSrlstr(1,tree,predicateinfo)[0];
 	}
 	
 	/**
 	 * 得到一棵树的语义角色标注的中括号表达式形式
 	 * @param tree 句法分析得到的树的括号表达式形式
+	 * @param predicateinfo 谓词信息
 	 * @return
 	 */
 	@Override
-	public String srlstr(String treeStr) {
+	public String srlstr(String treeStr, String predicateinfo) {
 		TreeNode node = pgt.generateTree("("+treeStr+")");
-		return srlstr(node);
+		return srlstr(node,predicateinfo);
 	}
 	
 	/**
 	 * 得到一棵树最好的K个角色标注的中括号表达式形式
+	 * @param k
 	 * @param tree 句法分析得到的树
+	 * @param predicateinfo 谓词信息
 	 * @return
 	 */
 	@Override
-	public String[] kSrlstr(TreeNode tree) {
-		SRLTree[] srltree = kSrltree(tree);
+	public String[] kSrlstr(int k,TreeNode tree, String predicateinfo) {
+		SRLTree[] srltree = kSrltree(k,tree,predicateinfo);
 		String[] output = new String[srltree.length];
  		for (int i = 0; i < srltree.length; i++) {
 			String str = SRLTreeNode.printSRLBracket(srltree[i].getSRLTreeRoot());
@@ -309,13 +317,15 @@ public class SRLMEForOneStep implements SemanticRoleLabeling{
 	
 	/**
 	 * 得到一棵树最好的K个角色标注的中括号表达式形式
+	 * @param k
 	 * @param tree 句法分析得到的树的括号表示
+	 * @param predicateinfo 谓词信息
 	 * @return
 	 */
 	@Override
-	public String[] kSrlstr(String treeStr) {
+	public String[] kSrlstr(int k,String treeStr, String predicateinfo) {
 		TreeNode node = pgt.generateTree("("+treeStr+")");
-		return kSrlstr(node);
+		return kSrlstr(k,node,predicateinfo);
 	}
 }
 

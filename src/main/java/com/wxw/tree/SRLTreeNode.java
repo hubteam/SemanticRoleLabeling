@@ -107,15 +107,25 @@ public class SRLTreeNode extends TreeNode{
 	 * @return
 	 */
 	public static String printSRLBracket(SRLTreeNode node){
-		return null;
-	}
-	
-	private static void printSRLInfo(SRLTreeNode node){
-		if(node.getSemanticRole() != null){
-			
-		}
-		for (TreeNode tree : node.getChildren()) {
-			printSRLInfo((SRLTreeNode) tree);
-		}
+
+		if(node.getChildren().size() == 0){
+			return node.getNodeName()+" ";
+		}else{	
+			String treestr = "";
+			if(node.getSemanticRole() != null){		
+				treestr += "[ ";
+				String role = node.getSemanticRole();
+
+				for (TreeNode tree:node.children) {
+					treestr += printSRLBracket((SRLTreeNode) tree);
+				}
+				treestr += "]"+role+" ";
+			}else{
+				for (TreeNode tree:node.children) {
+					treestr += printSRLBracket((SRLTreeNode) tree);
+				}
+			}
+			return treestr;
+		}				
 	}
 }

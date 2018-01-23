@@ -16,13 +16,20 @@ import com.wxw.tree.HeadTreeNode;
  */
 public class SRLContextGeneratorConfForIdentification implements SRLContextGenerator{
 
-	private boolean pathSet; 
-	private boolean pathlengthSet;
+	private boolean pathSet; 	
 	private boolean headwordSet;
-	private boolean headwordposSet;
+	private boolean headwordposSet;	
 	private boolean predicateAndHeadwordSet;   
 	private boolean predicateAndPhrasetypeSet;
-				
+	private boolean pathlengthSet;
+	private boolean phrasetypeSet;
+	private boolean partialpathSet;
+	private boolean predicateSet;
+	private boolean predicateposSet;
+	private boolean predicateAndPathSet;
+	private boolean headwordAndPhrasetypeSet;
+	private boolean headwordAndpredicateAndpathSet;
+			
 	/**
 	 * 无参构造
 	 * @throws IOException 		 
@@ -43,11 +50,10 @@ public class SRLContextGeneratorConfForIdentification implements SRLContextGener
 		init(properties);
 	}
 
-		/**
-		 * 根据配置文件中的信息初始化变量
-		 * @param properties
-		 */
-		
+	/**
+	 * 根据配置文件中的信息初始化变量
+	 * @param properties
+	 */
 	private void init(Properties config) {
 			
 		pathlengthSet = (config.getProperty("identify.pathlength", "true").equals("true"));
@@ -56,6 +62,14 @@ public class SRLContextGeneratorConfForIdentification implements SRLContextGener
 		headwordposSet = (config.getProperty("identify.headwordpos", "true").equals("true"));
 		predicateAndHeadwordSet = (config.getProperty("identify.predicateAndHeadword", "true").equals("true"));		
 		predicateAndPhrasetypeSet = (config.getProperty("identify.predicateAndPhrasetype", "true").equals("true"));		
+		
+		phrasetypeSet = (config.getProperty("identify.phrasetype", "true").equals("true"));
+		partialpathSet = (config.getProperty("identify.partialpath", "true").equals("true"));
+		predicateSet = (config.getProperty("identify.predicate", "true").equals("true"));
+		predicateposSet = (config.getProperty("identify.predicatepos", "true").equals("true"));
+		predicateAndPathSet = (config.getProperty("identify.predicateAndPath", "true").equals("true"));		
+		headwordAndPhrasetypeSet = (config.getProperty("identify.headwordAndPhrasetype", "true").equals("true"));	
+		headwordAndpredicateAndpathSet = (config.getProperty("identify.headwordAndpredicateAndpath", "true").equals("true"));	
 	}
 	
 	/**
@@ -63,11 +77,19 @@ public class SRLContextGeneratorConfForIdentification implements SRLContextGener
 	 */
 	@Override
 	public String toString() {
+		
 		return "SRLContextGeneratorConfForIdentification{" +
                 ", pathSet=" + pathSet + ", pathlengthSet=" + pathlengthSet + 
                 ", headwordSet=" + headwordSet + ", headwordposSet=" + headwordposSet + 
                 ", predicateAndHeadwordSet=" + predicateAndHeadwordSet +  
                 ", predicateAndPhrasetypeSet=" + predicateAndPhrasetypeSet +
+                ", phrasetypeSet=" + phrasetypeSet +  
+                ", partialpathSet=" + partialpathSet +
+                ", predicateSet=" + predicateSet +  
+                ", predicateposSet=" + predicateposSet +
+                ", predicateAndPathSet=" + predicateAndPathSet +  
+                ", headwordAndPhrasetypeSet=" + headwordAndPhrasetypeSet +
+                ", headwordAndpredicateAndpathSet=" + headwordAndpredicateAndpathSet +
                 '}';
 	}	
 	
@@ -105,6 +127,28 @@ public class SRLContextGeneratorConfForIdentification implements SRLContextGener
 		if(predicateAndPhrasetypeSet){
 			features.add("predicateAndPhrasetype="+predicate+"|"+argumenttree[i].getTree().getNodeName());
 		}	
+
+		if(phrasetypeSet){
+			features.add("phrasetype="+argumenttree[i].getTree().getNodeName());
+		}
+		if(partialpathSet){
+			features.add("partialpath="+getPartialPath(path));
+		}
+		if(predicateSet){
+			features.add("predicate="+predicate);
+		}
+		if(predicateposSet){
+			features.add("predicatepos="+headtree.getParent().getNodeName());
+		}
+		if(predicateAndPathSet){
+			features.add("predicateAndpath="+predicate+"|"+path);
+		}
+		if(headwordAndPhrasetypeSet){
+			features.add("headwordAndPhrasetype="+argumenttree[i].getTree().getHeadWords()+"|"+argumenttree[i].getTree().getNodeName());
+		}
+		if(headwordAndpredicateAndpathSet){
+			features.add("headwordAndpredicateAndpath="+argumenttree[i].getTree().getHeadWords()+"|"+predicate+"|"+path);
+		}
 		String[] contexts = features.toArray(new String[features.size()]);
         return contexts;
 	}
