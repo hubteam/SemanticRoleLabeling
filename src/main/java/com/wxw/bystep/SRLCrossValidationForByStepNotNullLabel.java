@@ -5,6 +5,8 @@ import java.io.IOException;
 import com.wxw.evaluate.SRLEvaluateMonitor;
 import com.wxw.evaluate.SRLMeasure;
 import com.wxw.feature.SRLContextGenerator;
+import com.wxw.parse.AbstractParseStrategy;
+import com.wxw.parse.SRLParseAddNULL_101HasPruning;
 import com.wxw.stream.SRLSample;
 import com.wxw.tree.HeadTreeNode;
 
@@ -21,7 +23,7 @@ public class SRLCrossValidationForByStepNotNullLabel {
 	private final String languageCode;
 	private final TrainingParameters params;
 	private SRLEvaluateMonitor[] monitor;
-	
+	private AbstractParseStrategy<HeadTreeNode> parse = new SRLParseAddNULL_101HasPruning();
 	/**
 	 * 构造
 	 * @param languageCode 编码格式
@@ -50,14 +52,16 @@ public class SRLCrossValidationForByStepNotNullLabel {
 		while(partitioner.hasNext()){
 			long start = System.currentTimeMillis();
 			System.out.println("Run"+run+"...");
-			CrossValidationPartitioner.TrainingSampleStream<SRLSample<HeadTreeNode>> trainingSampleStream = partitioner.next();			
-			SRLModelForIdentification modelIden = SRLMEForIdentification.train(languageCode, trainingSampleStream, params, contextIden);
+			CrossValidationPartitioner.TrainingSampleStream<SRLSample<HeadTreeNode>> trainingSampleStream = partitioner.next();	
+			SRLMEForIdentification meIden = new SRLMEForIdentification(parse);
+			SRLModelForIdentification modelIden = meIden.train(languageCode, trainingSampleStream, params, contextIden);
 			trainingSampleStream.reset();
-			SRLModelForClassification modelClas = SRLMEForClassificationNotNullLabel.train(languageCode, trainingSampleStream, params, contextClas);
+			SRLMEForClassificationNotNullLabel meClas = new SRLMEForClassificationNotNullLabel(parse);
+			SRLModelForClassification modelClas = meClas.train(languageCode, trainingSampleStream, params, contextClas);
 			
 			System.out.println("训练时间："+(System.currentTimeMillis()-start));
-			SRLEvaluatorForByStepNotNullLabel evaluator = new SRLEvaluatorForByStepNotNullLabel(new SRLMEForIdentification(modelIden,contextIden),
-					new SRLMEForClassificationNotNullLabel(modelIden,modelClas,contextIden,contextClas),monitor);
+			SRLEvaluatorForByStepNotNullLabel evaluator = new SRLEvaluatorForByStepNotNullLabel(new SRLMEForIdentification(modelIden,contextIden,parse),
+					new SRLMEForClassificationNotNullLabel(modelIden,modelClas,contextIden,contextClas,parse),monitor);
 			SRLMeasure measure = new SRLMeasure();
 			
 			evaluator.setMeasure(measure);

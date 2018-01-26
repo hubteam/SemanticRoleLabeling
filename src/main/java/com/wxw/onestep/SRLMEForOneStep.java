@@ -13,7 +13,6 @@ import java.util.Map;
 
 import com.wxw.feature.SRLContextGenerator;
 import com.wxw.parse.AbstractParseStrategy;
-import com.wxw.parse.SRLParseAddNULL_101HasPruning;
 import com.wxw.srl.SRLTree;
 import com.wxw.srl.SemanticRoleLabeling;
 import com.wxw.stream.FileInputStreamFactory;
@@ -55,14 +54,20 @@ public class SRLMEForOneStep implements SemanticRoleLabeling{
     private SequenceValidator<TreeNodeWrapper<HeadTreeNode>> sequenceValidator;
     
     private PhraseGenerateTree pgt = new PhraseGenerateTree();
+    private AbstractParseStrategy<HeadTreeNode> parse;
 	
+    public SRLMEForOneStep(AbstractParseStrategy<HeadTreeNode> parse) {
+    	this.parse = parse;
+	}
+    
 	/**
 	 * 构造函数，初始化工作
 	 * @param model 模型
 	 * @param contextGen 特征
 	 */
-	public SRLMEForOneStep(SRLModelForOneStep model, SRLContextGenerator contextGen) {
+	public SRLMEForOneStep(SRLModelForOneStep model, SRLContextGenerator contextGen, AbstractParseStrategy<HeadTreeNode> parse) {
 		init(model , contextGen);
+		this.parse = parse;
 	}
     /**
      * 初始化工作
@@ -88,7 +93,7 @@ public class SRLMEForOneStep implements SemanticRoleLabeling{
         }
 		
 	}
-	
+
 	/**
 	 * 训练模型
 	 * @param file 训练文件
@@ -99,13 +104,13 @@ public class SRLMEForOneStep implements SemanticRoleLabeling{
 	 * @throws IOException 
 	 * @throws FileNotFoundException 
 	 */
-	public static SRLModelForOneStep train(File file, TrainingParameters params, SRLContextGenerator contextGen,
+	public SRLModelForOneStep train(File file, TrainingParameters params, SRLContextGenerator contextGen,
 			String encoding){
 		SRLModelForOneStep model = null;
 		try {
 			ObjectStream<String[]> lineStream = new PlainTextByTreeStream(new FileInputStreamFactory(file), encoding);
-			ObjectStream<SRLSample<HeadTreeNode>> sampleStream = new SRLSampleStream(lineStream);
-			model = SRLMEForOneStep.train("zh", sampleStream, params, contextGen);
+			ObjectStream<SRLSample<HeadTreeNode>> sampleStream = new SRLSampleStream(lineStream,parse);
+			model = train("zh", sampleStream, params, contextGen);
 			return model;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -114,7 +119,44 @@ public class SRLMEForOneStep implements SemanticRoleLabeling{
 		}	
 		return null;
 	}
-
+	
+	/**
+	 * 训练模型，并将模型写出
+	 * @param file 训练的文本
+	 * @param modelFile 模型文件
+	 * @param params 训练的参数配置
+	 * @param contextGen 上下文 产生器
+	 * @param encoding 编码方式
+	 * @return
+	 */
+	public SRLModelForOneStep train(File file, File modelFile, TrainingParameters params,
+			SRLContextGenerator contextGen, String encoding) {
+		OutputStream modelOut = null;
+		SRLModelForOneStep model = null;
+		try {
+			ObjectStream<String[]> lineStream = new PlainTextByTreeStream(new FileInputStreamFactory(file), encoding);
+			ObjectStream<SRLSample<HeadTreeNode>> sampleStream = new SRLSampleStream(lineStream,parse);
+			model = train("zh", sampleStream, params, contextGen);
+            //模型的写出，文本文件
+            modelOut = new BufferedOutputStream(new FileOutputStream(modelFile));           
+            model.serialize(modelOut);
+            return model;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}finally {			
+            if (modelOut != null) {
+                try {
+                	modelOut.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }	
+		return null;
+	}
+	
 	/**
 	 * 训练模型
 	 * @param languageCode 编码
@@ -125,7 +167,7 @@ public class SRLMEForOneStep implements SemanticRoleLabeling{
 	 * @throws IOException 
 	 * @throws FileNotFoundException 
 	 */
-	public static SRLModelForOneStep train(String languageCode, ObjectStream<SRLSample<HeadTreeNode>> sampleStream, TrainingParameters params,
+	public SRLModelForOneStep train(String languageCode, ObjectStream<SRLSample<HeadTreeNode>> sampleStream, TrainingParameters params,
 			SRLContextGenerator contextGen) throws IOException {
 		String beamSizeString = params.getSettings().get(BeamSearch.BEAM_SIZE_PARAMETER);
 		int beamSize = SRLMEForOneStep.DEFAULT_BEAM_SIZE;
@@ -149,43 +191,6 @@ public class SRLMEForOneStep implements SemanticRoleLabeling{
         } else {
             return new SRLModelForOneStep(languageCode, seqSRLModel, manifestInfoEntries);
         }
-	}
-
-	/**
-	 * 训练模型，并将模型写出
-	 * @param file 训练的文本
-	 * @param modelbinaryFile 二进制的模型文件
-	 * @param modeltxtFile 文本类型的模型文件
-	 * @param params 训练的参数配置
-	 * @param contextGen 上下文 产生器
-	 * @param encoding 编码方式
-	 * @return
-	 */
-	public static SRLModelForOneStep train(File file, File modelFile, TrainingParameters params,
-			SRLContextGenerator contextGen, String encoding) {
-		OutputStream modelOut = null;
-		SRLModelForOneStep model = null;
-		try {
-			ObjectStream<String[]> lineStream = new PlainTextByTreeStream(new FileInputStreamFactory(file), encoding);
-			ObjectStream<SRLSample<HeadTreeNode>> sampleStream = new SRLSampleStream(lineStream);
-			model = SRLMEForOneStep.train("zh", sampleStream, params, contextGen);
-            modelOut = new BufferedOutputStream(new FileOutputStream(modelFile));           
-            model.serialize(modelOut);
-            return model;
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}finally {		
-            if (modelOut != null) {
-                try {
-                	modelOut.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }	
-		return null;
 	}
 	
 	/**
@@ -216,7 +221,7 @@ public class SRLMEForOneStep implements SemanticRoleLabeling{
 	 * @return
 	 */
 	@Override
-	public SRLTree srltree(TreeNode tree, String predicateinfo) {
+	public SRLTree srltree(TreeNode tree, int[] predicateinfo) {
 		return kSrltree(1,tree,predicateinfo)[0];
 	}
 	
@@ -227,7 +232,7 @@ public class SRLMEForOneStep implements SemanticRoleLabeling{
 	 * @return
 	 */
 	@Override
-	public SRLTree srltree(String treeStr, String predicateinfo) {
+	public SRLTree srltree(String treeStr, int[] predicateinfo) {
 		TreeNode node = pgt.generateTree("("+treeStr+")");
 		return srltree(node,predicateinfo);
 	}
@@ -239,11 +244,11 @@ public class SRLMEForOneStep implements SemanticRoleLabeling{
 	 * @return
 	 */
 	@Override
-	public SRLTree[] kSrltree(int k,TreeNode tree, String predicateinfo) {
-		AbstractParseStrategy<HeadTreeNode> ttst = new SRLParseAddNULL_101HasPruning();
+	public SRLTree[] kSrltree(int k,TreeNode tree, int[] predicateinfo) {
 		SRLSample<HeadTreeNode> sample = null;
 		PreTreatTool.preTreat(tree);
-        sample = ttst.parse(tree, predicateinfo);
+		String str = SRLSample.indexToTrainSample(predicateinfo);
+        sample = parse.parse(tree, str);
         List<SRLTree> srllist = new ArrayList<>();
         Sequence[] sequence = topKSequences(k,sample.getArgumentTree(),sample.getPredicateTree());
         for (int i = 0; i < sequence.length; i++) {
@@ -269,7 +274,7 @@ public class SRLMEForOneStep implements SemanticRoleLabeling{
 	 * @return
 	 */
 	@Override
-	public SRLTree[] kSrltree(int k,String treeStr, String predicateinfo) {
+	public SRLTree[] kSrltree(int k,String treeStr, int[] predicateinfo) {
 		TreeNode node = pgt.generateTree("("+treeStr+")");
 		return kSrltree(k,node,predicateinfo);
 	}
@@ -281,7 +286,7 @@ public class SRLMEForOneStep implements SemanticRoleLabeling{
 	 * @return
 	 */
 	@Override
-	public String srlstr(TreeNode tree, String predicateinfo) {
+	public String srlstr(TreeNode tree, int[] predicateinfo) {
 		return kSrlstr(1,tree,predicateinfo)[0];
 	}
 	
@@ -292,7 +297,7 @@ public class SRLMEForOneStep implements SemanticRoleLabeling{
 	 * @return
 	 */
 	@Override
-	public String srlstr(String treeStr, String predicateinfo) {
+	public String srlstr(String treeStr, int[] predicateinfo) {
 		TreeNode node = pgt.generateTree("("+treeStr+")");
 		return srlstr(node,predicateinfo);
 	}
@@ -305,7 +310,7 @@ public class SRLMEForOneStep implements SemanticRoleLabeling{
 	 * @return
 	 */
 	@Override
-	public String[] kSrlstr(int k,TreeNode tree, String predicateinfo) {
+	public String[] kSrlstr(int k,TreeNode tree, int[] predicateinfo) {
 		SRLTree[] srltree = kSrltree(k,tree,predicateinfo);
 		String[] output = new String[srltree.length];
  		for (int i = 0; i < srltree.length; i++) {
@@ -323,9 +328,49 @@ public class SRLMEForOneStep implements SemanticRoleLabeling{
 	 * @return
 	 */
 	@Override
-	public String[] kSrlstr(int k,String treeStr, String predicateinfo) {
+	public String[] kSrlstr(int k,String treeStr, int[] predicateinfo) {
 		TreeNode node = pgt.generateTree("("+treeStr+")");
 		return kSrlstr(k,node,predicateinfo);
+	}
+	
+	
+	@Override
+	public SRLTree srltree(TreeNode tree, String[] predicateinfo) {
+		return kSrltree(1,tree,predicateinfo)[0];
+	}
+	@Override
+	public SRLTree srltree(String treeStr, String[] predicateinfo) {
+		TreeNode tree = pgt.generateTree("("+treeStr+")");
+		return srltree(tree,predicateinfo);
+	}
+	@Override
+	public SRLTree[] kSrltree(int k, TreeNode tree, String[] predicateinfo) {
+		int[] index = SRLSample.getPredicateIndex(tree, predicateinfo);
+		return kSrltree(k,tree,index);
+	}
+	@Override
+	public SRLTree[] kSrltree(int k, String treeStr, String[] predicateinfo) {
+		TreeNode tree = pgt.generateTree("("+treeStr+")");
+		return kSrltree(k,tree,predicateinfo);
+	}
+	@Override
+	public String srlstr(TreeNode tree, String[] predicateinfo) {
+		return kSrlstr(1,tree,predicateinfo)[0];
+	}
+	@Override
+	public String srlstr(String treeStr, String[] predicateinfo) {
+		TreeNode tree = pgt.generateTree("("+treeStr+")");
+		return srlstr(tree,predicateinfo);
+	}
+	@Override
+	public String[] kSrlstr(int k, TreeNode tree, String[] predicateinfo) {
+		int[] index = SRLSample.getPredicateIndex(tree, predicateinfo);
+		return kSrlstr(k,tree,index);
+	}
+	@Override
+	public String[] kSrlstr(int k, String treeStr, String[] predicateinfo) {
+		TreeNode tree = pgt.generateTree("("+treeStr+")");
+		return kSrlstr(k,tree,predicateinfo);
 	}
 }
 

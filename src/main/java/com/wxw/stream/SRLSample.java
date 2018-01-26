@@ -1,6 +1,7 @@
 package com.wxw.stream;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -168,6 +169,52 @@ public class SRLSample <T extends TreeNode>{
 		return list;
 	}
 	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.deepHashCode(addtionalContext);
+		result = prime * result + ((argumenttree == null) ? 0 : argumenttree.hashCode());
+		result = prime * result + ((labelinfo == null) ? 0 : labelinfo.hashCode());
+		result = prime * result + ((predicatetree == null) ? 0 : predicatetree.hashCode());
+		result = prime * result + ((tree == null) ? 0 : tree.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SRLSample other = (SRLSample) obj;
+		if (!Arrays.deepEquals(addtionalContext, other.addtionalContext))
+			return false;
+		if (argumenttree == null) {
+			if (other.argumenttree != null)
+				return false;
+		} else if (!argumenttree.equals(other.argumenttree))
+			return false;
+		if (labelinfo == null) {
+			if (other.labelinfo != null)
+				return false;
+		} else if (!labelinfo.equals(other.labelinfo))
+			return false;
+		if (predicatetree == null) {
+			if (other.predicatetree != null)
+				return false;
+		} else if (!predicatetree.equals(other.predicatetree))
+			return false;
+		if (tree == null) {
+			if (other.tree != null)
+				return false;
+		} else if (!tree.equals(other.tree))
+			return false;
+		return true;
+	}
+
 	/**
 	 * 根据得到的是论元的下标，获取对应的子树
 	 * @param argumenttree 论元子树序列
@@ -181,6 +228,93 @@ public class SRLSample <T extends TreeNode>{
 			list.add(argumenttree[index.get(i)]);
 		}
 		return list.toArray(new TreeNodeWrapper[list.size()]);
+	}
+	
+	/**
+	 * 得到所有的非终结点序号
+	 * @param tree
+	 * @return
+	 */
+	public static List<String> getLeaf(TreeNode tree){
+		List<String> list = new ArrayList<>();
+		if(tree.getChildren().size() == 0){
+			list.add(tree.getNodeName());
+		}else{
+			for (TreeNode node : tree.getChildren()) {
+				list.addAll(getLeaf(node));
+			}
+		}
+		return list;
+	}
+	
+	/**
+	 * 给定动词或动词短语，得到对应下标
+	 * @param tree
+	 * @param predicateinfo
+	 * @return
+	 */
+	public static int[] getPredicateIndex(TreeNode tree,String[] predicateinfo){
+		List<String> list = getLeaf(tree);
+		int[] index = new int[predicateinfo.length];
+		for (int i = 0; i < index.length; i++) {
+			index[i] = list.indexOf(predicateinfo[i]);
+		}
+		return index;
+	}
+	
+	/**
+	 * 将给的谓词信息包装成训练时候解析的文本的样式：大于等于六列
+	 * 【文本名称 在文本中的序号 谓词索引 标注标准 框架集 动词的一些描述 论元信息。。。】
+	 * 在这里没有的信息用NULL占一个位置，这样解析时候就可以按照和训练文本一样的解析方式，解析出一样的样本类
+	 * @param tree
+	 * @param predicateinfo
+	 * @return
+	 */
+	public static String predicateToTrainSample(TreeNode tree,String[] predicateinfo){
+		int[] index = getPredicateIndex(tree,predicateinfo);
+		int min = index[0];
+		for (int i = 1; i < index.length; i++) {
+			if(index[i] < min){
+				min = index[i];
+			}
+		}
+		String str = "";
+		for (int i = 0; i < index.length; i++) {
+			if(i == index.length - 1){
+				str += index[i]+":"+0;
+			}else{
+				str += index[i]+":"+0+",";
+			}
+		}
+		String res = "NULL"+" "+"NULL"+" "+min+" "+"NULL"+" "+"NULL"+" "+"NULL"+" "+str;
+		return res;
+	}
+	
+	/**
+	 * 将给的谓词索引信息包装成训练时候解析的文本的样式：大于等于六列
+	 * 【文本名称 在文本中的序号 谓词索引 标注标准 框架集 动词的一些描述 论元信息。。。】
+	 * 在这里没有的信息用NULL占一个位置，这样解析时候就可以按照和训练文本一样的解析方式，解析出一样的样本类
+	 * @param tree
+	 * @param predicateinfo
+	 * @return
+	 */
+	public static String indexToTrainSample(int[] index){
+		int min = index[0];
+		for (int i = 1; i < index.length; i++) {
+			if(index[i] < min){
+				min = index[i];
+			}
+		}
+		String str = "";
+		for (int i = 0; i < index.length; i++) {
+			if(i == index.length - 1){
+				str += index[i]+":"+0;
+			}else{
+				str += index[i]+":"+0+",";
+			}
+		}
+		String res = "NULL"+" "+"NULL"+" "+min+" "+"NULL"+" "+"NULL"+" "+"NULL"+" "+str;
+		return res;
 	}
 }
 

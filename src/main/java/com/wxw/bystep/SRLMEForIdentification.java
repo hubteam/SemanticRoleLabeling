@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.wxw.feature.SRLContextGenerator;
+import com.wxw.parse.AbstractParseStrategy;
 import com.wxw.stream.FileInputStreamFactory;
 import com.wxw.stream.PlainTextByTreeStream;
 import com.wxw.stream.SRLSample;
@@ -45,13 +46,20 @@ public class SRLMEForIdentification {
 
     private SequenceValidator<TreeNodeWrapper<HeadTreeNode>> sequenceValidator;
 	
+    private AbstractParseStrategy<HeadTreeNode> parse;
+	
+    public SRLMEForIdentification(AbstractParseStrategy<HeadTreeNode> parse) {
+    	this.parse = parse;
+	}
+    
 	/**
 	 * 构造函数，初始化工作
 	 * @param model 模型
 	 * @param contextGen 特征
 	 */
-	public SRLMEForIdentification(SRLModelForIdentification model, SRLContextGenerator contextGen) {
+	public SRLMEForIdentification(SRLModelForIdentification model, SRLContextGenerator contextGen,AbstractParseStrategy<HeadTreeNode> parse) {
 		init(model , contextGen);
+		this.parse = parse;
 	}
     /**
      * 初始化工作
@@ -78,7 +86,7 @@ public class SRLMEForIdentification {
         }
 		
 	}
-	
+
 	/**
 	 * 训练模型
 	 * @param file 训练文件
@@ -89,13 +97,13 @@ public class SRLMEForIdentification {
 	 * @throws IOException 
 	 * @throws FileNotFoundException 
 	 */
-	public static SRLModelForIdentification train(File file, TrainingParameters params, SRLContextGenerator contextGen,
+	public SRLModelForIdentification train(File file, TrainingParameters params, SRLContextGenerator contextGen,
 			String encoding){
 		SRLModelForIdentification model = null;
 		try {
 			ObjectStream<String[]> lineStream = new PlainTextByTreeStream(new FileInputStreamFactory(file), encoding);
-			ObjectStream<SRLSample<HeadTreeNode>> sampleStream = new SRLSampleStream(lineStream);
-			model = SRLMEForIdentification.train("zh", sampleStream, params, contextGen);
+			ObjectStream<SRLSample<HeadTreeNode>> sampleStream = new SRLSampleStream(lineStream,parse);
+			model = train("zh", sampleStream, params, contextGen);
 			return model;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -104,7 +112,44 @@ public class SRLMEForIdentification {
 		}	
 		return null;
 	}
-
+	
+	/**
+	 * 训练模型，并将模型写出
+	 * @param file 训练的文本
+	 * @param modelFile 模型文件
+	 * @param params 训练的参数配置
+	 * @param contextGen 上下文 产生器
+	 * @param encoding 编码方式
+	 * @return
+	 */
+	public SRLModelForIdentification train(File file, File modelFile, TrainingParameters params,
+			SRLContextGenerator contextGen, String encoding) {
+		OutputStream modelOut = null;
+		SRLModelForIdentification model = null;
+		try {
+			ObjectStream<String[]> lineStream = new PlainTextByTreeStream(new FileInputStreamFactory(file), encoding);
+			ObjectStream<SRLSample<HeadTreeNode>> sampleStream = new SRLSampleStream(lineStream,parse);
+			model = train("zh", sampleStream, params, contextGen);
+            //模型的写出，文本文件
+            modelOut = new BufferedOutputStream(new FileOutputStream(modelFile));           
+            model.serialize(modelOut);
+            return model;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}finally {			
+            if (modelOut != null) {
+                try {
+                	modelOut.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }	
+		return null;
+	}
+	
 	/**
 	 * 训练模型
 	 * @param languageCode 编码
@@ -115,7 +160,7 @@ public class SRLMEForIdentification {
 	 * @throws IOException 
 	 * @throws FileNotFoundException 
 	 */
-	public static SRLModelForIdentification train(String languageCode, ObjectStream<SRLSample<HeadTreeNode>> sampleStream, TrainingParameters params,
+	public SRLModelForIdentification train(String languageCode, ObjectStream<SRLSample<HeadTreeNode>> sampleStream, TrainingParameters params,
 			SRLContextGenerator contextGen) throws IOException {
 		String beamSizeString = params.getSettings().get(BeamSearch.BEAM_SIZE_PARAMETER);
 		int beamSize = SRLMEForIdentification.DEFAULT_BEAM_SIZE;
@@ -139,43 +184,6 @@ public class SRLMEForIdentification {
         } else {
             return new SRLModelForIdentification(languageCode, seqPosModel, manifestInfoEntries);
         }
-	}
-
-	/**
-	 * 训练模型，并将模型写出
-	 * @param file 训练的文本
-	 * @param modelbinaryFile 二进制的模型文件
-	 * @param modeltxtFile 文本类型的模型文件
-	 * @param params 训练的参数配置
-	 * @param contextGen 上下文 产生器
-	 * @param encoding 编码方式
-	 * @return
-	 */
-	public static SRLModelForIdentification train(File file, File modelFile, TrainingParameters params,
-			SRLContextGenerator contextGen, String encoding) {
-		OutputStream modelOut = null;
-		SRLModelForIdentification model = null;
-		try {
-			ObjectStream<String[]> lineStream = new PlainTextByTreeStream(new FileInputStreamFactory(file), encoding);
-			ObjectStream<SRLSample<HeadTreeNode>> sampleStream = new SRLSampleStream(lineStream);
-			model = SRLMEForIdentification.train("zh", sampleStream, params, contextGen);
-            modelOut = new BufferedOutputStream(new FileOutputStream(modelFile));           
-            model.serialize(modelOut);
-            return model;
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}finally {		
-            if (modelOut != null) {
-                try {
-                	modelOut.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }	
-		return null;
 	}
 	
 	/**

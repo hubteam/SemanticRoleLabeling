@@ -5,6 +5,8 @@ import java.io.IOException;
 import com.wxw.evaluate.SRLEvaluateMonitor;
 import com.wxw.evaluate.SRLMeasure;
 import com.wxw.feature.SRLContextGenerator;
+import com.wxw.parse.AbstractParseStrategy;
+import com.wxw.parse.SRLParseAddNULL_101HasPruning;
 import com.wxw.stream.SRLSample;
 import com.wxw.tree.HeadTreeNode;
 
@@ -21,6 +23,7 @@ public class SRLCrossValidationForByStepContainsNullLabel {
 	private final String languageCode;
 	private final TrainingParameters params;
 	private SRLEvaluateMonitor[] monitor;
+	private AbstractParseStrategy<HeadTreeNode> parse = new SRLParseAddNULL_101HasPruning();
 	
 	/**
 	 * 构造
@@ -50,15 +53,17 @@ public class SRLCrossValidationForByStepContainsNullLabel {
 		while(partitioner.hasNext()){
 			long start = System.currentTimeMillis();
 			System.out.println("Run"+run+"...");
-			CrossValidationPartitioner.TrainingSampleStream<SRLSample<HeadTreeNode>> trainingSampleStream = partitioner.next();			
-			SRLModelForIdentification modelIden = SRLMEForIdentification.train(languageCode, trainingSampleStream, params, contextIden);
+			CrossValidationPartitioner.TrainingSampleStream<SRLSample<HeadTreeNode>> trainingSampleStream = partitioner.next();	
+			SRLMEForIdentification meIden = new SRLMEForIdentification(parse);
+			SRLModelForIdentification modelIden = meIden.train(languageCode, trainingSampleStream, params, contextIden);
 			trainingSampleStream.reset();
-			SRLMEForIdentification tagger = new SRLMEForIdentification(modelIden,contextIden);
-			SRLModelForClassification modelClas = SRLMEForClassificationContainsNullLabel.train(languageCode, trainingSampleStream, params, contextClas, tagger);
+			SRLMEForIdentification tagger = new SRLMEForIdentification(modelIden,contextIden,parse);
+			SRLMEForClassificationContainsNullLabel meClas = new SRLMEForClassificationContainsNullLabel(parse);
+			SRLModelForClassification modelClas = meClas.train(languageCode, trainingSampleStream, params, contextClas, tagger);
 			
 			System.out.println("训练时间："+(System.currentTimeMillis()-start));
-			SRLEvaluatorForByStepContainsNullLabel evaluator = new SRLEvaluatorForByStepContainsNullLabel(new SRLMEForIdentification(modelIden,contextIden),
-					new SRLMEForClassificationContainsNullLabel(modelIden,modelClas,contextIden,contextClas),monitor);
+			SRLEvaluatorForByStepContainsNullLabel evaluator = new SRLEvaluatorForByStepContainsNullLabel(new SRLMEForIdentification(modelIden,contextIden,parse),
+					new SRLMEForClassificationContainsNullLabel(modelIden,modelClas,contextIden,contextClas,parse),monitor);
 			SRLMeasure measure = new SRLMeasure();
 			
 			evaluator.setMeasure(measure);

@@ -15,6 +15,8 @@ import com.wxw.onestep.SRLCrossValidationForOneStep;
 import com.wxw.onestep.SRLEvaluatorForOneStep;
 import com.wxw.onestep.SRLMEForOneStep;
 import com.wxw.onestep.SRLModelForOneStep;
+import com.wxw.parse.AbstractParseStrategy;
+import com.wxw.parse.SRLParseAddNULL_101HasPruning;
 import com.wxw.stream.FileInputStreamFactory;
 import com.wxw.stream.PlainTextByTreeStream;
 import com.wxw.stream.SRLSample;
@@ -32,6 +34,7 @@ import opennlp.tools.util.TrainingParameters;
 public class SRLRunForOneStep {
 
 	private static String flag = "train";
+	private static AbstractParseStrategy<HeadTreeNode> parse = new SRLParseAddNULL_101HasPruning();
 	//静态内部类
 	public static class Corpus{
 		//文件名和编码
@@ -77,7 +80,7 @@ public class SRLRunForOneStep {
         SRLContextGenerator contextGen = getContextGenerator(config);
         ObjectStream<String[]> lineStream = new PlainTextByTreeStream(new FileInputStreamFactory(new File(corpus.trainFile)), corpus.encoding);
         
-        ObjectStream<SRLSample<HeadTreeNode>> sampleStream = new SRLSampleStream(lineStream);
+        ObjectStream<SRLSample<HeadTreeNode>> sampleStream = new SRLSampleStream(lineStream,parse);
 
         //默认参数
         TrainingParameters params = TrainingParameters.defaultParams();
@@ -162,7 +165,7 @@ public class SRLRunForOneStep {
 			TrainingParameters params) throws IOException {
 		System.out.println("ContextGenerator: " + contextGen);
 		SRLModelForOneStep model = new SRLModelForOneStep(new File(corpus.modelFile));
-		SRLMEForOneStep tagger = new SRLMEForOneStep(model,contextGen);
+		SRLMEForOneStep tagger = new SRLMEForOneStep(model,contextGen,parse);
        
 		SRLMeasure measure = new SRLMeasure();
 		SRLEvaluatorForOneStep evaluator = null;
@@ -176,7 +179,7 @@ public class SRLRunForOneStep {
         }
         evaluator.setMeasure(measure);
         ObjectStream<String[]> linesStream = new PlainTextByTreeStream(new FileInputStreamFactory(new File(corpus.testFile)), corpus.encoding);
-        ObjectStream<SRLSample<HeadTreeNode>> sampleStream = new SRLSampleStream(linesStream);
+        ObjectStream<SRLSample<HeadTreeNode>> sampleStream = new SRLSampleStream(linesStream,parse);
         evaluator.evaluate(sampleStream);
         SRLMeasure measureRes = evaluator.getMeasure();
         System.out.println("--------结果--------");
@@ -189,16 +192,15 @@ public class SRLRunForOneStep {
 	 * @param corpus 语料对象
 	 * @param params 训练模型的参数
 	 * @throws UnsupportedOperationException 
-	 * @throws FileNotFoundException 
 	 * @throws IOException 
 	 */	
 	private static void modelOutOnCorpus(SRLContextGenerator contextGen, Corpus corpus,
-			TrainingParameters params) {
+			TrainingParameters params) throws IOException {
 		System.out.println("ContextGenerator: " + contextGen);
         System.out.println("Training on " + corpus.name + "...");
         //训练模型
-        SRLMEForOneStep.train(new File(corpus.trainFile), new File(corpus.modelFile), params, contextGen, corpus.encoding);
-		
+        SRLMEForOneStep me = new SRLMEForOneStep(parse);
+        me.train(new File(corpus.trainFile), params, contextGen, corpus.encoding);		
 	}
 
 	/**
@@ -213,8 +215,9 @@ public class SRLRunForOneStep {
 		System.out.println("ContextGenerator: " + contextGen);
         System.out.println("Training on " + corpus.name + "...");
         //训练模型
-        SRLMEForOneStep.train(new File(corpus.trainFile), params, contextGen, corpus.encoding);
-		
+        SRLMEForOneStep me = new SRLMEForOneStep(parse);
+        me.train(new File(corpus.trainFile), new File(corpus.modelFile),params, contextGen, corpus.encoding);
+        //corpus.trainFile, corpus.modelFile,params, contextGen, corpus.encoding
 	}
 
 	/**

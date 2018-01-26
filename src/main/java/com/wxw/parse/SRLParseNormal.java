@@ -52,7 +52,7 @@ public class SRLParseNormal extends AbstractParseStrategy<HeadTreeNode>{
 						if(map.get(getLeftIndexAndDownSteps(tree)[0]).getRole().equals("rel")){
 							if(getLeftIndexAndDownSteps(tree)[0] == verbindex){
 								tree.setFlag(false);
-								predicatetree.add(new TreeNodeWrapper<HeadTreeNode>(tree,getLeftIndexAndDownSteps(tree)[0]));
+								predicatetree.add(new TreeNodeWrapper<HeadTreeNode>(tree,getLeftIndexAndDownSteps(tree)[0],predicate));
 							}else{
 								
 							}

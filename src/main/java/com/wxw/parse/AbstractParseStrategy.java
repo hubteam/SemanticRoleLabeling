@@ -22,6 +22,7 @@ public abstract class AbstractParseStrategy<T extends TreeNode> {
 
 	private TreeToHeadTree toheadtree = new TreeToHeadTree();
 	protected boolean containPredicateFlag;
+	protected String predicate;
 	
 	/**
 	 * 是否有剪枝操作
@@ -95,6 +96,26 @@ public abstract class AbstractParseStrategy<T extends TreeNode> {
 	}
 	
 	/**
+	 * 得到谓词或者谓词短语
+	 * @param tree 正常的一棵树
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private void getPredicate(T tree,HashMap<Integer,RoleTool> map,int verbindex){
+		if(tree.getChildren().size() == 0){
+			if(map.containsKey(tree.getWordIndex())){
+				if(map.get(tree.getWordIndex()).getRole().equals("rel")){
+					predicate += tree.getNodeName();
+				}			
+			}
+		}else{
+			for (TreeNode treenode : tree.getChildren()) {
+				getPredicate((T)treenode,map,verbindex);
+			}
+		}
+	}
+	
+	/**
 	 * 去除标点符号，将其flag设置为false
 	 * @param tree 要处理的树
 	 * @return
@@ -164,9 +185,12 @@ public abstract class AbstractParseStrategy<T extends TreeNode> {
 	 */
 	@SuppressWarnings("unchecked")
 	public SRLSample<T> parse(TreeNode tree, String semanticRole){
+		
 		SRLSample<T> sample;
 		String[] roles = semanticRole.split(" ");
 		int verbindex = Integer.parseInt(roles[2]);
+		predicate = "";//清空
+		getPredicate((T) tree, getRoleMap(semanticRole),verbindex);
 		if(hasHeadWord()){
 			HeadTreeNode headtree = toheadtree.treeToHeadTree(tree);
 			if(hasPrePruning()){

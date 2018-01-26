@@ -33,8 +33,9 @@ public class SRLParseAddNULL_101HasPruning extends AbstractParseStrategy<HeadTre
 		predicatetree.clear();
 		String[] roles = semanticRole.split(" ");
 		headtree.setFlag(false);
+
 		//加入以当前论元或者谓词作为根节点的树，和语义标记信息
-		predicatetree.add(new TreeNodeWrapper<HeadTreeNode>(headtree,Integer.parseInt(roles[2]),roles[3]));
+		predicatetree.add(new TreeNodeWrapper<HeadTreeNode>(headtree,Integer.parseInt(roles[2]),predicate));
 		addInfoDown(headtree.getParent(),getRoleMap(semanticRole),Integer.parseInt(roles[2]));	
 		addInfoUp(headtree.getParent(),getRoleMap(semanticRole),Integer.parseInt(roles[2]));
 		while(headtree.getParent() != null){

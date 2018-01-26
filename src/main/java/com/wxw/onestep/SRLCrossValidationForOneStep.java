@@ -5,6 +5,8 @@ import java.io.IOException;
 import com.wxw.evaluate.SRLEvaluateMonitor;
 import com.wxw.evaluate.SRLMeasure;
 import com.wxw.feature.SRLContextGenerator;
+import com.wxw.parse.AbstractParseStrategy;
+import com.wxw.parse.SRLParseAddNULL_101HasPruning;
 import com.wxw.stream.SRLSample;
 import com.wxw.tree.HeadTreeNode;
 
@@ -21,6 +23,7 @@ public class SRLCrossValidationForOneStep {
 	private final String languageCode;
 	private final TrainingParameters params;
 	private SRLEvaluateMonitor[] monitor;
+	private AbstractParseStrategy<HeadTreeNode> parse = new SRLParseAddNULL_101HasPruning();
 	
 	/**
 	 * 构造
@@ -49,10 +52,11 @@ public class SRLCrossValidationForOneStep {
 		while(partitioner.hasNext()){
 			long start = System.currentTimeMillis();
 			System.out.println("Run"+run+"...");
-			CrossValidationPartitioner.TrainingSampleStream<SRLSample<HeadTreeNode>> trainingSampleStream = partitioner.next();			
-			SRLModelForOneStep model = SRLMEForOneStep.train(languageCode, trainingSampleStream, params, contextGenerator);
+			CrossValidationPartitioner.TrainingSampleStream<SRLSample<HeadTreeNode>> trainingSampleStream = partitioner.next();	
+			SRLMEForOneStep me = new SRLMEForOneStep(parse);
+			SRLModelForOneStep model = me.train(languageCode, trainingSampleStream, params, contextGenerator);
 			System.out.println("训练时间："+(System.currentTimeMillis()-start));
-			SRLEvaluatorForOneStep evaluator = new SRLEvaluatorForOneStep(new SRLMEForOneStep(model,contextGenerator), monitor);
+			SRLEvaluatorForOneStep evaluator = new SRLEvaluatorForOneStep(new SRLMEForOneStep(model,contextGenerator,parse), monitor);
 			SRLMeasure measure = new SRLMeasure();
 			
 			evaluator.setMeasure(measure);

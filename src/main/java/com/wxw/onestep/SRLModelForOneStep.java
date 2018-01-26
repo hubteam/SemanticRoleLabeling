@@ -5,10 +5,6 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
 
-import com.wxw.tool.TreeNodeWrapper;
-import com.wxw.tree.HeadTreeNode;
-import com.wxw.tree.TreeNode;
-
 import opennlp.tools.ml.BeamSearch;
 import opennlp.tools.ml.model.MaxentModel;
 import opennlp.tools.ml.model.SequenceClassificationModel;
@@ -79,6 +75,7 @@ public class SRLModelForOneStep extends BaseModel{
         }
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public SequenceClassificationModel<?> getSRLTreeSequenceModel() {
 
         Properties manifest = (Properties) artifactMap.get(MANIFEST_ENTRY);

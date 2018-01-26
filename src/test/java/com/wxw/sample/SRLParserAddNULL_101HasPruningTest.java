@@ -39,6 +39,8 @@ public class SRLParserAddNULL_101HasPruningTest {
 	private AbstractParseStrategy<HeadTreeNode> parse1;
 	private SRLSample<HeadTreeNode> sample;
 	private SRLSample<HeadTreeNode> sample1;
+	private String predicate;
+	private String predicate1;
 	
 	@Before
 	public void setUp(){
@@ -152,6 +154,8 @@ public class SRLParserAddNULL_101HasPruningTest {
 		}
 		assertEquals(sample.getPredicateTree()[0].getTree().toString(),list);
 
+		System.out.println(sample.getPredicateTree()[0].getStem());
+		
 		assertEquals(Arrays.asList(sample1.getLabelInfo()),label1);
 		for (int i = 0; i < srlinfo1.size(); i++) {
 			assertEquals(sample1.getArgumentTree()[i].getLeftLeafIndex()+"",srlinfo1.get(i));

@@ -18,6 +18,8 @@ import com.wxw.evaluate.SRLMeasure;
 import com.wxw.feature.SRLContextGenerator;
 import com.wxw.feature.SRLContextGeneratorConfForClassification;
 import com.wxw.feature.SRLContextGeneratorConfForIdentification;
+import com.wxw.parse.AbstractParseStrategy;
+import com.wxw.parse.SRLParseAddNULL_101HasPruning;
 import com.wxw.stream.FileInputStreamFactory;
 import com.wxw.stream.PlainTextByTreeStream;
 import com.wxw.stream.SRLSample;
@@ -34,6 +36,7 @@ import opennlp.tools.util.TrainingParameters;
  */
 public class SRLRunForByStepNotNULL {
 	private static String flag = "train";
+	public static AbstractParseStrategy<HeadTreeNode> parse = new SRLParseAddNULL_101HasPruning();
 	//静态内部类
 	public static class Corpus{
 		//文件名和编码
@@ -81,7 +84,7 @@ public class SRLRunForByStepNotNULL {
         SRLContextGenerator contextClas = new SRLContextGeneratorConfForClassification(config);
         ObjectStream<String[]> lineStream = new PlainTextByTreeStream(new FileInputStreamFactory(new File(corpus.trainFile)), corpus.encoding);
         
-        ObjectStream<SRLSample<HeadTreeNode>> sampleStream = new SRLSampleStream(lineStream);
+        ObjectStream<SRLSample<HeadTreeNode>> sampleStream = new SRLSampleStream(lineStream,parse);
 
         //默认参数
         TrainingParameters params = TrainingParameters.defaultParams();
@@ -167,9 +170,9 @@ public class SRLRunForByStepNotNULL {
 		System.out.println("ContextGenerator: " + contextIden);
 		System.out.println("ContextGenerator: " + contextClas);
 		SRLModelForIdentification modelIden = new SRLModelForIdentification(new File(corpus.identificationmodelFile));
-		SRLMEForIdentification taggerIden = new SRLMEForIdentification(modelIden,contextIden);
+		SRLMEForIdentification taggerIden = new SRLMEForIdentification(modelIden,contextIden,parse);
 		SRLModelForClassification modelClas = new SRLModelForClassification(new File(corpus.classificationmodelFile));
-		SRLMEForClassificationNotNullLabel taggerClas = new SRLMEForClassificationNotNullLabel(modelIden,modelClas,contextIden,contextClas);
+		SRLMEForClassificationNotNullLabel taggerClas = new SRLMEForClassificationNotNullLabel(modelIden,modelClas,contextIden,contextClas,parse);
        
 		SRLMeasure measure = new SRLMeasure();
 		SRLEvaluatorForByStepNotNullLabel evaluator = null;
@@ -183,7 +186,7 @@ public class SRLRunForByStepNotNULL {
         }
         evaluator.setMeasure(measure);
         ObjectStream<String[]> linesStream = new PlainTextByTreeStream(new FileInputStreamFactory(new File(corpus.testFile)), corpus.encoding);
-        ObjectStream<SRLSample<HeadTreeNode>> sampleStream = new SRLSampleStream(linesStream);
+        ObjectStream<SRLSample<HeadTreeNode>> sampleStream = new SRLSampleStream(linesStream,parse);
         evaluator.evaluate(sampleStream);
         SRLMeasure measureRes = evaluator.getMeasure();
         System.out.println("--------结果--------");
@@ -206,10 +209,12 @@ public class SRLRunForByStepNotNULL {
 		System.out.println("ContextGenerator: " + contextIden);
 		System.out.println("ContextGenerator: " + contextClas);
         System.out.println("Training on " + corpus.name + "...");
-        //训练模型
-        SRLMEForIdentification.train(new File(corpus.trainFile), new File(corpus.identificationmodelFile), params, contextIden, corpus.encoding);
-        SRLMEForClassificationNotNullLabel.train(new File(corpus.trainFile), new File(corpus.classificationmodelFile), params, contextIden, corpus.encoding);
-		
+
+        SRLMEForIdentification meIden = new SRLMEForIdentification(parse);
+        meIden.train(new File(corpus.trainFile), new File(corpus.identificationmodelFile),params, contextIden, corpus.encoding);
+        
+        SRLMEForClassificationNotNullLabel meClas = new SRLMEForClassificationNotNullLabel(parse);
+        meClas.train(new File(corpus.trainFile), new File(corpus.classificationmodelFile),params, contextClas, corpus.encoding);
 	}
 
 	/**
@@ -226,9 +231,11 @@ public class SRLRunForByStepNotNULL {
 		System.out.println("ContextGenerator: " + contextIden);
 		System.out.println("ContextGenerator: " + contextClas);
         System.out.println("Training on " + corpus.name + "...");
-        //训练模型
-        SRLMEForIdentification.train(new File(corpus.trainFile), params, contextIden, corpus.encoding);
-        SRLMEForClassificationNotNullLabel.train(new File(corpus.trainFile), params, contextClas, corpus.encoding);
+        SRLMEForIdentification meIden = new SRLMEForIdentification(parse);
+        meIden.train(new File(corpus.trainFile), params, contextIden, corpus.encoding);
+        
+        SRLMEForClassificationNotNullLabel meClas = new SRLMEForClassificationNotNullLabel(parse);
+        meClas.train(new File(corpus.trainFile), params, contextClas, corpus.encoding);
 	}
 
 	private static Corpus[] getCorporaFromConf(Properties config) {

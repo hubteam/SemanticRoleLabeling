@@ -32,7 +32,7 @@ public class SRLParseNormalHasPruning extends AbstractParseStrategy<HeadTreeNode
 		predicatetree.clear();
 		String[] roles = semanticRole.split(" ");
 		headtree.setFlag(false);
-		predicatetree.add(new TreeNodeWrapper<HeadTreeNode>(headtree,Integer.parseInt(roles[2])));
+		predicatetree.add(new TreeNodeWrapper<HeadTreeNode>(headtree,Integer.parseInt(roles[2]),predicate));
 		//加入以当前论元或者谓词作为根节点的树，和语义标记信息
 		addInfoDown(headtree.getParent(),getRoleMap(semanticRole));	
 		addInfoUp(headtree.getParent(),getRoleMap(semanticRole));

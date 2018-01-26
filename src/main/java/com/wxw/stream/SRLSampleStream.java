@@ -26,20 +26,21 @@ import opennlp.tools.util.ObjectStream;
 public class SRLSampleStream extends FilterObjectStream<String[],SRLSample<HeadTreeNode>>{
 
 	private Logger logger = Logger.getLogger(SRLSampleStream.class.getName());
-	public SRLSampleStream(ObjectStream<String[]> samples) {
+	private AbstractParseStrategy<HeadTreeNode> parse;
+	public SRLSampleStream(ObjectStream<String[]> samples,AbstractParseStrategy<HeadTreeNode> parse) {
 		super(samples);
+		this.parse = parse;
 	}
 
 	public SRLSample<HeadTreeNode> read() throws IOException {				
 		String[] sentence = samples.read();	
 		SRLSample<HeadTreeNode> sample = null;
 		PhraseGenerateTree pgt = new PhraseGenerateTree();
-		AbstractParseStrategy<HeadTreeNode> ttst = new SRLParseAddNULL_101HasPruning();
 		if(sentence[0]!= null && sentence[1] != null){
 			try{
 				TreeNode tree = pgt.generateTree(sentence[0]);
 				PreTreatTool.preTreat(tree);
-                sample = ttst.parse(tree, sentence[1]);
+                sample = parse.parse(tree, sentence[1]);
 			}catch(Exception e){
 				if (logger.isLoggable(Level.WARNING)) {						
 	                logger.warning("Error during parsing, ignoring sentence: " + sentence[1]);
